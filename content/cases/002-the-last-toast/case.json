@@ -1,0 +1,1820 @@
+{
+  "id": "002-the-last-toast",
+  "version": 1,
+  "title": "The Last Toast",
+  "hook": "A wedding reception. Four hundred guests. One glass that should never have been poured.",
+  "city": {
+    "name": "Lagos",
+    "country": "Nigeria"
+  },
+  "difficulty": 4,
+  "estMinutes": [
+    60,
+    90
+  ],
+  "contentNotes": [
+    "A death by poisoning at a family celebration (no graphic detail).",
+    "Grief, debt and gambling are discussed.",
+    "All people and businesses are fictional."
+  ],
+  "parHours": 6,
+  "briefing": "**Saturday, 13 June 2026.** Four hundred guests in wine and emerald filled The Glasshouse in Lekki for the wedding of **Simisola Bankole** and **Femi Daramola**. At 19:41 the bride's father, **Chief Adewale Bankole (64)**, raised a glass to his daughter. At 19:52 he collapsed beside the cake. He was dead by 20:40.\n\nChief Bankole never drank alcohol: doctor's orders. Tonight he drank champagne. By morning the lab had found a heart drug in his blood that no doctor had ever prescribed him.\n\nSomeone made sure he would drink. Read everything. Trust nobody. When you are sure, name the killer, say how it was done and why, and pin the three pieces of evidence that prove it.\n\nYou have three accusations. After that, the case goes cold.",
+  "suspects": [
+    {
+      "id": "folake",
+      "name": "Folake Bankole",
+      "role": "The victim's wife",
+      "short": "Folake"
+    },
+    {
+      "id": "kayode",
+      "name": "Kayode Bankole",
+      "role": "The victim's son",
+      "short": "Kayode"
+    },
+    {
+      "id": "ngozi",
+      "name": "Dr Ngozi Eze",
+      "role": "His doctor and a family friend",
+      "short": "Dr Eze"
+    },
+    {
+      "id": "tunde",
+      "name": "Tunde Alabi",
+      "role": "Finance director, Bankole Homes",
+      "short": "Tunde"
+    },
+    {
+      "id": "ronke",
+      "name": "Ronke Bello",
+      "role": "Wedding planner, Gold Petal Events",
+      "short": "Ronke"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-01",
+      "tab": "documents",
+      "number": 1,
+      "title": "Police incident report",
+      "source": "Lagos State Police Command · Maroko Division · Insp. A. Okoro",
+      "body": {
+        "type": "document",
+        "markdown": "**Incident:** Sudden death at a wedding reception, The Glasshouse, Admiralty Way, Lekki Phase 1.\n**Reported:** 19:55, Saturday 13 June 2026, by Mrs Folake Bankole via 112.\n\n**Chief Adewale Bankole (64)**, father of the bride and chairman of Bankole Homes Ltd, collapsed at the high table at 19:52, a few minutes after the toast. Dr Ngozi Eze, a guest and his doctor, came back into the hall at 19:58 and began resuscitation. He was taken to Lagoon Crest Hospital and pronounced dead at 20:40.\n\nFirst officers arrived at 20:15 and recorded a **suspected heart attack** in a known heart patient. The toxicology result (item 2) changed that.\n\nNotes for the investigation:\n\n- About 400 guests. The bride's family wore **wine** aso-ebi; the groom's family wore **emerald**.\n- At 21:10 officers bagged everything at seat 1 of the high table: a brass cup of zobo and an empty champagne flute.\n- The planners' room (Room B, beside the kitchen) was sealed at 21:00. Nobody has been in since.\n- Statements were taken between 22:30 and 00:40."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:52",
+          "label": "Chief Bankole collapses at the high table",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:55",
+          "label": "Folake calls 112",
+          "suspectIds": [
+            "folake"
+          ],
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T20:40",
+          "label": "Chief Bankole pronounced dead",
+          "place": "Lagoon Crest Hospital"
+        }
+      ]
+    },
+    {
+      "id": "E-02",
+      "tab": "documents",
+      "number": 2,
+      "title": "Post-mortem and toxicology summary",
+      "source": "Lagos State Forensic Pathology Unit · Dr K. Fashola",
+      "body": {
+        "type": "document",
+        "markdown": "**Cause of death:** cardiac arrest caused by **digoxin poisoning**. The level in his blood was about ten times the safe maximum.\n\nDigoxin is a prescription heart medicine, sold as small tablets. It was **not** among the deceased's medicines (metformin, amlodipine and low-dose aspirin, per his doctor).\n\n**Timing:** with a dose this large and his heart history, the drug was most likely swallowed **between 18:50 and 19:45**.\n\n**Stomach contents:** jollof rice, small chops, zobo (hibiscus drink) and a small amount of champagne.\n\nHis smartwatch recorded a slow, irregular pulse from 19:47 (see his phone, item 15)."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:47",
+          "label": "Chief's pulse turns slow and irregular",
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-03",
+      "tab": "photos",
+      "number": 3,
+      "title": "Scene photo: the high table",
+      "source": "Police photographer · 21:05",
+      "body": {
+        "type": "photo",
+        "caption": "The high table at 21:05, before the items at seat 1 were bagged.",
+        "scene": "A long high table dressed in white cloth with wine and gold flowers and twelve gold chairs. A place card at the left end reads 'Chief A. Bankole'. At that seat stand a brass cup, half full of dark red zobo, and a single empty champagne flute with a thin gold rim. At every other seat the flutes are plain glass with no rim, most of them still half full. A gold hand fan lies at seat 2. A three-tier cake on a trolley has been pushed against the end of the table, uncut, a knife with a wine ribbon beside it.",
+        "markers": [
+          {
+            "n": 1,
+            "label": "Seat 1: brass cup of zobo"
+          },
+          {
+            "n": 2,
+            "label": "Seat 1: empty flute with a gold rim"
+          },
+          {
+            "n": 3,
+            "label": "Seats 2–12: plain flutes, no rim"
+          },
+          {
+            "n": 4,
+            "label": "Seat 2: gold hand fan"
+          },
+          {
+            "n": 5,
+            "label": "Cake trolley, uncut"
+          }
+        ],
+        "stamp": "MAROKO DIV · 13-06-2026 21:05"
+      },
+      "timestamps": []
+    },
+    {
+      "id": "E-04",
+      "tab": "documents",
+      "number": 4,
+      "title": "Order of events (printed programme)",
+      "source": "Programme card left on every table · printed by Gold Petal Events",
+      "body": {
+        "type": "document",
+        "markdown": "**The Wedding Reception of Simisola & Femi**\nSaturday 13 June 2026 · The Glasshouse, Lekki\n\n**14:00** · Arrival of guests\n**15:00** · Grand entrance of the couple\n**15:30** · Opening prayer · Chairman's remarks\n**16:00** · Lunch is served\n**17:00** · Introduction of families\n**18:00** · Couple's change of outfit\n**18:45** · Return of the couple\n**19:30** · Toast to the couple (MC Kola Banjo)\n**19:45** · Cutting of the cake\n**20:15** · First dance and spraying of the couple\n**21:00** · Dance floor opens · DJ Spinz\n**22:00** · Vote of thanks\n\n*Bride's family: wine · Groom's family: emerald · Planned with love by Gold Petal Events*"
+      },
+      "timestamps": []
+    },
+    {
+      "id": "E-05",
+      "tab": "records",
+      "number": 5,
+      "title": "Lighting and DJ desk log",
+      "source": "DJ Spinz · lighting desk event log",
+      "body": {
+        "type": "log",
+        "header": "DJ SPINZ · LIGHTING DESK · EVENT LOG · 13 JUNE",
+        "intro": "Every lighting cue and radio request the DJ booth logged during the evening.",
+        "columns": [
+          "Time",
+          "Source",
+          "Event"
+        ],
+        "rows": [
+          [
+            "18:44",
+            "MC mic",
+            "Return of the couple"
+          ],
+          [
+            "18:47",
+            "Desk",
+            "House lights 80%"
+          ],
+          [
+            "19:24",
+            "Radio ch2",
+            "\"Couple are ready. Do the first dance now. Cue 14.\""
+          ],
+          [
+            "19:26",
+            "Desk",
+            "CUE 14: full blackout, spotlight on dance floor only"
+          ],
+          [
+            "19:26",
+            "MC mic",
+            "First dance announced; families invited to spray the couple"
+          ],
+          [
+            "19:30",
+            "Desk",
+            "CUE 15: house lights 60%"
+          ],
+          [
+            "19:38",
+            "MC mic",
+            "Toast to the couple"
+          ],
+          [
+            "19:47",
+            "Desk",
+            "CUE 16: spotlight on the cake"
+          ],
+          [
+            "19:52",
+            "Desk",
+            "House lights 100% (emergency)"
+          ]
+        ],
+        "footnote": "Radio channel 2 is the planners' channel (Gold Petal Events); channel 1 is catering. Under cue 14 the tables are completely dark: only the dance floor is lit."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:24",
+          "label": "Planners radio the DJ: first dance now (ch2)",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:26",
+          "label": "Cue 14: tables go dark, first dance begins",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:30",
+          "label": "House lights back up to 60%",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:38",
+          "label": "MC starts the toast",
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-06",
+      "tab": "records",
+      "number": 6,
+      "title": "Head waiter's service log: high table",
+      "source": "Bukka & Bites Catering · head waiter E. Obi",
+      "body": {
+        "type": "log",
+        "header": "BUKKA & BITES · HIGH TABLE (HT) SERVICE LOG",
+        "columns": [
+          "Time",
+          "Where",
+          "Note"
+        ],
+        "rows": [
+          [
+            "All day",
+            "HT seat 1",
+            "STANDING INSTRUCTION: Chief Bankole, NO ALCOHOL (doctor's orders). Zobo only, in his brass cup."
+          ],
+          [
+            "18:45",
+            "HT",
+            "Couple back. Water and zobo refilled."
+          ],
+          [
+            "19:05",
+            "HT seat 1",
+            "Brass cup topped up with zobo."
+          ],
+          [
+            "19:08",
+            "Bar",
+            "1 bottle Moët (#24) signed out to Gold Petal for the couple's room. Signed: R.B."
+          ],
+          [
+            "19:20",
+            "Drinks station",
+            "Mr K. Bankole took a Chapman."
+          ],
+          [
+            "19:32",
+            "HT",
+            "Champagne for the toast: 11 flutes poured, seats 2–12. Seat 1 excluded (instruction)."
+          ],
+          [
+            "19:54",
+            "HT",
+            "Planner asked us to clear all HT glasses at once. I said wait for the family."
+          ],
+          [
+            "19:58",
+            "HT",
+            "Dr Eze: nobody touches seat 1. Left as it was."
+          ]
+        ],
+        "footnote": "Our flutes are plain glass, no rim. Toast champagne came from three bottles opened at the bar at 19:31. Our staff wear white jackets and carry hand radios (no earpieces, no wristbands)."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:08",
+          "label": "Moët #24 signed out to Gold Petal (\"R.B.\")",
+          "suspectIds": [
+            "ronke"
+          ],
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:20",
+          "label": "Kayode takes a Chapman at the drinks station",
+          "suspectIds": [
+            "kayode"
+          ],
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:32",
+          "label": "Waiters pour 11 flutes, seat 1 skipped",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:54",
+          "label": "Planner asks for the high-table glasses to be cleared",
+          "suspectIds": [
+            "ronke"
+          ],
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-07",
+      "tab": "photos",
+      "number": 7,
+      "title": "Wedding video: four frames",
+      "source": "Lens & Light Studios · camera A (wide shot of the high table)",
+      "body": {
+        "type": "photo",
+        "caption": "Four frames from the official wedding video, camera clock times.",
+        "scene": "Frame 1, 19:25: lights on; the MC at the podium; Chief Bankole is walking from seat 1 towards the dance floor; at his place there is only the brass cup. Frame 2, 19:27: almost black; only the dance floor in its white spotlight is visible; the tables are lost in darkness. Frame 3, 19:32: lights at 60%; Chief is sitting back down at seat 1; beside his brass cup stands a champagne flute with a gold rim; waiters are pouring champagne into plain flutes further along the table. Frame 4, 19:41: the whole table on its feet; Chief, laughing, raises the gold-rimmed flute.",
+        "markers": [
+          {
+            "n": 1,
+            "label": "19:25 · seat 1: brass cup only"
+          },
+          {
+            "n": 2,
+            "label": "19:27 · tables in darkness"
+          },
+          {
+            "n": 3,
+            "label": "19:32 · gold-rimmed flute at seat 1; waiters pouring seats 2–12"
+          },
+          {
+            "n": 4,
+            "label": "19:41 · the toast"
+          }
+        ],
+        "stamp": "LENS&LIGHT CAM-A"
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:25",
+          "label": "Seat 1 has only the brass cup; Chief walks to the dance floor",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:32",
+          "label": "A gold-rimmed flute is at seat 1",
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:41",
+          "label": "Chief drinks from the gold-rimmed flute",
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-08",
+      "tab": "records",
+      "number": 8,
+      "title": "The toast: audio transcript",
+      "source": "Lens & Light Studios · MC's lapel microphone",
+      "body": {
+        "type": "audio",
+        "lines": [
+          {
+            "t": "19:38",
+            "speaker": "MC Kola",
+            "text": "Ladies and gentlemen, charge your glasses! Bubbly for everybody!"
+          },
+          {
+            "t": "19:39",
+            "speaker": "MC Kola",
+            "text": "Daddy! Chief! Today you must drink with us o! No zobo today!"
+          },
+          {
+            "t": "19:39",
+            "speaker": "Guest (off mic)",
+            "text": "He doesn't drink!"
+          },
+          {
+            "t": "19:39",
+            "speaker": "MC Kola",
+            "text": "Waiter, where is Daddy's glass? Ah, it's already there! Somebody loves you, sir!"
+          },
+          {
+            "t": "19:40",
+            "speaker": "Chief Bankole",
+            "text": "For my Simi... just this once."
+          },
+          {
+            "t": "19:41",
+            "speaker": "MC Kola",
+            "text": "To Simi and Femi!"
+          },
+          {
+            "t": "19:41",
+            "speaker": "Guests",
+            "text": "Simi and Femi!"
+          },
+          {
+            "t": "19:47",
+            "speaker": "MC Kola",
+            "text": "Now, the cake! Mummy and Daddy, come and join the couple."
+          },
+          {
+            "t": "19:52",
+            "speaker": "Several voices",
+            "text": "Chief! Chief! Somebody call the doctor!"
+          }
+        ],
+        "note": "Transcribed from the videographer's audio. Times from the camera clock."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:39",
+          "label": "MC: \"Daddy's glass... it's already there!\"",
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-09",
+      "tab": "documents",
+      "number": 9,
+      "title": "Seating plan",
+      "source": "Gold Petal Events · seating plan v7",
+      "body": {
+        "type": "log",
+        "header": "HIGH TABLE (left to right, facing the dance floor)",
+        "columns": [
+          "Seat",
+          "Guest"
+        ],
+        "rows": [
+          [
+            "1",
+            "Chief Adewale Bankole (father of the bride)"
+          ],
+          [
+            "2",
+            "Mrs Folake Bankole (mother of the bride)"
+          ],
+          [
+            "3",
+            "Simisola Bankole (bride)"
+          ],
+          [
+            "4",
+            "Femi Daramola (groom)"
+          ],
+          [
+            "5",
+            "Mrs Comfort Daramola (mother of the groom)"
+          ],
+          [
+            "6",
+            "Mr Kayode Bankole"
+          ],
+          [
+            "7",
+            "Mrs Bimpe Bankole"
+          ],
+          [
+            "8",
+            "Rev. Samuel Ojo"
+          ],
+          [
+            "9",
+            "Mr Tunde Alabi"
+          ],
+          [
+            "10",
+            "Mrs Kemi Alabi"
+          ],
+          [
+            "11",
+            "Mr Chidi Daramola"
+          ],
+          [
+            "12",
+            "Barr. Felix Odu (family lawyer)"
+          ],
+          [
+            "Table 3",
+            "Dr Ngozi Eze (+1)"
+          ],
+          [
+            "Table 6",
+            "Mrs Tola Ogun and family"
+          ],
+          [
+            "Crew table",
+            "Gold Petal Events, by the kitchen door"
+          ]
+        ],
+        "footnote": "Seat 1 is at the left end, beside the steps down to the dance floor."
+      },
+      "timestamps": []
+    },
+    {
+      "id": "E-10",
+      "tab": "statements",
+      "number": 10,
+      "title": "Statement: Folake Bankole",
+      "source": "Interview by Insp. A. Okoro",
+      "body": {
+        "type": "statement",
+        "suspectId": "folake",
+        "interviewedAt": "13 June, 22:30",
+        "lines": [
+          {
+            "n": 1,
+            "text": "Adewale and I were married for twenty-two years. Simi is his daughter from his first marriage, but she is my daughter too."
+          },
+          {
+            "n": 2,
+            "text": "His heart was weak. Since his operation he took no alcohol at all, only zobo. The caterers were told."
+          },
+          {
+            "n": 3,
+            "text": "When the lights went off for the first dance, I went down with my husband to spray Simi and Femi. We walked back to the table together when the lights came up."
+          },
+          {
+            "n": 4,
+            "text": "I wore our family's wine lace, with a gold gele. Mama Tinuke Fabrics made all our aso-ebi."
+          },
+          {
+            "n": 5,
+            "text": "At the toast, Kola shouted that Daddy must drink with us. He laughed and drank. I thought the waiters had brought that glass."
+          },
+          {
+            "n": 6,
+            "text": "His lawyer was coming on Monday about a new will. I don't know what was in it. Ask Kayode why he was shouting at his father this evening."
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:26",
+          "label": "Folake says she was on the dance floor with Chief",
+          "suspectIds": [
+            "folake"
+          ],
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-11",
+      "tab": "statements",
+      "number": 11,
+      "title": "Statement: Kayode Bankole",
+      "source": "Interview by Insp. A. Okoro",
+      "body": {
+        "type": "statement",
+        "suspectId": "kayode",
+        "interviewedAt": "13 June, 22:55",
+        "lines": [
+          {
+            "n": 1,
+            "text": "I'm the first son. I run the Bankole Homes site office in Ajah."
+          },
+          {
+            "n": 2,
+            "text": "My father and I did not argue today. We were fine."
+          },
+          {
+            "n": 3,
+            "text": "At about seven-twenty I took a Chapman from the drinks station. For myself."
+          },
+          {
+            "n": 4,
+            "text": "When the lights went out I was on the dance floor spraying my sister until the lights came back."
+          },
+          {
+            "n": 5,
+            "text": "Ask Tunde about the deposits. My father was going to go through every file on Monday."
+          },
+          {
+            "n": 6,
+            "text": "Dr Eze gave him all his medicine. If anyone knows about heart drugs, it's her."
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:26",
+          "label": "Kayode says he was on the dance floor",
+          "suspectIds": [
+            "kayode"
+          ],
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-12",
+      "tab": "statements",
+      "number": 12,
+      "title": "Statement: Dr Ngozi Eze",
+      "source": "Interview by Insp. A. Okoro",
+      "body": {
+        "type": "statement",
+        "suspectId": "ngozi",
+        "interviewedAt": "13 June, 23:20",
+        "lines": [
+          {
+            "n": 1,
+            "text": "I have been Chief Bankole's doctor for eleven years, and a friend of the family."
+          },
+          {
+            "n": 2,
+            "text": "He had heart surgery in 2024. His medicines were metformin, amlodipine and aspirin. I never prescribed him digoxin. He didn't need it."
+          },
+          {
+            "n": 3,
+            "text": "At 18:47 my hospital called. A patient was crashing. I left the hall at once and drove to Lagoon Crest."
+          },
+          {
+            "n": 4,
+            "text": "Mrs Bankole called me at 19:53. I came straight back and got here a little before eight."
+          },
+          {
+            "n": 5,
+            "text": "I told the staff that nobody should touch his place at the table. The planner wanted the glasses cleared. I said no."
+          },
+          {
+            "n": 6,
+            "text": "Yes, he and I disagreed about the hospital board. That is a matter for the board, not the police."
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T18:52",
+          "label": "Dr Eze says she left for the hospital",
+          "suspectIds": [
+            "ngozi"
+          ],
+          "place": "Lagoon Crest Hospital (her claim)"
+        },
+        {
+          "at": "2026-06-13T19:58",
+          "label": "Dr Eze says she was back in the hall",
+          "suspectIds": [
+            "ngozi"
+          ],
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-13",
+      "tab": "statements",
+      "number": 13,
+      "title": "Statement: Tunde Alabi",
+      "source": "Interview by Insp. A. Okoro",
+      "body": {
+        "type": "statement",
+        "suspectId": "tunde",
+        "interviewedAt": "13 June, 23:50",
+        "lines": [
+          {
+            "n": 1,
+            "text": "Adewale and I built Bankole Homes together over twenty years. I'm the finance director."
+          },
+          {
+            "n": 2,
+            "text": "We have had one land case in twenty years, LD/1187/2019, and we won it. Our papers are always clean."
+          },
+          {
+            "n": 3,
+            "text": "I sat at the high table from seven o'clock until the toast. I didn't leave my seat."
+          },
+          {
+            "n": 4,
+            "text": "The Monday meeting was routine. He liked to look at the deposits every quarter."
+          },
+          {
+            "n": 5,
+            "text": "I didn't touch his glass. I was at the other end of the table."
+          },
+          {
+            "n": 6,
+            "text": "Kayode owes money to people you don't want to owe money to. Ask him."
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:26",
+          "label": "Tunde says he was in his seat at the high table",
+          "suspectIds": [
+            "tunde"
+          ],
+          "place": "The Glasshouse, Lekki"
+        }
+      ]
+    },
+    {
+      "id": "E-14",
+      "tab": "statements",
+      "number": 14,
+      "title": "Statement: Ronke Bello",
+      "source": "Interview by Insp. A. Okoro",
+      "body": {
+        "type": "statement",
+        "suspectId": "ronke",
+        "interviewedAt": "14 June, 00:20",
+        "lines": [
+          {
+            "n": 1,
+            "text": "I'm the lead planner at Gold Petal Events. We've done over sixty weddings."
+          },
+          {
+            "n": 2,
+            "text": "Before this contract I had never met Chief Bankole."
+          },
+          {
+            "n": 3,
+            "text": "Bringing the first dance forward was the DJ's idea. We were running late."
+          },
+          {
+            "n": 4,
+            "text": "During the blackout I was in the kitchen corridor with my cake team the whole time."
+          },
+          {
+            "n": 5,
+            "text": "I wore my black uniform all day, like the rest of my team."
+          },
+          {
+            "n": 6,
+            "text": "I asked the waiters to clear the high table after he fell because guests were crowding it. That's my job."
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:26",
+          "label": "Ronke says she was in the kitchen corridor with the cake team",
+          "suspectIds": [
+            "ronke"
+          ],
+          "place": "Kitchen corridor (her claim)"
+        }
+      ]
+    },
+    {
+      "id": "E-15",
+      "tab": "phone",
+      "number": 15,
+      "title": "Chief Bankole's phone",
+      "source": "Device extraction · police digital forensics",
+      "body": {
+        "type": "phone",
+        "owner": "Chief Adewale Bankole",
+        "messages": [
+          {
+            "thread": "Kayode",
+            "messages": [
+              {
+                "from": "Kayode",
+                "at": "17:52",
+                "text": "You didn't have to disgrace me in front of people, Daddy."
+              },
+              {
+                "from": "Chief",
+                "at": "17:55",
+                "text": "Then stop giving me reasons. Come and see me at 6.",
+                "me": true
+              }
+            ]
+          },
+          {
+            "thread": "Tunde (BH)",
+            "messages": [
+              {
+                "from": "Chief",
+                "at": "Thu 16:10",
+                "text": "Monday 9am. Bring every file. Every deposit since January.",
+                "me": true
+              },
+              {
+                "from": "Tunde",
+                "at": "Thu 16:40",
+                "text": "No problem, Chairman."
+              }
+            ]
+          },
+          {
+            "thread": "Dr Ngozi",
+            "messages": [
+              {
+                "from": "Chief",
+                "at": "Fri 21:15",
+                "text": "The board meets Tuesday. I've made my decision about the medical director post.",
+                "me": true
+              },
+              {
+                "from": "Ngozi",
+                "at": "Fri 21:30",
+                "text": "Let's talk after the wedding, Adewale. Please."
+              }
+            ]
+          },
+          {
+            "thread": "Barr. Felix Odu",
+            "messages": [
+              {
+                "from": "Felix Odu",
+                "at": "Fri 11:02",
+                "text": "Chief, the new will is ready for your signature. Monday, 10am."
+              }
+            ]
+          },
+          {
+            "thread": "Folake",
+            "messages": [
+              {
+                "from": "Folake",
+                "at": "19:14",
+                "text": "Where are you? Come and greet the Daramolas."
+              },
+              {
+                "from": "Chief",
+                "at": "19:15",
+                "text": "Coming.",
+                "me": true
+              }
+            ]
+          }
+        ],
+        "calls": [
+          {
+            "at": "18:24",
+            "who": "First Atlantic Bank (private desk)",
+            "dir": "out",
+            "duration": "6:12"
+          }
+        ],
+        "notes": [
+          {
+            "title": "Medicines (Dr E)",
+            "text": "Metformin 500 x2, amlodipine 5, aspirin 75. NO ALCOHOL."
+          },
+          {
+            "title": "Land matters",
+            "text": "LD/1187/2019: appeal window closed. Finished. (Mar 2022)"
+          }
+        ],
+        "health": [
+          {
+            "t": "19:20",
+            "bpm": 74
+          },
+          {
+            "t": "19:41",
+            "bpm": 80
+          },
+          {
+            "t": "19:47",
+            "bpm": 46
+          },
+          {
+            "t": "19:50",
+            "bpm": 38
+          },
+          {
+            "t": "19:52",
+            "bpm": 31
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T17:52",
+          "label": "Kayode texts his father about being \"disgraced\"",
+          "suspectIds": [
+            "kayode"
+          ]
+        },
+        {
+          "at": "2026-06-13T18:24",
+          "label": "Chief calls his bank (6 min)"
+        }
+      ]
+    },
+    {
+      "id": "E-16",
+      "tab": "records",
+      "number": 16,
+      "title": "Family WhatsApp group",
+      "source": "Bride's phone · group 'BANKOLE x DARAMOLA 💍 Family'",
+      "body": {
+        "type": "chat",
+        "thread": "BANKOLE x DARAMOLA 💍 Family",
+        "messages": [
+          {
+            "from": "Aunty Bose",
+            "at": "2 Apr",
+            "text": "ASO-EBI ALERT 📣 Bride's family: WINE lace. Groom's family: EMERALD. Order from Mama Tinuke Fabrics before 1 May!"
+          },
+          {
+            "from": "Folake",
+            "at": "2 Apr",
+            "text": "Mummy of the bride will wear a GOLD gele so the photographers can find me 😄"
+          },
+          {
+            "from": "Simi",
+            "at": "3 May",
+            "text": "Our planner is Gold Petal Events. Ronke is amazing and her price was a miracle 🙏🏾"
+          },
+          {
+            "from": "Kayode",
+            "at": "3 May",
+            "text": "A miracle? Ask her how she's making money at that price 😂"
+          },
+          {
+            "from": "Simi",
+            "at": "12 Jun",
+            "text": "Reminder for tomorrow: the planners wear black with gold wristbands and earpieces. If you need anything, find a gold wristband!"
+          },
+          {
+            "from": "Bimpe",
+            "at": "17:58",
+            "text": "Kayode and Daddy, please, not today. Everybody is watching."
+          },
+          {
+            "from": "Chief Bankole",
+            "at": "18:33",
+            "text": "It is settled. Enjoy the party, all of you."
+          }
+        ]
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T17:58",
+          "label": "Bimpe begs Kayode and his father to stop arguing",
+          "suspectIds": [
+            "kayode"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E-17",
+      "tab": "documents",
+      "number": 17,
+      "title": "Bride's planning folder: the planner",
+      "source": "Simi Bankole's planning folder · page 4",
+      "body": {
+        "type": "document",
+        "markdown": "**Planner quotes (Simi's notes, March 2026)**\n\n- Elegance by Tiwa: ₦8.5m\n- The Owambe Co.: ₦7.2m\n- **Gold Petal Events: ₦2.5m** (\"Ronke said she'd do it for her portfolio. Too good!!\")\n\n**Gold Petal Events: service agreement (extract)**\n\n- Lead planner: Ronke Bello. Team on the day: Ese Okon (assistant) and Musa Bala (cake and logistics).\n- Team dress code: black uniform, gold wristband, radio earpiece (channel 2).\n- The lead planner runs the order of events and agrees lighting cues with the DJ.\n- Planners' room: Room B, beside the kitchen. The key is held by the lead planner.\n\nSigned for Gold Petal Events (BN 1874402): *R. Bello*"
+      },
+      "timestamps": []
+    },
+    {
+      "id": "E-18",
+      "tab": "photos",
+      "number": 18,
+      "title": "Guest's flash photo: the first dance",
+      "source": "Instagram post by @tolaogun_ (table 6) · posted 19:29",
+      "body": {
+        "type": "photo",
+        "caption": "\"THE FIRST DANCE!!! 😍💃🏾\" · photo taken 19:28 with flash.",
+        "scene": "A dark hall. The bride and groom stand in a white spotlight on the dance floor while family members crowd around them, throwing notes into the air. The phone's flash lights up the nearest tables and, at the far left edge of the picture, the end of the high table. A woman stands at seat 1 with her back to the camera, leaning over the place setting. She wears wine-coloured lace and a tall wine gele. A curly earpiece wire runs from her ear down the back of her neck. A gold wristband on her right wrist catches the flash.",
+        "markers": [
+          {
+            "n": 1,
+            "label": "The couple in the spotlight"
+          },
+          {
+            "n": 2,
+            "label": "Family spraying the couple"
+          },
+          {
+            "n": 3,
+            "label": "Woman at seat 1: wine lace, wine gele"
+          },
+          {
+            "n": 4,
+            "label": "Curly earpiece wire"
+          },
+          {
+            "n": 5,
+            "label": "Gold wristband"
+          }
+        ],
+        "stamp": "13/06/2026 19:28"
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:28",
+          "label": "A woman in wine aso-ebi is at seat 1 in the dark",
+          "place": "The Glasshouse, Lekki"
+        }
+      ],
+      "gate": {
+        "kind": "lead",
+        "id": "L1"
+      }
+    },
+    {
+      "id": "E-19",
+      "tab": "photos",
+      "number": 19,
+      "title": "Guest videos: the dance floor",
+      "source": "Phone videos from three guests, collected by police",
+      "body": {
+        "type": "photo",
+        "caption": "Stills from three guests' phone videos of the first dance.",
+        "scene": "19:26: in the spotlight, Chief Bankole sprays notes over the couple; Folake beside him in wine lace and a gold gele. 19:27: Kayode, in a wine agbada, throws notes at his sister; Mrs Comfort Daramola dances in emerald. At the edge of the floor a young woman in a black uniform with a gold wristband gathers the notes into a bag. 19:29: the same family group, still dancing. 19:31: lights half up; Chief and Folake walk back towards the high table together; Kayode is still dancing with his sister.",
+        "markers": [
+          {
+            "n": 1,
+            "label": "19:26 · Chief and Folake (gold gele) spraying"
+          },
+          {
+            "n": 2,
+            "label": "19:27 · Kayode spraying; planner assistant in black collects notes"
+          },
+          {
+            "n": 3,
+            "label": "19:29 · same group still dancing"
+          },
+          {
+            "n": 4,
+            "label": "19:31 · Chief and Folake walk back; Kayode still dancing"
+          }
+        ],
+        "stamp": "GUEST VIDEOS · 13-06-2026"
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:26",
+          "label": "Chief and Folake spraying on the dance floor",
+          "suspectIds": [
+            "folake"
+          ],
+          "place": "Dance floor"
+        },
+        {
+          "at": "2026-06-13T19:27",
+          "label": "Kayode spraying on the dance floor",
+          "suspectIds": [
+            "kayode"
+          ],
+          "place": "Dance floor"
+        },
+        {
+          "at": "2026-06-13T19:31",
+          "label": "Chief and Folake walk back; Kayode still dancing",
+          "suspectIds": [
+            "folake",
+            "kayode"
+          ],
+          "place": "Dance floor"
+        }
+      ],
+      "gate": {
+        "kind": "lead",
+        "id": "L1"
+      }
+    },
+    {
+      "id": "E-20",
+      "tab": "documents",
+      "number": 20,
+      "title": "Lab report: the high-table glasses",
+      "source": "Police forensic laboratory, Alagbon · ref FL/0613/26",
+      "body": {
+        "type": "document",
+        "markdown": "- **Gold-rimmed flute, seat 1:** champagne residue. **Digoxin: yes, a large amount.**\n- **Brass cup, seat 1:** zobo. Digoxin: no.\n- **11 plain flutes, seats 2–12:** champagne. Digoxin: no.\n- **3 opened toast bottles from the bar:** champagne. Digoxin: no.\n\n**Fingerprints on the gold-rimmed flute:** Chief Bankole's only. Earlier smudging suggests it was handled with a cloth or gloves before he picked it up.\n\n**The glass itself:** not a Bukka & Bites or Glasshouse glass. Maker's mark on the base: *Lumière, sold as a set of two*."
+      },
+      "timestamps": [],
+      "gate": {
+        "kind": "lead",
+        "id": "L2"
+      }
+    },
+    {
+      "id": "E-21",
+      "tab": "records",
+      "number": 21,
+      "title": "Venue gate register and door camera",
+      "source": "The Glasshouse security · gate register and side-door camera",
+      "body": {
+        "type": "log",
+        "header": "THE GLASSHOUSE · SECURITY · 13 JUNE",
+        "columns": [
+          "Time",
+          "Point",
+          "Who",
+          "Dir"
+        ],
+        "rows": [
+          [
+            "18:52",
+            "Main gate (vehicles)",
+            "Dr N. Eze · Lexus LAG-344-KJ",
+            "OUT"
+          ],
+          [
+            "19:22",
+            "Side door camera",
+            "Mr T. Alabi (on his phone)",
+            "OUT to car park"
+          ],
+          [
+            "19:36",
+            "Side door camera",
+            "Mr T. Alabi",
+            "IN"
+          ],
+          [
+            "19:58",
+            "Main gate (vehicles)",
+            "Dr N. Eze · Lexus LAG-344-KJ",
+            "IN"
+          ],
+          [
+            "20:05",
+            "Main gate (vehicles)",
+            "Ambulance, Lagoon Crest Hospital",
+            "IN"
+          ],
+          [
+            "21:00",
+            "Room B (planners)",
+            "Sealed by police",
+            "—"
+          ]
+        ],
+        "footnote": "The side door is the only way between the hall and the car park apart from the main entrance. There is no camera in the kitchen corridor."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T18:52",
+          "label": "Dr Eze drives out of the main gate",
+          "suspectIds": [
+            "ngozi"
+          ],
+          "place": "Main gate"
+        },
+        {
+          "at": "2026-06-13T19:22",
+          "label": "Tunde goes out to the car park",
+          "suspectIds": [
+            "tunde"
+          ],
+          "place": "Car park"
+        },
+        {
+          "at": "2026-06-13T19:36",
+          "label": "Tunde comes back in",
+          "suspectIds": [
+            "tunde"
+          ],
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:58",
+          "label": "Dr Eze drives back in",
+          "suspectIds": [
+            "ngozi"
+          ],
+          "place": "Main gate"
+        }
+      ],
+      "gate": {
+        "kind": "lead",
+        "id": "L3"
+      }
+    },
+    {
+      "id": "E-22",
+      "tab": "documents",
+      "number": 22,
+      "title": "Search of the planners' room (Room B)",
+      "source": "Police search · 13 June, 22:15",
+      "body": {
+        "type": "document",
+        "markdown": "Room B was sealed at 21:00. Found:\n\n- Two staff bags labelled *Ese* and *Musa*, with their own clothes inside.\n- One black Gold Petal uniform shirt on a hanger labelled *Ronke*: **unworn, still pressed**.\n- An empty dress bag from Mama Tinuke Fabrics.\n- A gift box made for **two** gold-rimmed champagne flutes, maker's mark *Lumière*. One flute is in the box. **The other slot is empty.**\n- The foil and cork from a bottle of Moët numbered **#24**.\n- In a make-up bag: an amber pill bottle, **empty**. Label: *DIGOXIN 250 microgram tablets · for: J. AJAYI · Kingsway Pharmacy, Yaba · dispensed 08/02/2022.*\n- A teaspoon with traces of white powder (sent to the lab).\n\nAssistant Musa Bala: \"Ronke kept the key. She opened the room for us when we needed our bags.\""
+      },
+      "timestamps": [],
+      "gate": {
+        "kind": "lead",
+        "id": "L4"
+      }
+    },
+    {
+      "id": "E-23",
+      "tab": "records",
+      "number": 23,
+      "title": "Gold Petal crew chat",
+      "source": "Ese Okon's phone · exported with her consent",
+      "body": {
+        "type": "chat",
+        "thread": "Gold Petal Crew 🌼",
+        "messages": [
+          {
+            "from": "Ronke",
+            "at": "19:12",
+            "text": "Couple's room is set. Going to check on Mummy and Daddy."
+          },
+          {
+            "from": "Musa",
+            "at": "19:21",
+            "text": "Cake trolley ready in the kitchen corridor"
+          },
+          {
+            "from": "Ronke",
+            "at": "19:24",
+            "text": "First dance NOW. Ese take the dance floor and collect the money. Musa hold the cake."
+          },
+          {
+            "from": "Musa",
+            "at": "19:27",
+            "text": "Where is Ronke?? Cake people are asking"
+          },
+          {
+            "from": "Ese",
+            "at": "19:28",
+            "text": "Not on radio. Not on the dance floor"
+          },
+          {
+            "from": "Musa",
+            "at": "19:29",
+            "text": "She's not in the kitchen either 🤷🏾‍♂️"
+          },
+          {
+            "from": "Ronke",
+            "at": "19:31",
+            "text": "Calm down. I was with the family. Bring the cake at 19:45."
+          },
+          {
+            "from": "Ese",
+            "at": "19:55",
+            "text": "Ronke what is happening??"
+          },
+          {
+            "from": "Ronke",
+            "at": "19:56",
+            "text": "Clear the high table. Now."
+          }
+        ],
+        "note": "Ese Okon is Gold Petal's assistant planner; Musa Bala handles the cake and logistics."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:27",
+          "label": "Ronke's crew can't find her (until 19:31)",
+          "suspectIds": [
+            "ronke"
+          ],
+          "place": "The Glasshouse, Lekki"
+        },
+        {
+          "at": "2026-06-13T19:56",
+          "label": "Ronke tells her crew to clear the high table",
+          "suspectIds": [
+            "ronke"
+          ],
+          "place": "The Glasshouse, Lekki"
+        }
+      ],
+      "gate": {
+        "kind": "lead",
+        "id": "L5"
+      }
+    },
+    {
+      "id": "E-24",
+      "tab": "records",
+      "number": 24,
+      "title": "Aso-ebi order book",
+      "source": "Mama Tinuke Fabrics, Surulere · photo of the order book",
+      "body": {
+        "type": "log",
+        "header": "MAMA TINUKE FABRICS · BANKOLE x DARAMOLA WEDDING · ORDERS",
+        "columns": [
+          "Order",
+          "Name",
+          "Set",
+          "Paid"
+        ],
+        "rows": [
+          [
+            "031",
+            "Mrs Folake Bankole",
+            "Wine lace + GOLD gele (mother of the bride)",
+            "18 Apr"
+          ],
+          [
+            "032",
+            "Mrs Bimpe Bankole",
+            "Wine lace + wine gele",
+            "20 Apr"
+          ],
+          [
+            "033",
+            "Aunty Bose Adeyemi",
+            "Wine lace + wine gele",
+            "20 Apr"
+          ],
+          [
+            "047",
+            "Mrs Comfort Daramola",
+            "Emerald lace + emerald gele",
+            "22 Apr"
+          ],
+          [
+            "058",
+            "Gold Petal Events (R. Bello)",
+            "Wine lace + wine gele, size 12 · \"for the planner, family photos\"",
+            "28 May"
+          ],
+          [
+            "061",
+            "Mr Kayode Bankole",
+            "Wine agbada + cap",
+            "30 Apr"
+          ]
+        ],
+        "footnote": "Totals: 214 wine sets, 188 emerald sets. Only one order from Gold Petal Events."
+      },
+      "timestamps": [],
+      "gate": {
+        "kind": "search",
+        "id": "E-24"
+      }
+    },
+    {
+      "id": "E-25",
+      "tab": "documents",
+      "number": 25,
+      "title": "Court record: Suit LD/1187/2019",
+      "source": "High Court of Lagos State, Ikeja · registry extract",
+      "body": {
+        "type": "document",
+        "markdown": "**Suit LD/1187/2019 · Joseph Ajayi v. Bankole Homes Ltd and Adewale Bankole**\n\n**Claim:** that the defendants took over the claimant's family land at Plot 9, Abijo, Ajah, using a sale agreement the claimant says he never signed.\n\n**Witnesses for the claimant:** Mr Joseph Ajayi; **Miss Ronke Ajayi**, daughter of the claimant, who told the court her father \"never sold our land to anybody\".\n\n**Judgment (14 October 2021):** claim dismissed. The claimant's original documents could not be produced; the court accepted the defendants' sale agreement.\n\n**Registry note (2022):** claimant deceased, 3 March 2022. No appeal filed. File closed."
+      },
+      "timestamps": [],
+      "gate": {
+        "kind": "search",
+        "id": "E-25"
+      }
+    },
+    {
+      "id": "E-26",
+      "tab": "documents",
+      "number": 26,
+      "title": "Business register: Gold Petal Events",
+      "source": "Corporate Affairs Commission · public search",
+      "body": {
+        "type": "document",
+        "markdown": "**GOLD PETAL EVENTS** · business name · **BN 1874402**\n\n- Registered: 9 May 2022\n- Address: 14 Herbert Macaulay Way, Yaba, Lagos\n- Nature of business: event planning and decoration\n- Proprietor: **Ronke Bello (née Ajayi)**. Surname updated on marriage, 2023."
+      },
+      "timestamps": [],
+      "gate": {
+        "kind": "search",
+        "id": "E-26"
+      }
+    },
+    {
+      "id": "E-27",
+      "tab": "phone",
+      "number": 27,
+      "title": "Ronke Bello's phone",
+      "source": "Device extraction · police digital forensics",
+      "body": {
+        "type": "phone",
+        "owner": "Ronke Bello",
+        "messages": [
+          {
+            "thread": "Simi (client)",
+            "messages": [
+              {
+                "from": "Simi",
+                "at": "3 Mar",
+                "text": "Ronke why is your price so low?? Are you sure? 😅"
+              },
+              {
+                "from": "Ronke",
+                "at": "3 Mar",
+                "text": "For you, sis. Your family deserves the best 🙂",
+                "me": true
+              }
+            ]
+          }
+        ],
+        "notes": [
+          {
+            "title": "13 June",
+            "text": "Wine set from Mama Tinuke ✓ · Lumière flutes ✓ · Room B key: keep it · Ch2: first dance early · Daddy's bottle ✓"
+          },
+          {
+            "title": "Daddy",
+            "text": "3 March 2022. You said nobody ever listens to people like us. I listened."
+          }
+        ]
+      },
+      "timestamps": [],
+      "gate": {
+        "kind": "confront",
+        "id": "C-1"
+      }
+    },
+    {
+      "id": "E-28",
+      "tab": "records",
+      "number": 28,
+      "title": "Kayode's betting account",
+      "source": "BetSure NG account statement · with First Atlantic Bank alerts",
+      "body": {
+        "type": "log",
+        "header": "BETSURE NG · ACCOUNT K. BANKOLE · 13 JUNE",
+        "columns": [
+          "Time",
+          "Item",
+          "Amount"
+        ],
+        "rows": [
+          [
+            "18:29",
+            "Bank transfer IN from ADEWALE BANKOLE (\"last time\")",
+            "₦18,400,000"
+          ],
+          [
+            "18:41",
+            "Repayment to BetSure NG credit desk: balance cleared",
+            "₦18,400,000"
+          ],
+          [
+            "18:45",
+            "Account self-excluded at the customer's request (5 years)",
+            "—"
+          ]
+        ],
+        "footnote": "No further activity."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T18:29",
+          "label": "Chief pays off Kayode's ₦18.4m debt",
+          "suspectIds": [
+            "kayode"
+          ]
+        },
+        {
+          "at": "2026-06-13T18:45",
+          "label": "Kayode closes his betting account",
+          "suspectIds": [
+            "kayode"
+          ]
+        }
+      ],
+      "gate": {
+        "kind": "confront",
+        "id": "C-2"
+      }
+    },
+    {
+      "id": "E-29",
+      "tab": "records",
+      "number": 29,
+      "title": "Tunde Alabi's bank alerts and calls",
+      "source": "First Atlantic Bank alerts · phone call log",
+      "body": {
+        "type": "log",
+        "header": "T. ALABI · ALERTS AND CALLS",
+        "columns": [
+          "When",
+          "Item"
+        ],
+        "rows": [
+          [
+            "Jan–May",
+            "23 transfers from BANKOLE HOMES DEPOSIT A/C to TA VENTURES, total ₦212,000,000"
+          ],
+          [
+            "13 Jun 19:23",
+            "Call OUT to \"Mr Okafor, First Atlantic\" · 12 min 40 s"
+          ],
+          [
+            "13 Jun 19:35",
+            "SMS: \"Reversal request received: ₦45,000,000 TA VENTURES → BANKOLE HOMES DEPOSIT A/C\""
+          ]
+        ],
+        "footnote": "TA Ventures is registered to Tunde Alabi."
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T19:23",
+          "label": "Tunde on the phone to his bank until 19:36",
+          "suspectIds": [
+            "tunde"
+          ],
+          "place": "Car park"
+        }
+      ],
+      "gate": {
+        "kind": "confront",
+        "id": "C-3"
+      }
+    },
+    {
+      "id": "E-30",
+      "tab": "records",
+      "number": 30,
+      "title": "MC run sheet: version history",
+      "source": "Shared document 'MC Run Sheet: Simi & Femi' · version history",
+      "body": {
+        "type": "log",
+        "header": "MC RUN SHEET · VERSION HISTORY",
+        "columns": [
+          "When",
+          "Editor",
+          "Change"
+        ],
+        "rows": [
+          [
+            "12 Jun 22:10",
+            "kola.mc",
+            "v1 created"
+          ],
+          [
+            "13 Jun 11:02",
+            "ese@goldpetal",
+            "v2: cake confirmed for 19:45"
+          ],
+          [
+            "13 Jun 18:40",
+            "ronke@goldpetal",
+            "v3: added under TOAST: \"MC: Daddy, today you must drink with us! No zobo today!\""
+          ],
+          [
+            "13 Jun 18:41",
+            "ronke@goldpetal",
+            "v3: added note: \"First dance may move earlier. Wait for my call on ch2.\""
+          ]
+        ],
+        "footnote": "MC Kola Banjo: \"I read what was on the sheet. I thought the family wanted it.\""
+      },
+      "timestamps": [
+        {
+          "at": "2026-06-13T18:40",
+          "label": "Ronke edits the MC run sheet",
+          "suspectIds": [
+            "ronke"
+          ]
+        }
+      ],
+      "gate": {
+        "kind": "confront",
+        "id": "C-4"
+      }
+    }
+  ],
+  "leads": [
+    {
+      "id": "L1",
+      "title": "Collect guests' photos and videos of the first dance",
+      "costHours": 1
+    },
+    {
+      "id": "L2",
+      "title": "Send the high-table glasses to the forensic lab",
+      "costHours": 2
+    },
+    {
+      "id": "L3",
+      "title": "Pull the venue's gate register and door camera",
+      "costHours": 1
+    },
+    {
+      "id": "L4",
+      "title": "Search the planners' room (Room B)",
+      "costHours": 1,
+      "gate": {
+        "kind": "breakthrough",
+        "id": "BT-1"
+      }
+    },
+    {
+      "id": "L5",
+      "title": "Ask the planning crew for their group chat",
+      "costHours": 1,
+      "gate": {
+        "kind": "breakthrough",
+        "id": "BT-2"
+      }
+    }
+  ],
+  "archive": {
+    "label": "Search Lagos records and the wedding suppliers",
+    "placeholder": "A name, a business, a suit number…"
+  },
+  "words": [
+    {
+      "id": "m-flute",
+      "text": "digoxin in a champagne flute set at his place",
+      "revealedBy": [
+        "E-20",
+        "E-22"
+      ]
+    },
+    {
+      "id": "m-zobo",
+      "text": "digoxin in his cup of zobo",
+      "revealedBy": [
+        "E-06",
+        "E-02"
+      ]
+    },
+    {
+      "id": "m-bottle",
+      "text": "digoxin in the toast champagne",
+      "revealedBy": [
+        "E-06"
+      ]
+    },
+    {
+      "id": "m-heart",
+      "text": "nothing: it was a natural heart attack",
+      "revealedBy": [
+        "E-01"
+      ]
+    },
+    {
+      "id": "w-1926",
+      "text": "during the blackout, 19:26–19:30",
+      "revealedBy": [
+        "E-05",
+        "BT-2"
+      ]
+    },
+    {
+      "id": "w-1905",
+      "text": "when his zobo was topped up at 19:05",
+      "revealedBy": [
+        "E-06"
+      ]
+    },
+    {
+      "id": "w-1932",
+      "text": "when the waiters poured at 19:32",
+      "revealedBy": [
+        "E-06"
+      ]
+    },
+    {
+      "id": "w-1941",
+      "text": "during the toast at 19:41",
+      "revealedBy": [
+        "E-08"
+      ]
+    },
+    {
+      "id": "k-blackout",
+      "text": "had the first dance moved forward so the tables went dark",
+      "revealedBy": [
+        "E-30",
+        "BT-2"
+      ]
+    },
+    {
+      "id": "k-waiter",
+      "text": "paid a waiter to serve it to him",
+      "revealedBy": [
+        "E-06"
+      ]
+    },
+    {
+      "id": "k-swap",
+      "text": "swapped glasses with him during the toast",
+      "revealedBy": [
+        "E-08"
+      ]
+    },
+    {
+      "id": "k-gift",
+      "text": "sent it over as a gift from the couple",
+      "revealedBy": [
+        "E-17"
+      ]
+    },
+    {
+      "id": "y-father",
+      "text": "revenge for her father, who lost his land to Chief Bankole and died",
+      "revealedBy": [
+        "E-25",
+        "E-27",
+        "BT-6"
+      ]
+    },
+    {
+      "id": "y-will",
+      "text": "to stop him signing a new will",
+      "revealedBy": [
+        "E-15"
+      ]
+    },
+    {
+      "id": "y-debt",
+      "text": "to escape gambling debts",
+      "revealedBy": [
+        "E-15",
+        "E-16"
+      ]
+    },
+    {
+      "id": "y-audit",
+      "text": "to stop an audit of the company deposits",
+      "revealedBy": [
+        "E-15"
+      ]
+    },
+    {
+      "id": "y-board",
+      "text": "to keep a post on the hospital board",
+      "revealedBy": [
+        "E-15"
+      ]
+    }
+  ],
+  "verdict": {
+    "who": [
+      {
+        "blankId": "killer",
+        "prompt": "Who killed Chief Bankole?"
+      }
+    ],
+    "how": [
+      {
+        "blankId": "method",
+        "prompt": "What killed him?",
+        "wordIds": [
+          "m-flute",
+          "m-zobo",
+          "m-bottle",
+          "m-heart"
+        ]
+      },
+      {
+        "blankId": "when",
+        "prompt": "When did the poison reach his place at the table?",
+        "wordIds": [
+          "w-1926",
+          "w-1905",
+          "w-1932",
+          "w-1941"
+        ]
+      },
+      {
+        "blankId": "trick",
+        "prompt": "How did the killer get it there unseen?",
+        "wordIds": [
+          "k-blackout",
+          "k-waiter",
+          "k-swap",
+          "k-gift"
+        ]
+      }
+    ],
+    "why": [
+      {
+        "blankId": "motive",
+        "prompt": "Why?",
+        "wordIds": [
+          "y-father",
+          "y-will",
+          "y-debt",
+          "y-audit",
+          "y-board"
+        ]
+      }
+    ],
+    "proofCount": 3
+  },
+  "nudges": [
+    {
+      "stuckPointId": "BT-1",
+      "text": "Who poured the glass he toasted with?"
+    },
+    {
+      "stuckPointId": "BT-2",
+      "text": "When could anyone reach his seat without being seen?"
+    },
+    {
+      "stuckPointId": "BT-3",
+      "text": "Look hard at who was standing at seat 1 in the dark, and what she was wearing."
+    },
+    {
+      "stuckPointId": "BT-4",
+      "text": "Does everyone's story match what their own people saw?"
+    }
+  ]
+}

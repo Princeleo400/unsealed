@@ -1,0 +1,279 @@
+{
+  "caseId": "002-the-last-toast",
+  "version": 1,
+  "breakthroughs": [
+    {
+      "id": "BT-1",
+      "a": "E-06",
+      "b": "E-07",
+      "relation": "contradiction",
+      "essential": true,
+      "order": 1,
+      "insight": "The waiters never poured for seat 1, yet a gold-rimmed flute was standing at Chief Bankole's place at 19:32. It wasn't there at 19:25. Someone else put it there."
+    },
+    {
+      "id": "BT-2",
+      "a": "E-04",
+      "b": "E-05",
+      "relation": "contradiction",
+      "essential": true,
+      "order": 2,
+      "insight": "The first dance was planned for 20:15. A call on the planners' radio channel moved it to 19:26 and blacked out every table for four minutes, just as Chief left his seat to spray the couple."
+    },
+    {
+      "id": "BT-3",
+      "a": "E-18",
+      "b": "E-24",
+      "relation": "link",
+      "essential": true,
+      "order": 3,
+      "insight": "The woman at seat 1 in the dark wore wine aso-ebi with a planner's earpiece and gold wristband. Only one planner ordered a wine set: Ronke Bello."
+    },
+    {
+      "id": "BT-4",
+      "a": "E-14",
+      "b": "E-23",
+      "relation": "contradiction",
+      "essential": true,
+      "order": 4,
+      "insight": "Ronke says she was in the kitchen corridor with her cake team all through the blackout. Her own team could not find her anywhere from 19:27 to 19:31."
+    },
+    {
+      "id": "BT-5",
+      "a": "E-21",
+      "b": "E-12",
+      "relation": "corroboration",
+      "essential": false,
+      "order": 5,
+      "insight": "Dr Eze's car left at 18:52 and came back at 19:58. She was not in the hall when the glass appeared."
+    },
+    {
+      "id": "BT-6",
+      "a": "E-25",
+      "b": "E-26",
+      "relation": "link",
+      "essential": false,
+      "order": 6,
+      "insight": "Ronke Bello was born Ronke Ajayi: the daughter who testified in the land case her father lost to Chief Bankole, months before he died."
+    },
+    {
+      "id": "BT-7",
+      "a": "E-19",
+      "b": "E-18",
+      "relation": "corroboration",
+      "essential": false,
+      "order": 7,
+      "insight": "Chief, Folake (in her gold gele) and Kayode were all on the dance floor during the blackout. The woman at seat 1 was someone else."
+    }
+  ],
+  "confrontations": [
+    {
+      "id": "C-1",
+      "statementId": "E-14",
+      "line": 2,
+      "evidenceIds": [
+        "E-25",
+        "E-26"
+      ],
+      "revealLines": [
+        {
+          "n": "2a",
+          "text": "…I knew who he was. Everybody in Abijo knows who he is. That case was my father's, not mine. I took this job because I needed the work."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "statementId": "E-11",
+      "line": 2,
+      "evidenceIds": [
+        "E-15",
+        "E-16"
+      ],
+      "revealLines": [
+        {
+          "n": "2a",
+          "text": "All right, we argued. About my betting. He found out I owed eighteen million. He shouted, then at half six he paid it all and told me if I ever bet again, I'm on my own. Why would I kill the one man who had just saved me?"
+        }
+      ]
+    },
+    {
+      "id": "C-3",
+      "statementId": "E-13",
+      "line": 3,
+      "evidenceIds": [
+        "E-21"
+      ],
+      "revealLines": [
+        {
+          "n": "3a",
+          "text": "Fine. I went out to the car park to call my bank manager. There was a transfer that had to be reversed before Monday. I was outside maybe fifteen minutes."
+        }
+      ]
+    },
+    {
+      "id": "C-4",
+      "statementId": "E-14",
+      "line": 3,
+      "evidenceIds": [
+        "E-05",
+        "E-23"
+      ],
+      "revealLines": [
+        {
+          "n": "3a",
+          "text": "Okay, I made the call. The couple were ready and we were behind schedule. That is not a crime."
+        }
+      ]
+    }
+  ],
+  "archiveIndex": [
+    {
+      "evidenceId": "E-24",
+      "terms": [
+        "Mama Tinuke Fabrics",
+        "Mama Tinuke",
+        "Tinuke Fabrics",
+        "Tinuke",
+        "aso-ebi",
+        "aso ebi",
+        "asoebi",
+        "aso-ebi orders"
+      ]
+    },
+    {
+      "evidenceId": "E-25",
+      "terms": [
+        "LD/1187/2019",
+        "LD 1187 2019",
+        "LD1187/2019",
+        "1187/2019",
+        "Ajayi v Bankole",
+        "Joseph Ajayi",
+        "Ajayi",
+        "J. Ajayi",
+        "J Ajayi",
+        "Ronke Ajayi"
+      ]
+    },
+    {
+      "evidenceId": "E-26",
+      "terms": [
+        "Gold Petal Events",
+        "Gold Petal",
+        "BN 1874402",
+        "1874402",
+        "Ronke Bello"
+      ]
+    }
+  ],
+  "verdict": {
+    "who": {
+      "killer": "ronke"
+    },
+    "how": {
+      "method": [
+        "m-flute"
+      ],
+      "when": [
+        "w-1926"
+      ],
+      "trick": [
+        "k-blackout"
+      ]
+    },
+    "why": {
+      "motive": [
+        "y-father"
+      ]
+    },
+    "proof": {
+      "core": [
+        "E-18",
+        "E-22"
+      ],
+      "support": [
+        "E-05",
+        "E-06",
+        "E-07",
+        "E-08",
+        "E-20",
+        "E-23",
+        "E-24",
+        "E-25",
+        "E-26",
+        "E-27",
+        "E-30"
+      ]
+    }
+  },
+  "hints": [
+    {
+      "stuckPointId": "BT-1",
+      "pointer": "Compare the head waiter's log (6) with the wedding video frames (7).",
+      "reveal": "String the waiter's log (6) to the video frames (7) as a contradiction: seat 1 was never poured, yet a gold-rimmed flute was there at 19:32."
+    },
+    {
+      "stuckPointId": "BT-2",
+      "pointer": "Compare the printed programme (4) with the lighting and DJ desk log (5).",
+      "reveal": "String the programme (4) to the desk log (5) as a contradiction: the first dance was moved from 20:15 to 19:26 on the planners' channel, and the tables went dark."
+    },
+    {
+      "stuckPointId": "BT-3",
+      "pointer": "Follow lead \"Collect guests' photos\" and search the archive for \"aso-ebi\". Compare the flash photo with what you find.",
+      "reveal": "String the flash photo (18) to the aso-ebi order book (24) as a link: the woman at seat 1 wore wine with a planner's earpiece and wristband, and only Ronke Bello ordered a wine set."
+    },
+    {
+      "stuckPointId": "BT-4",
+      "pointer": "Compare Ronke's statement (14), line 4, with her crew's group chat (23).",
+      "reveal": "String Ronke's statement (14) to the crew chat (23) as a contradiction: her team couldn't find her anywhere between 19:27 and 19:31."
+    }
+  ],
+  "debrief": [
+    {
+      "step": 1,
+      "time": "2021–2022",
+      "text": "Pa Joseph Ajayi loses his family land at Abijo to Bankole Homes in Suit LD/1187/2019. His daughter Ronke testifies for him. He dies in March 2022."
+    },
+    {
+      "step": 2,
+      "time": "March–May 2026",
+      "text": "Now Ronke Bello, she wins the Bankole wedding with a \"miracle\" price, then orders a wine aso-ebi set \"for family photos\"."
+    },
+    {
+      "step": 3,
+      "time": "18:40",
+      "text": "She adds a line to the MC's run sheet: \"Daddy, today you must drink with us!\", and a note that the first dance may move."
+    },
+    {
+      "step": 4,
+      "time": "19:08–19:20",
+      "text": "She signs out bottle #24 \"for the couple's room\". In Room B she pours one of her two Lumière flutes and stirs in her late father's digoxin."
+    },
+    {
+      "step": 5,
+      "time": "19:24–19:26",
+      "text": "On the planners' channel she tells the DJ to start the first dance now. Cue 14 blacks out every table; Chief goes down to spray the couple."
+    },
+    {
+      "step": 6,
+      "time": "19:28",
+      "text": "In the dark she sets the flute at seat 1. A guest's flash catches her back: wine gele, earpiece wire, gold wristband."
+    },
+    {
+      "step": 7,
+      "time": "19:32–19:41",
+      "text": "At 19:32 the waiters skip seat 1, as instructed. The MC reads her line and sees the glass is \"already there\". Chief drinks, \"just this once\"."
+    },
+    {
+      "step": 8,
+      "time": "19:52–19:56",
+      "text": "Chief collapses. Ronke tries twice to have the high-table glasses cleared; the head waiter and Dr Eze refuse."
+    },
+    {
+      "step": 9,
+      "time": "21:00",
+      "text": "Police seal Room B with the empty pill bottle, labelled for J. Ajayi, and the twin of the flute still inside."
+    }
+  ]
+}

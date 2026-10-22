@@ -35,7 +35,7 @@ export const CATALOG: CatalogEntry[] = [
     minutes: '60–90 min',
     difficulty: 4,
     productId: 'case-standard',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     slug: '003-checkout-at-room-9',
