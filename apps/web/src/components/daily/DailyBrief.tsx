@@ -5,7 +5,11 @@ import Link from 'next/link';
 import type { DailyView } from '@/server/daily';
 
 type Mark = '' | 'x' | 'v';
-type Solution = { culprit: number; place: number; rows: { suspect: number; place: number; object: number }[] };
+type Solution = {
+  culprit: number;
+  place: number;
+  rows: { suspect: number; place: number; object: number }[];
+};
 type Saved = {
   places: Mark[][];
   objects: Mark[][];
@@ -16,43 +20,51 @@ type Saved = {
   solution?: Solution;
   guesses: { suspect: number; place: number }[];
 };
-type History = Record<string, { solved: boolean; wrong: number; seconds: number }>;
+type History = Record<
+  string,
+  { solved: boolean; wrong: number; seconds: number }
+>;
 
 const MAX_TRIES = 3;
 const HISTORY_KEY = 'unsealed:daily:history';
-const load = <T,>(k: string): T | null => {
+const load = <T,>(storageKey: string): T | null => {
   try {
-    const v = localStorage.getItem(k);
-    return v ? (JSON.parse(v) as T) : null;
+    const stored = localStorage.getItem(storageKey);
+    return stored ? (JSON.parse(stored) as T) : null;
   } catch {
     return null;
   }
 };
-const save = (k: string, v: unknown) => {
+const save = (storageKey: string, value: unknown) => {
   try {
-    localStorage.setItem(k, JSON.stringify(v));
+    localStorage.setItem(storageKey, JSON.stringify(value));
   } catch {
     /* storage unavailable */
   }
 };
-const grid = (n: number): Mark[][] => Array.from({ length: n }, () => Array<Mark>(n).fill(''));
-const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-const dayBefore = (d: string) => new Date(Date.parse(`${d}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+const grid = (size: number): Mark[][] =>
+  Array.from({ length: size }, () => Array<Mark>(size).fill(''));
+const mmss = (totalSeconds: number) =>
+  `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
+const dayBefore = (date: string) =>
+  new Date(Date.parse(`${date}T00:00:00Z`) - 86400000)
+    .toISOString()
+    .slice(0, 10);
 
 export function streakFrom(history: History, today: string): number {
-  let d = history[today]?.solved ? today : dayBefore(today);
-  let n = 0;
-  while (history[d]?.solved) {
-    n++;
-    d = dayBefore(d);
+  let date = history[today]?.solved ? today : dayBefore(today);
+  let streak = 0;
+  while (history[date]?.solved) {
+    streak++;
+    date = dayBefore(date);
   }
-  return n;
+  return streak;
 }
 
 export function DailyBrief({ date }: { date?: string }) {
   const [daily, setDaily] = useState<DailyView | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [s, setS] = useState<Saved | null>(null);
+  const [saved, setS] = useState<Saved | null>(null);
   const [who, setWho] = useState<number | null>(null);
   const [where, setWhere] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -62,25 +74,36 @@ export function DailyBrief({ date }: { date?: string }) {
 
   useEffect(() => {
     fetch(`/api/daily${date ? `?date=${encodeURIComponent(date)}` : ''}`)
-      .then((r) => r.json())
-      .then((j: { ok: boolean; daily?: DailyView; message?: string }) => {
-        if (!j.ok || !j.daily) return setError(j.message ?? 'Could not load the Daily Brief.');
-        const d = j.daily;
-        setDaily(d);
-        const n = d.suspects.length;
-        const prev = load<Saved>(`unsealed:daily:${d.id}`);
-        setS(prev ?? { places: grid(n), objects: grid(n), wrong: 0, status: 'playing', startedAt: Date.now(), seconds: 0, guesses: [] });
+      .then((response) => response.json())
+      .then((reply: { ok: boolean; daily?: DailyView; message?: string }) => {
+        if (!reply.ok || !reply.daily)
+          return setError(reply.message ?? 'Could not load the Daily Brief.');
+        const dailyView = reply.daily;
+        setDaily(dailyView);
+        const size = dailyView.suspects.length;
+        const prev = load<Saved>(`unsealed:daily:${dailyView.id}`);
+        setS(
+          prev ?? {
+            places: grid(size),
+            objects: grid(size),
+            wrong: 0,
+            status: 'playing',
+            startedAt: Date.now(),
+            seconds: 0,
+            guesses: [],
+          },
+        );
       })
       .catch(() => setError('No connection. Please try again.'));
   }, [date]);
 
   useEffect(() => {
-    if (daily && s) save(`unsealed:daily:${daily.id}`, s);
-  }, [daily, s]);
+    if (daily && saved) save(`unsealed:daily:${daily.id}`, saved);
+  }, [daily, saved]);
 
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
+    const timeout = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timeout);
   }, []);
 
   // Account sync: merge the account's history into this browser, and upload results played while signed out.
@@ -88,26 +111,35 @@ export function DailyBrief({ date }: { date?: string }) {
   const [historyVersion, setHistoryVersion] = useState(0);
   useEffect(() => {
     fetch('/api/daily/results')
-      .then((r) => r.json())
-      .then((j: { ok: boolean; signedIn: boolean; history?: History }) => {
-        if (!j.ok || !j.signedIn || !j.history) return;
+      .then((response) => response.json())
+      .then((reply: { ok: boolean; signedIn: boolean; history?: History }) => {
+        if (!reply.ok || !reply.signedIn || !reply.history) return;
         setSignedIn(true);
         const local = load<History>(HISTORY_KEY) ?? {};
-        const remote = j.history;
+        const remote = reply.history;
         save(HISTORY_KEY, { ...local, ...remote }); // the account's record of a day wins
         const missing = Object.entries(local)
-          .filter(([d]) => !remote[d])
-          .sort(([a], [b]) => (a < b ? 1 : -1))
+          .filter(([date]) => !remote[date])
+          .sort(([firstDate], [secondDate]) =>
+            firstDate < secondDate ? 1 : -1,
+          )
           .slice(0, 60)
-          .map(([date, r]) => ({ date, ...r }));
+          .map(([date, dayResult]) => ({ date, ...dayResult }));
         if (missing.length)
-          void fetch('/api/daily/results', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ results: missing }) }).catch(() => undefined);
-        setHistoryVersion((v) => v + 1);
+          void fetch('/api/daily/results', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ results: missing }),
+          }).catch(() => undefined);
+        setHistoryVersion((version) => version + 1);
       })
       .catch(() => undefined);
   }, []);
 
-  const history = useMemo(() => load<History>(HISTORY_KEY) ?? {}, [s?.status, historyVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  const history = useMemo(
+    () => load<History>(HISTORY_KEY) ?? {},
+    [saved?.status, historyVersion],
+  ); // eslint-disable-line react-hooks/exhaustive-deps
 
   const finish = useCallback(
     (status: 'solved' | 'failed', solution: Solution, wrong: number) => {
@@ -115,40 +147,66 @@ export function DailyBrief({ date }: { date?: string }) {
       setS((prev) => {
         if (!prev) return prev;
         const seconds = Math.round((Date.now() - prev.startedAt) / 1000);
-        const h = load<History>(HISTORY_KEY) ?? {};
-        if (!h[daily.id]) {
-          h[daily.id] = { solved: status === 'solved', wrong, seconds };
+        const history = load<History>(HISTORY_KEY) ?? {};
+        if (!history[daily.id]) {
+          history[daily.id] = { solved: status === 'solved', wrong, seconds };
           if (signedIn)
             void fetch('/api/daily/results', {
               method: 'POST',
               headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({ results: [{ date: daily.id, ...h[daily.id] }] }),
+              body: JSON.stringify({
+                results: [{ date: daily.id, ...history[daily.id] }],
+              }),
             }).catch(() => undefined);
         }
-        save(HISTORY_KEY, h);
+        save(HISTORY_KEY, history);
         return { ...prev, status, solution, seconds, wrong };
       });
     },
     [daily, signedIn],
   );
 
-  if (error) return <p role="alert" className="py-20 text-center text-body">{error}</p>;
-  if (!daily || !s) return <p role="status" className="py-20 text-center font-mono text-sm tracking-[0.2em] text-muted">OPENING TODAY’S BRIEF…</p>;
+  if (error)
+    return (
+      <p role="alert" className="py-20 text-center text-body">
+        {error}
+      </p>
+    );
+  if (!daily || !saved)
+    return (
+      <p
+        role="status"
+        className="py-20 text-center font-mono text-sm tracking-[0.2em] text-muted"
+      >
+        OPENING TODAY’S BRIEF…
+      </p>
+    );
 
-  const n = daily.suspects.length;
-  const playing = s.status === 'playing';
-  const elapsed = playing ? Math.round((now - s.startedAt) / 1000) : s.seconds;
+  const suspectCount = daily.suspects.length;
+  const playing = saved.status === 'playing';
+  const elapsed = playing
+    ? Math.round((now - saved.startedAt) / 1000)
+    : saved.seconds;
   const tomorrow = Date.parse(`${daily.today}T00:00:00Z`) + 86400000;
   const untilNext = Math.max(0, Math.round((tomorrow - now) / 1000));
   const streak = streakFrom(history, daily.today);
 
-  const cycle = (which: 'places' | 'objects', r: number, c: number) => {
+  const cycle = (
+    which: 'places' | 'objects',
+    rowIndex: number,
+    columnIndex: number,
+  ) => {
     if (!playing) return;
     setS((prev) => {
       if (!prev) return prev;
-      const g = prev[which].map((row) => [...row]);
-      g[r]![c] = g[r]![c] === '' ? 'x' : g[r]![c] === 'x' ? 'v' : '';
-      return { ...prev, [which]: g };
+      const nextGrid = prev[which].map((row) => [...row]);
+      nextGrid[rowIndex]![columnIndex] =
+        nextGrid[rowIndex]![columnIndex] === ''
+          ? 'x'
+          : nextGrid[rowIndex]![columnIndex] === 'x'
+            ? 'v'
+            : '';
+      return { ...prev, [which]: nextGrid };
     });
   };
 
@@ -160,25 +218,41 @@ export function DailyBrief({ date }: { date?: string }) {
       const res = await fetch('/api/daily', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ type: 'answer', date: daily.id, suspect: who, place: where }),
+        body: JSON.stringify({
+          type: 'answer',
+          date: daily.id,
+          suspect: who,
+          place: where,
+        }),
       });
-      const j = (await res.json()) as { ok: boolean; correct?: boolean; solution?: Solution; message?: string };
-      if (!j.ok) return setMsg(j.message ?? 'Something went wrong.');
-      const guesses = [...s.guesses, { suspect: who, place: where }];
-      if (j.correct && j.solution) {
-        setS({ ...s, guesses });
-        finish('solved', j.solution, s.wrong);
+      const reply = (await res.json()) as {
+        ok: boolean;
+        correct?: boolean;
+        solution?: Solution;
+        message?: string;
+      };
+      if (!reply.ok) return setMsg(reply.message ?? 'Something went wrong.');
+      const guesses = [...saved.guesses, { suspect: who, place: where }];
+      if (reply.correct && reply.solution) {
+        setS({ ...saved, guesses });
+        finish('solved', reply.solution, saved.wrong);
         return;
       }
-      const wrong = s.wrong + 1;
+      const wrong = saved.wrong + 1;
       if (wrong >= MAX_TRIES) {
-        const r = await fetch('/api/daily', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'reveal', date: daily.id }) });
-        const rj = (await r.json()) as { solution: Solution };
-        setS({ ...s, guesses, wrong });
+        const response = await fetch('/api/daily', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ type: 'reveal', date: daily.id }),
+        });
+        const rj = (await response.json()) as { solution: Solution };
+        setS({ ...saved, guesses, wrong });
         finish('failed', rj.solution, wrong);
       } else {
-        setS({ ...s, guesses, wrong });
-        setMsg(`Not quite. ${MAX_TRIES - wrong} ${MAX_TRIES - wrong === 1 ? 'try' : 'tries'} left.`);
+        setS({ ...saved, guesses, wrong });
+        setMsg(
+          `Not quite. ${MAX_TRIES - wrong} ${MAX_TRIES - wrong === 1 ? 'try' : 'tries'} left.`,
+        );
       }
     } catch {
       setMsg('No connection. Please try again.');
@@ -188,8 +262,10 @@ export function DailyBrief({ date }: { date?: string }) {
   };
 
   const shareText = () => {
-    const squares = [...Array(s.wrong)].map(() => '🟥').join('') + (s.status === 'solved' ? '🟩' : '');
-    return `UNSEALED Daily #${daily.number} · ${daily.difficultyLabel} · ${daily.city}\n${squares} ${s.status === 'solved' ? `solved in ${mmss(s.seconds)}` : 'case went cold'}\nStreak ${streak}\n${window.location.origin}/daily`;
+    const squares =
+      [...Array(saved.wrong)].map(() => '🟥').join('') +
+      (saved.status === 'solved' ? '🟩' : '');
+    return `UNSEALED Daily #${daily.number} · ${daily.difficultyLabel} · ${daily.city}\n${squares} ${saved.status === 'solved' ? `solved in ${mmss(saved.seconds)}` : 'case went cold'}\nStreak ${streak}\n${window.location.origin}/daily`;
   };
   const share = async () => {
     const text = shareText();
@@ -205,36 +281,61 @@ export function DailyBrief({ date }: { date?: string }) {
   };
 
   // A render function (not a nested component) so the grid isn't remounted on each tap and keeps keyboard focus.
-  const renderGrid = ({ which, cols, label }: { which: 'places' | 'objects'; cols: string[]; label: string }) => (
+  const renderGrid = ({
+    which,
+    cols,
+    label,
+  }: {
+    which: 'places' | 'objects';
+    cols: string[];
+    label: string;
+  }) => (
     <div className="overflow-x-auto">
-      <table className="w-full border-separate border-spacing-1 text-xs" aria-label={label}>
+      <table
+        className="w-full border-separate border-spacing-1 text-xs"
+        aria-label={label}
+      >
         <thead>
           <tr>
-            <th scope="col" className="w-20"><span className="sr-only">Suspect</span></th>
-            {cols.map((c) => (
-              <th key={c} scope="col" className="align-bottom font-semibold leading-tight text-muted">
-                <span className="block min-w-14 break-words">{c.replace(/^the /, '')}</span>
+            <th scope="col" className="w-20">
+              <span className="sr-only">Suspect</span>
+            </th>
+            {cols.map((column) => (
+              <th
+                key={column}
+                scope="col"
+                className="align-bottom font-semibold leading-tight text-muted"
+              >
+                <span className="block min-w-14 break-words">
+                  {column.replace(/^the /, '')}
+                </span>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {daily.suspects.map((name, r) => (
+          {daily.suspects.map((name, rowIndex) => (
             <tr key={name}>
-              <th scope="row" className="pr-1 text-left text-sm font-bold">{name}</th>
-              {cols.map((c, ci) => {
-                const m = s[which][r]![ci]!;
+              <th scope="row" className="pr-1 text-left text-sm font-bold">
+                {name}
+              </th>
+              {cols.map((column, ci) => {
+                const mark = saved[which][rowIndex]![ci]!;
                 return (
-                  <td key={c}>
+                  <td key={column}>
                     <button
                       type="button"
-                      onClick={() => cycle(which, r, ci)}
-                      aria-label={`${name}, ${c}: ${m === '' ? 'empty' : m === 'x' ? 'ruled out' : 'confirmed'}`}
+                      onClick={() => cycle(which, rowIndex, ci)}
+                      aria-label={`${name}, ${column}: ${mark === '' ? 'empty' : mark === 'x' ? 'ruled out' : 'confirmed'}`}
                       className={`h-11 w-full min-w-11 rounded-md border text-base font-extrabold ${
-                        m === 'v' ? 'border-green-text bg-green/35 text-[#8fd9b0]' : m === 'x' ? 'border-line bg-walnut text-red-text' : 'border-line bg-walnut'
+                        mark === 'v'
+                          ? 'border-green-text bg-green/35 text-[#8fd9b0]'
+                          : mark === 'x'
+                            ? 'border-line bg-walnut text-red-text'
+                            : 'border-line bg-walnut'
                       }`}
                     >
-                      {m === 'v' ? '✓' : m === 'x' ? '✕' : ''}
+                      {mark === 'v' ? '✓' : mark === 'x' ? '✕' : ''}
                     </button>
                   </td>
                 );
@@ -253,117 +354,228 @@ export function DailyBrief({ date }: { date?: string }) {
           <p className="font-mono text-xs tracking-[0.15em] text-red-text">
             DAILY BRIEF #{daily.number} · {daily.city.toUpperCase()}
           </p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight">{daily.title}</h1>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
+            {daily.title}
+          </h1>
           <p className="mt-1 text-sm text-muted">
-            {daily.difficultyLabel} · {n} suspects · {daily.clues.length} clues{daily.id !== daily.today && ` · from ${daily.id}`}
+            {daily.difficultyLabel} · {suspectCount} suspects ·{' '}
+            {daily.clues.length} clues
+            {daily.id !== daily.today && ` · from ${daily.id}`}
           </p>
         </div>
         <div className="flex gap-2 font-mono text-sm">
-          <span className="rounded-full border border-line px-3 py-1.5" aria-label="Time">{mmss(elapsed)}</span>
-          <span className="rounded-full border border-line px-3 py-1.5" aria-label="Streak">Streak {streak}</span>
+          <span
+            className="rounded-full border border-line px-3 py-1.5"
+            aria-label="Time"
+          >
+            {mmss(elapsed)}
+          </span>
+          <span
+            className="rounded-full border border-line px-3 py-1.5"
+            aria-label="Streak"
+          >
+            Streak {streak}
+          </span>
         </div>
       </div>
 
       <p className="leading-relaxed text-body">{daily.intro}</p>
 
       <ol className="m-0 flex list-none flex-col gap-2 p-0" aria-label="Clues">
-        {daily.clues.map((c, i) => {
-          const [tag, ...rest] = c.text.split(' · ');
+        {daily.clues.map((clue, index) => {
+          const [tag, ...rest] = clue.text.split(' · ');
           return (
-            <li key={i} className="rounded-lg bg-paper px-3.5 py-2.5 text-[15px] leading-snug text-ink">
-              <span className="font-mono text-xs font-semibold tracking-wide text-[#4a3f35]">{tag}</span>{' '}
+            <li
+              key={index}
+              className="rounded-lg bg-paper px-3.5 py-2.5 text-[15px] leading-snug text-ink"
+            >
+              <span className="font-mono text-xs font-semibold tracking-wide text-[#4a3f35]">
+                {tag}
+              </span>{' '}
               {rest.join(' · ')}
             </li>
           );
         })}
       </ol>
 
-      <section aria-label="Deduction grids" className="flex flex-col gap-4 rounded-2xl border border-line p-3 sm:p-4">
-        <p className="text-xs text-faint">Tap a box to cycle: empty → ✕ ruled out → ✓ confirmed. Grids are just for you; they aren’t graded.</p>
-        <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">WHERE WAS EVERYONE?</h2>
-        {renderGrid({ which: 'places', cols: daily.places, label: 'Suspects and places' })}
-        <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">WHO HAD WHAT?</h2>
-        {renderGrid({ which: 'objects', cols: daily.objects, label: 'Suspects and objects' })}
+      <section
+        aria-label="Deduction grids"
+        className="flex flex-col gap-4 rounded-2xl border border-line p-3 sm:p-4"
+      >
+        <p className="text-xs text-faint">
+          Tap a box to cycle: empty → ✕ ruled out → ✓ confirmed. Grids are just
+          for you; they aren’t graded.
+        </p>
+        <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">
+          WHERE WAS EVERYONE?
+        </h2>
+        {renderGrid({
+          which: 'places',
+          cols: daily.places,
+          label: 'Suspects and places',
+        })}
+        <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">
+          WHO HAD WHAT?
+        </h2>
+        {renderGrid({
+          which: 'objects',
+          cols: daily.objects,
+          label: 'Suspects and objects',
+        })}
       </section>
 
       {playing ? (
-        <section aria-label="Your answer" className="flex flex-col gap-4 rounded-2xl border border-line bg-cocoa p-4">
+        <section
+          aria-label="Your answer"
+          className="flex flex-col gap-4 rounded-2xl border border-line bg-cocoa p-4"
+        >
           <div className="flex items-center justify-between">
             <h2 className="font-extrabold">{daily.title}</h2>
-            <span className="flex gap-1.5" aria-label={`${MAX_TRIES - s.wrong} tries left`}>
-              {[...Array(MAX_TRIES)].map((_, i) => (
-                <span key={i} className={`h-2.5 w-2.5 rounded-full ${i < s.wrong ? 'bg-line-strong' : 'bg-amber'}`} />
+            <span
+              className="flex gap-1.5"
+              aria-label={`${MAX_TRIES - saved.wrong} tries left`}
+            >
+              {[...Array(MAX_TRIES)].map((_, index) => (
+                <span
+                  key={index}
+                  className={`h-2.5 w-2.5 rounded-full ${index < saved.wrong ? 'bg-line-strong' : 'bg-amber'}`}
+                />
               ))}
             </span>
           </div>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Who">
-            {daily.suspects.map((name, i) => (
-              <button key={name} type="button" role="radio" aria-checked={who === i} onClick={() => setWho(i)}
-                className={`min-h-11 rounded-xl border px-4 font-bold ${who === i ? 'border-paper bg-paper text-ink' : 'border-line-strong bg-walnut hover:border-amber'}`}>
+          <div
+            className="flex flex-wrap gap-2"
+            role="radiogroup"
+            aria-label="Who"
+          >
+            {daily.suspects.map((name, index) => (
+              <button
+                key={name}
+                type="button"
+                role="radio"
+                aria-checked={who === index}
+                onClick={() => setWho(index)}
+                className={`min-h-11 rounded-xl border px-4 font-bold ${who === index ? 'border-paper bg-paper text-ink' : 'border-line-strong bg-walnut hover:border-amber'}`}
+              >
                 {name}
               </button>
             ))}
           </div>
           <p className="text-sm font-bold">Where were they?</p>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Where">
-            {daily.places.map((p, i) => (
-              <button key={p} type="button" role="radio" aria-checked={where === i} onClick={() => setWhere(i)}
-                className={`min-h-11 rounded-xl border px-4 text-sm font-bold ${where === i ? 'border-paper bg-paper text-ink' : 'border-line-strong bg-walnut hover:border-amber'}`}>
-                {p}
+          <div
+            className="flex flex-wrap gap-2"
+            role="radiogroup"
+            aria-label="Where"
+          >
+            {daily.places.map((place, index) => (
+              <button
+                key={place}
+                type="button"
+                role="radio"
+                aria-checked={where === index}
+                onClick={() => setWhere(index)}
+                className={`min-h-11 rounded-xl border px-4 text-sm font-bold ${where === index ? 'border-paper bg-paper text-ink' : 'border-line-strong bg-walnut hover:border-amber'}`}
+              >
+                {place}
               </button>
             ))}
           </div>
-          {msg && <p role="status" className="text-sm font-semibold text-red-soft">{msg}</p>}
-          <button type="button" disabled={busy || who === null || where === null} onClick={submit}
-            className="h-12 rounded-xl bg-amber font-extrabold text-ink disabled:bg-line-strong disabled:text-body">
+          {msg && (
+            <p role="status" className="text-sm font-semibold text-red-soft">
+              {msg}
+            </p>
+          )}
+          <button
+            type="button"
+            disabled={busy || who === null || where === null}
+            onClick={submit}
+            className="h-12 rounded-xl bg-amber font-extrabold text-ink disabled:bg-line-strong disabled:text-body"
+          >
             Name who took it
           </button>
         </section>
       ) : (
-        <section aria-label="Result" className="flex flex-col gap-4 rounded-2xl border-2 border-amber bg-cocoa p-5">
-          <p className={`w-fit -rotate-2 border-2 px-3 py-1 font-mono text-sm tracking-[0.25em] ${s.status === 'solved' ? 'border-green-text text-green-text' : 'border-red-text text-red-text'}`}>
-            {s.status === 'solved' ? 'SOLVED' : 'CASE COLD'}
+        <section
+          aria-label="Result"
+          className="flex flex-col gap-4 rounded-2xl border-2 border-amber bg-cocoa p-5"
+        >
+          <p
+            className={`w-fit -rotate-2 border-2 px-3 py-1 font-mono text-sm tracking-[0.25em] ${saved.status === 'solved' ? 'border-green-text text-green-text' : 'border-red-text text-red-text'}`}
+          >
+            {saved.status === 'solved' ? 'SOLVED' : 'CASE COLD'}
           </p>
           <p className="text-lg font-extrabold">
-            {daily.suspects[s.solution!.culprit]} took the {daily.objects[daily.target]}, at {daily.places[s.solution!.place]}.
+            {daily.suspects[saved.solution!.culprit]} took the{' '}
+            {daily.objects[daily.target]}, at{' '}
+            {daily.places[saved.solution!.place]}.
           </p>
           <p className="text-sm text-muted">
-            {s.status === 'solved' ? `Solved in ${mmss(s.seconds)} with ${s.wrong} wrong ${s.wrong === 1 ? 'guess' : 'guesses'}.` : 'Three tries used.'} Streak: {streak}.
+            {saved.status === 'solved'
+              ? `Solved in ${mmss(saved.seconds)} with ${saved.wrong} wrong ${saved.wrong === 1 ? 'guess' : 'guesses'}.`
+              : 'Three tries used.'}{' '}
+            Streak: {streak}.
           </p>
           <table className="text-sm">
             <thead>
-              <tr className="text-left text-faint"><th className="py-1 font-semibold">Who</th><th className="font-semibold">Where</th><th className="font-semibold">Had</th></tr>
+              <tr className="text-left text-faint">
+                <th className="py-1 font-semibold">Who</th>
+                <th className="font-semibold">Where</th>
+                <th className="font-semibold">Had</th>
+              </tr>
             </thead>
             <tbody>
-              {s.solution!.rows.map((r) => (
-                <tr key={r.suspect} className="border-t border-line">
-                  <td className="py-1.5 font-bold">{daily.suspects[r.suspect]}</td>
-                  <td>{daily.places[r.place]}</td>
-                  <td>{daily.objects[r.object]}</td>
+              {saved.solution!.rows.map((row) => (
+                <tr key={row.suspect} className="border-t border-line">
+                  <td className="py-1.5 font-bold">
+                    {daily.suspects[row.suspect]}
+                  </td>
+                  <td>{daily.places[row.place]}</td>
+                  <td>{daily.objects[row.object]}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div className="grid gap-2 sm:grid-cols-2">
-            <button type="button" onClick={share} className="h-12 rounded-xl border border-line-strong font-extrabold">{copied ? 'Copied!' : 'Share result'}</button>
-            <Link href="/play/001-dead-air" className="flex h-12 items-center justify-center rounded-xl bg-amber font-extrabold text-ink">Play a full case</Link>
+            <button
+              type="button"
+              onClick={share}
+              className="h-12 rounded-xl border border-line-strong font-extrabold"
+            >
+              {copied ? 'Copied!' : 'Share result'}
+            </button>
+            <Link
+              href="/play/001-dead-air"
+              className="flex h-12 items-center justify-center rounded-xl bg-amber font-extrabold text-ink"
+            >
+              Play a full case
+            </Link>
           </div>
           {daily.id === daily.today && (
-            <p className="text-center font-mono text-xs text-faint">Next brief in {Math.floor(untilNext / 3600)}h {String(Math.floor((untilNext % 3600) / 60)).padStart(2, '0')}m</p>
+            <p className="text-center font-mono text-xs text-faint">
+              Next brief in {Math.floor(untilNext / 3600)}h{' '}
+              {String(Math.floor((untilNext % 3600) / 60)).padStart(2, '0')}m
+            </p>
           )}
         </section>
       )}
 
       {daily.archive.length > 1 && (
         <nav aria-label="Past briefs" className="flex flex-col gap-2">
-          <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">THIS WEEK</h2>
+          <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">
+            THIS WEEK
+          </h2>
           <div className="flex flex-wrap gap-2">
-            {daily.archive.map((d) => {
-              const h = history[d];
+            {daily.archive.map((date) => {
+              const dayResult = history[date];
               return (
-                <Link key={d} href={d === daily.today ? '/daily' : `/daily?date=${d}`} aria-current={d === daily.id ? 'page' : undefined}
-                  className={`rounded-lg border px-3 py-2 font-mono text-xs ${d === daily.id ? 'border-amber text-amber' : 'border-line text-muted hover:text-paper'}`}>
-                  {d.slice(5)} {h ? (h.solved ? '✓' : '✕') : ''}
+                <Link
+                  key={date}
+                  href={date === daily.today ? '/daily' : `/daily?date=${date}`}
+                  aria-current={date === daily.id ? 'page' : undefined}
+                  className={`rounded-lg border px-3 py-2 font-mono text-xs ${date === daily.id ? 'border-amber text-amber' : 'border-line text-muted hover:text-paper'}`}
+                >
+                  {date.slice(5)}{' '}
+                  {dayResult ? (dayResult.solved ? '✓' : '✕') : ''}
                 </Link>
               );
             })}

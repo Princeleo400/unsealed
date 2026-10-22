@@ -2,56 +2,212 @@
   "caseId": "001-dead-air",
   "version": 1,
   "breakthroughs": [
-    { "id": "BT-1", "a": "E-02", "b": "E-05", "relation": "contradiction", "essential": true, "order": 1,
-      "insight": "She was dead by 00:50 at the latest, but her voice went out at 01:10. Whatever aired at 01:10 was not live." },
-    { "id": "BT-2", "a": "E-06", "b": "E-07", "relation": "contradiction", "essential": true, "order": 2,
-      "insight": "The 01:10 link wished listeners a happy Easter weekend on 6 March. It was one of the pre-recorded Easter voice tracks." },
-    { "id": "BT-3", "a": "E-17", "b": "E-04", "relation": "corroboration", "essential": true, "order": 3,
-      "insight": "The Easter voice track was scheduled at 00:44 under Marguerite's login, while her badge shows her inside the building from 00:22 to 00:52." },
-    { "id": "BT-4", "a": "E-09", "b": "E-04", "relation": "contradiction", "essential": true, "order": 4,
-      "insight": "Marguerite says she left at 23:30 and never came back. Her badge came back in at 00:22 and left at 00:52, right across the time of death. Her 01:12 petrol receipt only covers the fake 01:10 link." },
-    { "id": "BT-5", "a": "E-11", "b": "E-04", "relation": "corroboration", "essential": false, "order": 5,
-      "insight": "Lena's badge went out at 00:24, before the earliest time of death. Her story holds so far." },
-    { "id": "BT-6", "a": "E-18", "b": "E-19", "relation": "link", "essential": false, "order": 6,
-      "insight": "The 'ad verification fee' on every sponsor invoice went to MV Media Solutions, a company whose sole director is Marguerite Vos." },
-    { "id": "BT-7", "a": "E-09", "b": "E-12", "relation": "contradiction", "essential": false, "order": 7,
-      "insight": "The guard saw a white Polo, the car Marguerite left in, parked in the staff lane from 00:20 until about 00:54." }
+    {
+      "id": "BT-1",
+      "a": "E-02",
+      "b": "E-05",
+      "relation": "contradiction",
+      "essential": true,
+      "order": 1,
+      "insight": "She was dead by 00:50 at the latest, but her voice went out at 01:10. Whatever aired at 01:10 was not live."
+    },
+    {
+      "id": "BT-2",
+      "a": "E-06",
+      "b": "E-07",
+      "relation": "contradiction",
+      "essential": true,
+      "order": 2,
+      "insight": "The 01:10 link wished listeners a happy Easter weekend on 6 March. It was one of the pre-recorded Easter voice tracks."
+    },
+    {
+      "id": "BT-3",
+      "a": "E-17",
+      "b": "E-04",
+      "relation": "corroboration",
+      "essential": true,
+      "order": 3,
+      "insight": "The Easter voice track was scheduled at 00:44 under Marguerite's login, while her badge shows her inside the building from 00:22 to 00:52."
+    },
+    {
+      "id": "BT-4",
+      "a": "E-09",
+      "b": "E-04",
+      "relation": "contradiction",
+      "essential": true,
+      "order": 4,
+      "insight": "Marguerite says she left at 23:30 and never came back. Her badge came back in at 00:22 and left at 00:52, right across the time of death. Her 01:12 petrol receipt only covers the fake 01:10 link."
+    },
+    {
+      "id": "BT-5",
+      "a": "E-11",
+      "b": "E-04",
+      "relation": "corroboration",
+      "essential": false,
+      "order": 5,
+      "insight": "Lena's badge went out at 00:24, before the earliest time of death. Her story holds so far."
+    },
+    {
+      "id": "BT-6",
+      "a": "E-18",
+      "b": "E-19",
+      "relation": "link",
+      "essential": false,
+      "order": 6,
+      "insight": "The 'ad verification fee' on every sponsor invoice went to MV Media Solutions, a company whose sole director is Marguerite Vos."
+    },
+    {
+      "id": "BT-7",
+      "a": "E-09",
+      "b": "E-12",
+      "relation": "contradiction",
+      "essential": false,
+      "order": 7,
+      "insight": "The guard saw a white Polo, the car Marguerite left in, parked in the staff lane from 00:20 until about 00:54."
+    }
   ],
   "confrontations": [
-    { "id": "C-1", "statementId": "E-09", "line": 4, "evidenceIds": ["E-18", "E-13"],
-      "revealLines": [ { "n": "4a", "text": "…Fine. She asked me about the Rooibos numbers on Thursday. I told her it was a system error. That's all it was. She kept notes on everything, you know. In that folder of hers." } ] },
-    { "id": "C-2", "statementId": "E-10", "line": 3, "evidenceIds": ["E-14"],
-      "revealLines": [ { "n": "3a", "text": "Okay. I went out to cool off. A ride to Sea Point, The Blue Fin on Main Road, until about half past one. I can show you the receipts." } ] },
-    { "id": "C-3", "statementId": "E-08", "line": 2, "evidenceIds": ["E-12", "E-20"],
-      "revealLines": [ { "n": "2a", "text": "All right, I wasn't smoking. I sat in Mama Rosa's café on a call with a recruiter. I didn't want Thandi to know I was looking." } ] },
-    { "id": "C-4", "statementId": "E-09", "line": 2, "evidenceIds": ["E-04", "E-12"],
-      "revealLines": [ { "n": "2a", "text": "I… came back for some papers I'd left. Ten minutes, maybe. I didn't see Thandi. I didn't go near Studio B." } ] }
+    {
+      "id": "C-1",
+      "statementId": "E-09",
+      "line": 4,
+      "evidenceIds": ["E-18", "E-13"],
+      "revealLines": [
+        {
+          "n": "4a",
+          "text": "…Fine. She asked me about the Rooibos numbers on Thursday. I told her it was a system error. That's all it was. She kept notes on everything, you know. In that folder of hers."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "statementId": "E-10",
+      "line": 3,
+      "evidenceIds": ["E-14"],
+      "revealLines": [
+        {
+          "n": "3a",
+          "text": "Okay. I went out to cool off. A ride to Sea Point, The Blue Fin on Main Road, until about half past one. I can show you the receipts."
+        }
+      ]
+    },
+    {
+      "id": "C-3",
+      "statementId": "E-08",
+      "line": 2,
+      "evidenceIds": ["E-12", "E-20"],
+      "revealLines": [
+        {
+          "n": "2a",
+          "text": "All right, I wasn't smoking. I sat in Mama Rosa's café on a call with a recruiter. I didn't want Thandi to know I was looking."
+        }
+      ]
+    },
+    {
+      "id": "C-4",
+      "statementId": "E-09",
+      "line": 2,
+      "evidenceIds": ["E-04", "E-12"],
+      "revealLines": [
+        {
+          "n": "2a",
+          "text": "I… came back for some papers I'd left. Ten minutes, maybe. I didn't see Thandi. I didn't go near Studio B."
+        }
+      ]
+    }
   ],
   "archiveIndex": [
-    { "evidenceId": "E-17", "terms": ["VT", "voice track", "voice tracks", "VT_THANDI_EASTER_02", "pre-recorded"] },
-    { "evidenceId": "E-19", "terms": ["MV Media", "MV Media Solutions", "MV Media Solutions (Pty) Ltd"] },
+    {
+      "evidenceId": "E-17",
+      "terms": [
+        "VT",
+        "voice track",
+        "voice tracks",
+        "VT_THANDI_EASTER_02",
+        "pre-recorded"
+      ]
+    },
+    {
+      "evidenceId": "E-19",
+      "terms": [
+        "MV Media",
+        "MV Media Solutions",
+        "MV Media Solutions (Pty) Ltd"
+      ]
+    },
     { "evidenceId": "E-23", "terms": ["CA 412-778", "CA412778", "CA 412778"] }
   ],
   "verdict": {
     "who": { "killer": "marguerite" },
     "how": { "method": ["m-plaque"], "time": ["t-0030"], "trick": ["k-vt"] },
     "why": { "motive": ["y-fraud"] },
-    "proof": { "core": ["E-17", "E-04"], "support": ["E-02", "E-06", "E-09", "E-13", "E-18", "E-24"] }
+    "proof": {
+      "core": ["E-17", "E-04"],
+      "support": ["E-02", "E-06", "E-09", "E-13", "E-18", "E-24"]
+    }
   },
   "hints": [
-    { "stuckPointId": "BT-1", "pointer": "Compare the pathologist's summary (2) with the playout log (5).", "reveal": "String the pathologist's summary (2) to the playout log (5) as a contradiction: she was dead before the 01:10 link aired." },
-    { "stuckPointId": "BT-2", "pointer": "Compare the listener SMS line (6) at 01:11 with the wall calendar (7).", "reveal": "String the SMS line (6) to the wall calendar (7) as a contradiction: the 01:10 link mentioned Easter on 6 March, so it was pre-recorded." },
-    { "stuckPointId": "BT-3", "pointer": "Search the archive for \"VT\", then compare what you find with the keycard log (4).", "reveal": "String the VT schedule (17) to the keycard log (4) as corroboration: the voice track was scheduled at 00:44 under Marguerite's login while she was inside." },
-    { "stuckPointId": "BT-4", "pointer": "Compare Marguerite's statement (9), line 2, with the keycard log (4).", "reveal": "String Marguerite's statement (9) to the keycard log (4) as a contradiction: she said she never came back, but her badge was inside from 00:22 to 00:52." }
+    {
+      "stuckPointId": "BT-1",
+      "pointer": "Compare the pathologist's summary (2) with the playout log (5).",
+      "reveal": "String the pathologist's summary (2) to the playout log (5) as a contradiction: she was dead before the 01:10 link aired."
+    },
+    {
+      "stuckPointId": "BT-2",
+      "pointer": "Compare the listener SMS line (6) at 01:11 with the wall calendar (7).",
+      "reveal": "String the SMS line (6) to the wall calendar (7) as a contradiction: the 01:10 link mentioned Easter on 6 March, so it was pre-recorded."
+    },
+    {
+      "stuckPointId": "BT-3",
+      "pointer": "Search the archive for \"VT\", then compare what you find with the keycard log (4).",
+      "reveal": "String the VT schedule (17) to the keycard log (4) as corroboration: the voice track was scheduled at 00:44 under Marguerite's login while she was inside."
+    },
+    {
+      "stuckPointId": "BT-4",
+      "pointer": "Compare Marguerite's statement (9), line 2, with the keycard log (4).",
+      "reveal": "String Marguerite's statement (9) to the keycard log (4) as a contradiction: she said she never came back, but her badge was inside from 00:22 to 00:52."
+    }
   ],
   "debrief": [
-    { "step": 1, "time": "Thu 17:02", "text": "Thandi asks Marguerite about the Rooibos & Co numbers. Marguerite calls it a billing error." },
-    { "step": 2, "time": "23:20", "text": "Before leaving, Marguerite sees Thandi's note in the show folder: 'Ask M on Monday or go to the board.'" },
-    { "step": 3, "time": "00:22", "text": "Marguerite comes back through the side door after Thandi refuses to talk by text." },
-    { "step": 4, "time": "00:35", "text": "During \"Long Song\", Marguerite confronts Thandi in Studio B and strikes her with the award plaque. Thandi's watch records her last pulse at 00:35." },
-    { "step": 5, "time": "00:40–00:44", "text": "Marguerite loads an auto-playlist, then schedules one of Thandi's pre-recorded Easter voice tracks to play at 01:10, so Thandi will seem alive." },
-    { "step": 6, "time": "00:52", "text": "She wipes the plaque, pulls the blinds and leaves by the side door." },
-    { "step": 7, "time": "01:10", "text": "The voice track airs: 'Happy Easter weekend, Cape Town!' Listeners laugh. It is the line that undoes her." },
-    { "step": 8, "time": "01:12", "text": "Marguerite buys petrol in Sea Point to give herself an alibi for 01:10." }
+    {
+      "step": 1,
+      "time": "Thu 17:02",
+      "text": "Thandi asks Marguerite about the Rooibos & Co numbers. Marguerite calls it a billing error."
+    },
+    {
+      "step": 2,
+      "time": "23:20",
+      "text": "Before leaving, Marguerite sees Thandi's note in the show folder: 'Ask M on Monday or go to the board.'"
+    },
+    {
+      "step": 3,
+      "time": "00:22",
+      "text": "Marguerite comes back through the side door after Thandi refuses to talk by text."
+    },
+    {
+      "step": 4,
+      "time": "00:35",
+      "text": "During \"Long Song\", Marguerite confronts Thandi in Studio B and strikes her with the award plaque. Thandi's watch records her last pulse at 00:35."
+    },
+    {
+      "step": 5,
+      "time": "00:40–00:44",
+      "text": "Marguerite loads an auto-playlist, then schedules one of Thandi's pre-recorded Easter voice tracks to play at 01:10, so Thandi will seem alive."
+    },
+    {
+      "step": 6,
+      "time": "00:52",
+      "text": "She wipes the plaque, pulls the blinds and leaves by the side door."
+    },
+    {
+      "step": 7,
+      "time": "01:10",
+      "text": "The voice track airs: 'Happy Easter weekend, Cape Town!' Listeners laugh. It is the line that undoes her."
+    },
+    {
+      "step": 8,
+      "time": "01:12",
+      "text": "Marguerite buys petrol in Sea Point to give herself an alibi for 01:10."
+    }
   ]
 }

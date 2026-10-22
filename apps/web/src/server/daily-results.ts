@@ -4,7 +4,10 @@ import { z } from 'zod';
 import { todayUTC } from './daily';
 import { serverSupabase } from './supabase';
 
-export type DailyHistory = Record<string, { solved: boolean; wrong: number; seconds: number }>;
+export type DailyHistory = Record<
+  string,
+  { solved: boolean; wrong: number; seconds: number }
+>;
 
 export const ResultInput = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -12,12 +15,18 @@ export const ResultInput = z.object({
   wrong: z.number().int().min(0).max(3),
   seconds: z.number().int().min(0).max(86400),
 });
-export const ResultsInput = z.object({ results: z.array(ResultInput).min(1).max(60) });
+export const ResultsInput = z.object({
+  results: z.array(ResultInput).min(1).max(60),
+});
 
 /** Only dates that have actually happened since launch can be recorded. */
 export function validResultDate(date: string, now = new Date()): boolean {
-  const t = Date.parse(`${date}T00:00:00Z`);
-  return !Number.isNaN(t) && t >= Date.parse(`${DAILY_EPOCH}T00:00:00Z`) && t <= Date.parse(`${todayUTC(now)}T00:00:00Z`);
+  const timestamp = Date.parse(`${date}T00:00:00Z`);
+  return (
+    !Number.isNaN(timestamp) &&
+    timestamp >= Date.parse(`${DAILY_EPOCH}T00:00:00Z`) &&
+    timestamp <= Date.parse(`${todayUTC(now)}T00:00:00Z`)
+  );
 }
 
 export interface ResultsStore {
@@ -39,13 +48,19 @@ export async function supabaseResultsStore(): Promise<ResultsStore | null> {
         .limit(400);
       if (error) throw error;
       const out: DailyHistory = {};
-      for (const r of data ?? []) out[r.date as string] = { solved: r.solved as boolean, wrong: r.wrong as number, seconds: r.seconds as number };
+      for (const row of data ?? [])
+        out[row.date as string] = {
+          solved: row.solved as boolean,
+          wrong: row.wrong as number,
+          seconds: row.seconds as number,
+        };
       return out;
     },
     async add(userId, rows) {
-      const { error } = await sb
-        .from('daily_results')
-        .upsert(rows.map((r) => ({ user_id: userId, ...r })), { onConflict: 'user_id,date', ignoreDuplicates: true });
+      const { error } = await sb.from('daily_results').upsert(
+        rows.map((row) => ({ user_id: userId, ...row })),
+        { onConflict: 'user_id,date', ignoreDuplicates: true },
+      );
       if (error) throw error;
     },
   };

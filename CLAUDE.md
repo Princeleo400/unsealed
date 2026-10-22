@@ -17,12 +17,14 @@ UNSEALED: a fair-play detective game. Monorepo with `apps/web` (Next.js App Rout
 9. **Defensive CSS:** include `[hidden] { display: none !important; }` in global styles.
 
 ## Conventions
+- **Formatting:** Prettier, `printWidth` 80 (`.prettierrc`). Run `pnpm format` before handing over files; `pnpm format:check` must pass.
+- **Naming:** readable, descriptive names for every variable, parameter and argument. Never single letters (`e`, `s`, `x`, `i`…): use `evidence`, `state`, `index`. `_` is allowed only for an unused value. `pnpm lint:names` enforces this.
 - TypeScript strict. zod schemas for all external data (case files, API payloads, webhooks).
 - Prices and product IDs live in config/DB, never hard-coded.
 - Supabase: RLS on every table; migrations only via `supabase/migrations`.
 - Commits: `feat(FR-CASE-03): log renderer with sort/filter`.
 
 ## Before you say "done"
-- `pnpm typecheck && pnpm lint && pnpm test && pnpm case:lint && pnpm case:golden`
+- `pnpm format:check && pnpm lint:names && pnpm typecheck && pnpm test && pnpm case:lint && pnpm case:golden`
 - Open the changed screen in a browser / simulator and check it at phone width (375 px) and desktop. A visible bug on first open is a failed delivery.
 - When handing code to Michael, list **only new or edited files with their paths**. Don't zip them.

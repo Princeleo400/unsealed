@@ -1,4 +1,10 @@
-import type { Evidence, Lead, Relation, ScoreBreakdown, StringCheck } from '@unsealed/engine';
+import type {
+  Evidence,
+  Lead,
+  Relation,
+  ScoreBreakdown,
+  StringCheck,
+} from '@unsealed/engine';
 
 /** Everything the browser is allowed to know. Built on the server from case + solution + state. */
 export type CaseView = {
@@ -48,13 +54,22 @@ export type CaseView = {
  */
 export type AdReward = { provider: 'gam' | 'no-fill' | 'dev'; id: string };
 
-export type VerdictBlankView ={ blankId: string; prompt: string; options: { id: string; text: string }[] };
+export type VerdictBlankView = {
+  blankId: string;
+  prompt: string;
+  options: { id: string; text: string }[];
+};
 
 export type DebriefView = {
   score: ScoreBreakdown;
   steps: { step: number; time: string; text: string }[];
   solution: { who: string; how: string[]; why: string[]; proofCore: string[] };
-  breakthroughs: { id: string; insight: string; found: boolean; essential: boolean }[];
+  breakthroughs: {
+    id: string;
+    insight: string;
+    found: boolean;
+    essential: boolean;
+  }[];
 };
 
 export type PlayAction =
@@ -68,16 +83,40 @@ export type PlayAction =
   | { type: 'hint'; tier: 'nudge' | 'pointer' | 'reveal'; adReward?: AdReward }
   | {
       type: 'verdict';
-      answer: { who: Record<string, string>; how: Record<string, string>; why: Record<string, string>; proof: string[] };
+      answer: {
+        who: Record<string, string>;
+        how: Record<string, string>;
+        why: Record<string, string>;
+        proof: string[];
+      };
     };
 
 export type PlayResult =
-  | { type: 'string'; valid: boolean; duplicate: boolean; breakthrough?: { id: string; insight: string } }
-  | { type: 'confront'; valid: boolean; duplicate: boolean; revealLines: { n: string; text: string }[] }
-  | { type: 'search'; query: string; results: { id: string; number: number; title: string }[] }
+  | {
+      type: 'string';
+      valid: boolean;
+      duplicate: boolean;
+      breakthrough?: { id: string; insight: string };
+    }
+  | {
+      type: 'confront';
+      valid: boolean;
+      duplicate: boolean;
+      revealLines: { n: string; text: string }[];
+    }
+  | {
+      type: 'search';
+      query: string;
+      results: { id: string; number: number; title: string }[];
+    }
   | { type: 'lead'; title: string; costHours: number }
   | { type: 'hint'; tier: string; text: string; cost: number }
-  | { type: 'verdict'; correctSections: number; accusationsLeft: number; status: string }
+  | {
+      type: 'verdict';
+      correctSections: number;
+      accusationsLeft: number;
+      status: string;
+    }
   | { type: 'none' };
 
 export type PlayResponse =
@@ -88,9 +127,20 @@ export type PlayResponse =
       result: PlayResult;
       unlocked: { id: string; number: number; title: string }[];
       /** Account sync: where the progress came from on start, and whether this action was saved to the account. */
-      sync?: { signedIn: boolean; source: 'account' | 'device' | 'new'; saved: boolean; board?: unknown };
+      sync?: {
+        signedIn: boolean;
+        source: 'account' | 'device' | 'new';
+        saved: boolean;
+        board?: unknown;
+      };
     }
-  | { ok: false; error: { code: string; message: string }; token?: string; view?: CaseView; paywall?: PaywallInfo };
+  | {
+      ok: false;
+      error: { code: string; message: string };
+      token?: string;
+      view?: CaseView;
+      paywall?: PaywallInfo;
+    };
 
 /** What the player owns, safe to send to the browser. */
 export type AccessSummary = {
@@ -99,4 +149,9 @@ export type AccessSummary = {
 };
 
 /** Sent with a 402 when a paid case is opened without access. */
-export type PaywallInfo = { slug: string; title: string; productId: 'case-standard' | 'case-premium'; signedIn: boolean };
+export type PaywallInfo = {
+  slug: string;
+  title: string;
+  productId: 'case-standard' | 'case-premium';
+  signedIn: boolean;
+};

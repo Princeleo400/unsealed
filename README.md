@@ -45,6 +45,8 @@ pnpm dev            # web app at http://localhost:3003 (landing, /daily, /cases,
 pnpm build          # production build of the web app
 pnpm test           # engine unit tests (Vitest, coverage)
 pnpm typecheck
+pnpm format         # Prettier, 80 columns (pnpm format:check to verify)
+pnpm lint:names     # fails on single-letter variable/parameter names
 pnpm case:lint      # validates every case in content/cases
 pnpm case:golden    # an automated detective solves every case end to end
 pnpm case:pack -- --pdf   # builds the paper playtest packs into dist/<case>/

@@ -14,7 +14,13 @@ export async function GET(req: Request) {
   const next = safeNext(url.searchParams.get('next'), '/');
   // Only fixed error CODES travel in the URL; the sign-in page maps them to its own wording,
   // so nobody can craft a link that shows arbitrary text on our page.
-  const fail = (reason: SignInError) => NextResponse.redirect(new URL(`/signin?error=${reason}&next=${encodeURIComponent(next)}`, url.origin));
+  const fail = (reason: SignInError) =>
+    NextResponse.redirect(
+      new URL(
+        `/signin?error=${reason}&next=${encodeURIComponent(next)}`,
+        url.origin,
+      ),
+    );
 
   if (url.searchParams.get('error')) return fail('provider');
   if (!code) return fail('missing_code');
@@ -25,6 +31,9 @@ export async function GET(req: Request) {
   if (error) return fail('expired');
 
   const res = NextResponse.redirect(new URL(next, url.origin));
-  res.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate, max-age=0');
+  res.headers.set(
+    'Cache-Control',
+    'private, no-cache, no-store, must-revalidate, max-age=0',
+  );
   return res;
 }

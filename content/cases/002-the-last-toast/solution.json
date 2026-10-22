@@ -71,10 +71,7 @@
       "id": "C-1",
       "statementId": "E-14",
       "line": 2,
-      "evidenceIds": [
-        "E-25",
-        "E-26"
-      ],
+      "evidenceIds": ["E-25", "E-26"],
       "revealLines": [
         {
           "n": "2a",
@@ -86,10 +83,7 @@
       "id": "C-2",
       "statementId": "E-11",
       "line": 2,
-      "evidenceIds": [
-        "E-15",
-        "E-16"
-      ],
+      "evidenceIds": ["E-15", "E-16"],
       "revealLines": [
         {
           "n": "2a",
@@ -101,9 +95,7 @@
       "id": "C-3",
       "statementId": "E-13",
       "line": 3,
-      "evidenceIds": [
-        "E-21"
-      ],
+      "evidenceIds": ["E-21"],
       "revealLines": [
         {
           "n": "3a",
@@ -115,10 +107,7 @@
       "id": "C-4",
       "statementId": "E-14",
       "line": 3,
-      "evidenceIds": [
-        "E-05",
-        "E-23"
-      ],
+      "evidenceIds": ["E-05", "E-23"],
       "revealLines": [
         {
           "n": "3a",
@@ -172,26 +161,15 @@
       "killer": "ronke"
     },
     "how": {
-      "method": [
-        "m-flute"
-      ],
-      "when": [
-        "w-1926"
-      ],
-      "trick": [
-        "k-blackout"
-      ]
+      "method": ["m-flute"],
+      "when": ["w-1926"],
+      "trick": ["k-blackout"]
     },
     "why": {
-      "motive": [
-        "y-father"
-      ]
+      "motive": ["y-father"]
     },
     "proof": {
-      "core": [
-        "E-18",
-        "E-22"
-      ],
+      "core": ["E-18", "E-22"],
       "support": [
         "E-05",
         "E-06",

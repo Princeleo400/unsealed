@@ -1,5 +1,11 @@
 import 'server-only';
-import { CasePublicSchema, CaseSolutionSchema, lintCase, type CasePublic, type CaseSolution } from '@unsealed/engine';
+import {
+  CasePublicSchema,
+  CaseSolutionSchema,
+  lintCase,
+  type CasePublic,
+  type CaseSolution,
+} from '@unsealed/engine';
 // Solutions are imported here, in server-only code. `server-only` makes the build fail
 // if any client component ever imports this module (BRD BR-9).
 import pub001 from '../../../../content/cases/001-dead-air/case.json';
@@ -10,9 +16,17 @@ import sol002 from '../../../../content/cases/002-the-last-toast/solution.json';
 type LoadedCase = { pub: CasePublic; sol: CaseSolution };
 
 function load(rawPub: unknown, rawSol: unknown): LoadedCase {
-  const errors = lintCase(rawPub, rawSol).issues.filter((i) => i.level === 'error');
-  if (errors.length) throw new Error(`Case failed lint: ${errors.map((e) => e.message).join('; ')}`);
-  return { pub: CasePublicSchema.parse(rawPub), sol: CaseSolutionSchema.parse(rawSol) };
+  const errors = lintCase(rawPub, rawSol).issues.filter(
+    (lintIssue) => lintIssue.level === 'error',
+  );
+  if (errors.length)
+    throw new Error(
+      `Case failed lint: ${errors.map((lintIssue) => lintIssue.message).join('; ')}`,
+    );
+  return {
+    pub: CasePublicSchema.parse(rawPub),
+    sol: CaseSolutionSchema.parse(rawSol),
+  };
 }
 
 const CASES: Record<string, LoadedCase> = {

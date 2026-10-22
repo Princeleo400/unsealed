@@ -2,7 +2,11 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient, type User } from '@supabase/supabase-js';
-import { SUPABASE_ANON_KEY, SUPABASE_URL, authEnabled } from '@/lib/supabase/config';
+import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  authEnabled,
+} from '@/lib/supabase/config';
 
 /** A Supabase client acting AS the signed-in player (row-level security applies). New one per request. */
 export async function serverSupabase() {
@@ -13,7 +17,8 @@ export async function serverSupabase() {
       getAll: () => store.getAll(),
       setAll: (toSet) => {
         try {
-          for (const { name, value, options } of toSet) store.set(name, value, options);
+          for (const { name, value, options } of toSet)
+            store.set(name, value, options);
         } catch {
           // Called from a Server Component, where cookies are read-only. The middleware refreshes sessions.
         }
@@ -38,5 +43,7 @@ export async function currentUser(): Promise<User | null> {
 export function adminSupabase() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!SUPABASE_URL || !key) return null;
-  return createClient(SUPABASE_URL, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient(SUPABASE_URL, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }

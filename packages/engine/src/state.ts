@@ -1,6 +1,12 @@
 import type { CasePublic, Evidence, Gate, Relation } from './schema';
 
-export type StringCheck = { a: string; b: string; relation: Relation; valid: boolean; breakthroughId?: string };
+export type StringCheck = {
+  a: string;
+  b: string;
+  relation: Relation;
+  valid: boolean;
+  breakthroughId?: string;
+};
 export type VerdictAttempt = { correctSections: number };
 export type CaseStatus = 'active' | 'solved' | 'cold';
 
@@ -26,7 +32,9 @@ export type SessionState = {
 export const MAX_ACCUSATIONS = 3;
 export const CHECK_COST_MINUTES = 10;
 
-export function newSession(pub: Pick<CasePublic, 'id' | 'version'>): SessionState {
+export function newSession(
+  pub: Pick<CasePublic, 'id' | 'version'>,
+): SessionState {
   return {
     caseId: pub.id,
     version: pub.version,
@@ -46,30 +54,50 @@ export function newSession(pub: Pick<CasePublic, 'id' | 'version'>): SessionStat
   };
 }
 
-export const gateKey = (g: Gate): string => `${g.kind}:${g.id}`;
+export const gateKey = (gate: Gate): string => `${gate.kind}:${gate.id}`;
 
-export function isGateOpen(state: SessionState, gate: Gate | undefined): boolean {
+export function isGateOpen(
+  state: SessionState,
+  gate: Gate | undefined,
+): boolean {
   return gate === undefined || state.unlocked.includes(gateKey(gate));
 }
 
-export function visibleEvidence(pub: CasePublic, state: SessionState): Evidence[] {
-  return pub.evidence.filter((e) => isGateOpen(state, e.gate));
+export function visibleEvidence(
+  pub: CasePublic,
+  state: SessionState,
+): Evidence[] {
+  return pub.evidence.filter((evidence) => isGateOpen(state, evidence.gate));
 }
 
-export function isVisible(pub: CasePublic, state: SessionState, evidenceId: string): boolean {
-  const e = pub.evidence.find((x) => x.id === evidenceId);
-  return e !== undefined && isGateOpen(state, e.gate);
+export function isVisible(
+  pub: CasePublic,
+  state: SessionState,
+  evidenceId: string,
+): boolean {
+  const evidence = pub.evidence.find((evidence) => evidence.id === evidenceId);
+  return evidence !== undefined && isGateOpen(state, evidence.gate);
 }
 
 export function availableLeads(pub: CasePublic, state: SessionState) {
-  return pub.leads.filter((l) => isGateOpen(state, l.gate) && !state.unlocked.includes(`lead:${l.id}`));
+  return pub.leads.filter(
+    (lead) =>
+      isGateOpen(state, lead.gate) &&
+      !state.unlocked.includes(`lead:${lead.id}`),
+  );
 }
 
-export function isWordAvailable(pub: CasePublic, state: SessionState, wordId: string): boolean {
-  const w = pub.words.find((x) => x.id === wordId);
-  if (!w) return false;
-  if (w.revealedBy.length === 0) return true;
-  return w.revealedBy.some((id) => state.read.includes(id) || state.breakthroughs.includes(id));
+export function isWordAvailable(
+  pub: CasePublic,
+  state: SessionState,
+  wordId: string,
+): boolean {
+  const word = pub.words.find((word) => word.id === wordId);
+  if (!word) return false;
+  if (word.revealedBy.length === 0) return true;
+  return word.revealedBy.some(
+    (id) => state.read.includes(id) || state.breakthroughs.includes(id),
+  );
 }
 
 export function accusationsLeft(state: SessionState): number {

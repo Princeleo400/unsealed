@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { SUPABASE_ANON_KEY, SUPABASE_URL, authEnabled } from '@/lib/supabase/config';
+import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  authEnabled,
+} from '@/lib/supabase/config';
 
 /**
  * Keeps the Supabase session fresh on every request (the official @supabase/ssr pattern).
@@ -15,8 +19,10 @@ export async function middleware(request: NextRequest) {
       setAll: (toSet, headers) => {
         for (const { name, value } of toSet) request.cookies.set(name, value);
         response = NextResponse.next({ request });
-        for (const { name, value, options } of toSet) response.cookies.set(name, value, options);
-        for (const [k, v] of Object.entries(headers ?? {})) response.headers.set(k, v);
+        for (const { name, value, options } of toSet)
+          response.cookies.set(name, value, options);
+        for (const [headerName, headerValue] of Object.entries(headers ?? {}))
+          response.headers.set(headerName, headerValue);
       },
     },
   });
@@ -30,5 +36,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Skip static files and images; everything else (pages and API routes) gets a fresh session.
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.svg|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff2?)$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|icon.svg|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff2?)$).*)',
+  ],
 };

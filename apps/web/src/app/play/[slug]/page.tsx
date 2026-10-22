@@ -8,13 +8,26 @@ export function generateStaticParams() {
   return playableSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
-  const c = CATALOG.find((x) => x.slug === slug);
-  return c ? { title: `${c.title} — Case ${c.number}`, description: c.hook } : {};
+  const entry = CATALOG.find((catalogEntry) => catalogEntry.slug === slug);
+  return entry
+    ? {
+        title: `${entry.title} — Case ${entry.number}`,
+        description: entry.hook,
+      }
+    : {};
 }
 
-export default async function PlayPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PlayPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   if (!getCase(slug)) notFound();
   return <CasePlayer slug={slug} />;

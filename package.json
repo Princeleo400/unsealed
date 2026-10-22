@@ -9,6 +9,13 @@
     "test": "pnpm -r test",
     "case:lint": "pnpm --filter @unsealed/content-tools lint-cases",
     "case:golden": "pnpm --filter @unsealed/content-tools golden",
-    "case:pack": "pnpm --filter @unsealed/content-tools pack-case"
+    "case:pack": "pnpm --filter @unsealed/content-tools pack-case",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:names": "node scripts/check-names.mjs"
+  },
+  "devDependencies": {
+    "prettier": "3.9.10",
+    "typescript": "5.9.3"
   }
 }

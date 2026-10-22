@@ -1,90 +1,154 @@
 import type { CasePublic, Evidence } from '@unsealed/engine';
 
-export const esc = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export const esc = (unsafeText: string) =>
+  unsafeText
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
 /** Tiny markdown: **bold**, *italic*, "- " lists, blank-line paragraphs. Enough for case documents. */
 export function md(src: string): string {
-  const inline = (t: string) =>
-    esc(t)
+  const inline = (markdownText: string) =>
+    esc(markdownText)
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>');
   return src
     .split(/\n{2,}/)
     .map((block) => {
       const lines = block.split('\n');
-      if (lines.every((l) => l.startsWith('- '))) return `<ul>${lines.map((l) => `<li>${inline(l.slice(2))}</li>`).join('')}</ul>`;
+      if (lines.every((line) => line.startsWith('- ')))
+        return `<ul>${lines.map((line) => `<li>${inline(line.slice(2))}</li>`).join('')}</ul>`;
       return `<p>${lines.map(inline).join('<br>')}</p>`;
     })
     .join('');
 }
 
 const table = (cols: string[], rows: string[][]) =>
-  `<table><thead><tr>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows
-    .map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`)
+  `<table><thead><tr>${cols.map((column) => `<th>${esc(column)}</th>`).join('')}</tr></thead><tbody>${rows
+    .map(
+      (row) =>
+        `<tr>${row.map((cell) => `<td>${esc(cell)}</td>`).join('')}</tr>`,
+    )
     .join('')}</tbody></table>`;
 
-export function renderBody(e: Evidence, pub: CasePublic): string {
-  const b = e.body;
-  switch (b.type) {
+export function renderBody(evidence: Evidence, pub: CasePublic): string {
+  const body = evidence.body;
+  switch (body.type) {
     case 'document':
-      return `<div class="doc">${md(b.markdown)}</div>`;
+      return `<div class="doc">${md(body.markdown)}</div>`;
     case 'photo':
-      return `<div class="photo"><div class="frame"><span class="tag">ILLUSTRATION</span><p>${esc(b.scene)}</p>${
-        b.stamp ? `<span class="stamp">${esc(b.stamp)}</span>` : ''
-      }</div><p class="caption">${esc(b.caption)}</p>${
-        b.markers?.length ? `<ol class="markers">${b.markers.map((m) => `<li><b>${m.n}</b> ${esc(m.label)}</li>`).join('')}</ol>` : ''
+      return `<div class="photo"><div class="frame"><span class="tag">ILLUSTRATION</span><p>${esc(body.scene)}</p>${
+        body.stamp ? `<span class="stamp">${esc(body.stamp)}</span>` : ''
+      }</div><p class="caption">${esc(body.caption)}</p>${
+        body.markers?.length
+          ? `<ol class="markers">${body.markers.map((marker) => `<li><b>${marker.n}</b> ${esc(marker.label)}</li>`).join('')}</ol>`
+          : ''
       }</div>`;
     case 'chat':
-      return `<div class="chat"><div class="thread">${esc(b.thread)}</div>${b.messages
-        .map((m) => `<div class="msg ${m.me ? 'me' : ''}"><span class="who">${esc(m.from)}</span>${esc(m.text)}<span class="at">${esc(m.at)}</span></div>`)
-        .join('')}${b.note ? `<p class="note">${esc(b.note)}</p>` : ''}</div>`;
+      return `<div class="chat"><div class="thread">${esc(body.thread)}</div>${body.messages
+        .map(
+          (message) =>
+            `<div class="msg ${message.me ? 'me' : ''}"><span class="who">${esc(message.from)}</span>${esc(message.text)}<span class="at">${esc(message.at)}</span></div>`,
+        )
+        .join(
+          '',
+        )}${body.note ? `<p class="note">${esc(body.note)}</p>` : ''}</div>`;
     case 'log':
-      return `<div class="log">${b.header ? `<div class="hdr">${esc(b.header)}</div>` : ''}${b.intro ? `<p>${esc(b.intro)}</p>` : ''}${table(
-        b.columns,
-        b.rows,
-      )}${b.footnote ? `<p class="note">${esc(b.footnote)}</p>` : ''}</div>`;
+      return `<div class="log">${body.header ? `<div class="hdr">${esc(body.header)}</div>` : ''}${body.intro ? `<p>${esc(body.intro)}</p>` : ''}${table(
+        body.columns,
+        body.rows,
+      )}${body.footnote ? `<p class="note">${esc(body.footnote)}</p>` : ''}</div>`;
     case 'handwriting':
-      return `<div class="hand">${b.entries.map((x) => `<p style="color:${esc(x.ink)}">${esc(x.text)}${x.signedBy ? ` — ${esc(x.signedBy)}` : ''}</p>`).join('')}</div>`;
+      return `<div class="hand">${body.entries.map((handwrittenEntry) => `<p style="color:${esc(handwrittenEntry.ink)}">${esc(handwrittenEntry.text)}${handwrittenEntry.signedBy ? ` — ${esc(handwrittenEntry.signedBy)}` : ''}</p>`).join('')}</div>`;
     case 'receipt':
-      return `<div class="receipt"><b>${esc(b.merchant)}</b>${b.lines.map((l) => `<div>${esc(l)}</div>`).join('')}<div class="at">${esc(b.at)}</div>${
-        b.note ? `<p class="note">${esc(b.note)}</p>` : ''
+      return `<div class="receipt"><b>${esc(body.merchant)}</b>${body.lines.map((line) => `<div>${esc(line)}</div>`).join('')}<div class="at">${esc(body.at)}</div>${
+        body.note ? `<p class="note">${esc(body.note)}</p>` : ''
       }</div>`;
     case 'map': {
-      const label = (id: string) => b.points.find((p) => p.id === id)?.label ?? id;
-      return `<div class="doc"><p>${esc(b.description)}</p>${table(
+      const label = (id: string) =>
+        body.points.find((point) => point.id === id)?.label ?? id;
+      return `<div class="doc"><p>${esc(body.description)}</p>${table(
         ['From', 'To', 'Time'],
-        b.travel.map((t) => [label(t.from), label(t.to), `${t.minutes} min by ${t.mode}`]),
+        body.travel.map((route) => [
+          label(route.from),
+          label(route.to),
+          `${route.minutes} min by ${route.mode}`,
+        ]),
       )}</div>`;
     }
     case 'statement': {
-      const s = pub.suspects.find((x) => x.id === b.suspectId);
-      return `<div class="stmt"><p class="note">${esc(s?.name ?? '')} · ${esc(s?.role ?? '')} · interviewed ${esc(b.interviewedAt)}</p>${b.lines
-        .map((l) => `<div class="line"><span class="n">${l.n}</span>${esc(l.text)}</div>`)
+      const suspect = pub.suspects.find(
+        (suspect) => suspect.id === body.suspectId,
+      );
+      return `<div class="stmt"><p class="note">${esc(suspect?.name ?? '')} · ${esc(suspect?.role ?? '')} · interviewed ${esc(body.interviewedAt)}</p>${body.lines
+        .map(
+          (line) =>
+            `<div class="line"><span class="n">${line.n}</span>${esc(line.text)}</div>`,
+        )
         .join('')}</div>`;
     }
     case 'audio':
-      return `<div class="log">${table(['Time', 'Speaker', 'Words'], b.lines.map((l) => [l.t, l.speaker, l.text]))}${b.note ? `<p class="note">${esc(b.note)}</p>` : ''}</div>`;
+      return `<div class="log">${table(
+        ['Time', 'Speaker', 'Words'],
+        body.lines.map((audioLine) => [
+          audioLine.t,
+          audioLine.speaker,
+          audioLine.text,
+        ]),
+      )}${body.note ? `<p class="note">${esc(body.note)}</p>` : ''}</div>`;
     case 'phone':
       return `<div class="phone">
-        <h4>Messages</h4>${b.messages
-          .map((t) => `<div class="chat"><div class="thread">${esc(t.thread)}</div>${t.messages
-            .map((m) => `<div class="msg ${m.me ? 'me' : ''}"><span class="who">${esc(m.from)}</span>${esc(m.text)}<span class="at">${esc(m.at)}</span></div>`)
-            .join('')}</div>`)
+        <h4>Messages</h4>${body.messages
+          .map(
+            (thread) =>
+              `<div class="chat"><div class="thread">${esc(thread.thread)}</div>${thread.messages
+                .map(
+                  (message) =>
+                    `<div class="msg ${message.me ? 'me' : ''}"><span class="who">${esc(message.from)}</span>${esc(message.text)}<span class="at">${esc(message.at)}</span></div>`,
+                )
+                .join('')}</div>`,
+          )
           .join('')}
-        ${b.calls.length ? `<h4>Calls</h4>${table(['Time', 'Who', 'Type', 'Length'], b.calls.map((c) => [c.at, c.who, c.dir, c.duration]))}` : ''}
-        ${b.notes.length ? `<h4>Notes</h4>${b.notes.map((n) => `<p><b>${esc(n.title)}</b><br>${esc(n.text)}</p>`).join('')}` : ''}
-        ${b.health.length ? `<h4>Health · watch heart rate</h4>${table(['Time', 'Heart rate'], b.health.map((h) => [h.t, h.bpm ? `${h.bpm} bpm` : 'no pulse detected']))}` : ''}
+        ${
+          body.calls.length
+            ? `<h4>Calls</h4>${table(
+                ['Time', 'Who', 'Type', 'Length'],
+                body.calls.map((call) => [
+                  call.at,
+                  call.who,
+                  call.dir,
+                  call.duration,
+                ]),
+              )}`
+            : ''
+        }
+        ${body.notes.length ? `<h4>Notes</h4>${body.notes.map((note) => `<p><b>${esc(note.title)}</b><br>${esc(note.text)}</p>`).join('')}` : ''}
+        ${
+          body.health.length
+            ? `<h4>Health · watch heart rate</h4>${table(
+                ['Time', 'Heart rate'],
+                body.health.map((reading) => [
+                  reading.t,
+                  reading.bpm ? `${reading.bpm} bpm` : 'no pulse detected',
+                ]),
+              )}`
+            : ''
+        }
       </div>`;
   }
 }
 
-export function renderEvidenceCard(e: Evidence, pub: CasePublic, total: number): string {
+export function renderEvidenceCard(
+  evidence: Evidence,
+  pub: CasePublic,
+  total: number,
+): string {
   return `<section class="card">
-    <div class="meta"><span>${esc(e.tab.toUpperCase())} · ${String(e.number).padStart(2, '0')}/${total}</span><span>${esc(e.id)}</span></div>
-    <h3>${esc(e.title)}</h3>
-    <p class="src">${esc(e.source)}</p>
-    ${renderBody(e, pub)}
+    <div class="meta"><span>${esc(evidence.tab.toUpperCase())} · ${String(evidence.number).padStart(2, '0')}/${total}</span><span>${esc(evidence.id)}</span></div>
+    <h3>${esc(evidence.title)}</h3>
+    <p class="src">${esc(evidence.source)}</p>
+    ${renderBody(evidence, pub)}
   </section>`;
 }
 
