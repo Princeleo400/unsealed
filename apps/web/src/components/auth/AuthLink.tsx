@@ -12,15 +12,22 @@ export function AuthLink({ className }: { className?: string }) {
   useEffect(() => {
     if (!sb) return;
     sb.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
-    const { data } = sb.auth.onAuthStateChange((_e, session) => setSignedIn(Boolean(session)));
+    const { data } = sb.auth.onAuthStateChange((_e, session) =>
+      setSignedIn(Boolean(session)),
+    );
     return () => data.subscription.unsubscribe();
   }, [sb]);
 
   if (!sb || signedIn === null) return null;
   return signedIn ? (
-    <Link href="/account" className={className}>Account</Link>
+    <Link href="/account" className={className}>
+      Account
+    </Link>
   ) : (
-    <Link href={`/signin?next=${typeof window === 'undefined' ? '/' : encodeURIComponent(window.location.pathname)}`} className={className}>
+    <Link
+      href={`/signin?next=${typeof window === 'undefined' ? '/' : encodeURIComponent(window.location.pathname)}`}
+      className={className}
+    >
       Sign in
     </Link>
   );

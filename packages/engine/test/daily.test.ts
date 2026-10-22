@@ -13,37 +13,61 @@ import {
 } from '../src/daily/generator';
 
 const dates = (start: string, days: number) =>
-  Array.from({ length: days }, (_, i) => new Date(Date.parse(`${start}T00:00:00Z`) + i * 86400000).toISOString().slice(0, 10));
+  Array.from({ length: days }, (_, dayOffset) =>
+    new Date(Date.parse(`${start}T00:00:00Z`) + dayOffset * 86400000)
+      .toISOString()
+      .slice(0, 10),
+  );
 
 describe('Daily Brief generator (FR-DAILY-01/02)', () => {
   it('is deterministic for a date', () => {
-    const a = generateDaily('2026-10-23');
-    const b = generateDaily('2026-10-23');
-    expect(a).toEqual(b);
-    expect(generateDaily('2026-10-24').puzzle).not.toEqual(a.puzzle);
-    expect(generateDaily('2026-10-23', 'other-salt').puzzle).not.toEqual(a.puzzle);
+    const firstRun = generateDaily('2026-10-23');
+    const secondRun = generateDaily('2026-10-23');
+    expect(firstRun).toEqual(secondRun);
+    expect(generateDaily('2026-10-24').puzzle).not.toEqual(firstRun.puzzle);
+    expect(generateDaily('2026-10-23', 'other-salt').puzzle).not.toEqual(
+      firstRun.puzzle,
+    );
   });
 
   it('every generated puzzle has exactly one solution (2,000 logic puzzles per difficulty)', () => {
-    for (const d of ['rookie', 'detective', 'inspector', 'chief'] as Difficulty[]) {
-      for (let i = 0; i < 2000; i++) {
-        const g = generateLogic(`stress:${d}:${i}`, d);
-        expect(g.unique).toBe(true);
+    for (const difficulty of [
+      'rookie',
+      'detective',
+      'inspector',
+      'chief',
+    ] as Difficulty[]) {
+      for (let index = 0; index < 2000; index++) {
+        const generated = generateLogic(
+          `stress:${difficulty}:${index}`,
+          difficulty,
+        );
+        expect(generated.unique).toBe(true);
         // Independent brute-force check, and every clue must be true of the real solution.
-        expect(countSolutions(g.n, g.clues)).toBe(1);
-        expect(g.clues.every((c) => holds(c, g.sol))).toBe(true);
+        expect(countSolutions(generated.size, generated.clues)).toBe(1);
+        expect(
+          generated.clues.every((clue) => holds(clue, generated.sol)),
+        ).toBe(true);
       }
     }
   });
 
   it('respects difficulty rules', () => {
-    for (let i = 0; i < 300; i++) {
-      const insp = generateLogic(`rule:i:${i}`, 'inspector');
-      expect(insp.n).toBe(4);
-      expect(insp.clues.some((c) => c.kind === 'isPlace' || c.kind === 'isObject')).toBe(false);
-      const det = generateLogic(`rule:d:${i}`, 'detective');
-      expect(det.clues.filter((c) => c.kind === 'isPlace' || c.kind === 'isObject').length).toBeLessThanOrEqual(1);
-      expect(generateLogic(`rule:r:${i}`, 'rookie').n).toBe(3);
+    for (let index = 0; index < 300; index++) {
+      const insp = generateLogic(`rule:i:${index}`, 'inspector');
+      expect(insp.size).toBe(4);
+      expect(
+        insp.clues.some(
+          (clue) => clue.kind === 'isPlace' || clue.kind === 'isObject',
+        ),
+      ).toBe(false);
+      const det = generateLogic(`rule:d:${index}`, 'detective');
+      expect(
+        det.clues.filter(
+          (clue) => clue.kind === 'isPlace' || clue.kind === 'isObject',
+        ).length,
+      ).toBeLessThanOrEqual(1);
+      expect(generateLogic(`rule:r:${index}`, 'rookie').size).toBe(3);
     }
   });
 
@@ -57,24 +81,43 @@ describe('Daily Brief generator (FR-DAILY-01/02)', () => {
   });
 
   it('builds a full year of readable, valid dailies', () => {
-    for (const d of dates('2026-10-01', 366)) {
-      const { puzzle, solution } = generateDaily(d);
-      const n = puzzle.suspects.length;
-      expect(new Set(puzzle.suspects).size).toBe(n);
-      expect(new Set(puzzle.places).size).toBe(n);
-      expect(new Set(puzzle.objects).size).toBe(n);
+    for (const date of dates('2026-10-01', 366)) {
+      const { puzzle, solution } = generateDaily(date);
+      const suspectCount = puzzle.suspects.length;
+      expect(new Set(puzzle.suspects).size).toBe(suspectCount);
+      expect(new Set(puzzle.places).size).toBe(suspectCount);
+      expect(new Set(puzzle.objects).size).toBe(suspectCount);
       expect(puzzle.clues.length).toBeGreaterThan(1);
-      expect(puzzle.clues.every((c) => c.text.length > 10 && !c.text.includes('undefined'))).toBe(true);
+      expect(
+        puzzle.clues.every(
+          (clue) => clue.text.length > 10 && !clue.text.includes('undefined'),
+        ),
+      ).toBe(true);
       expect(solution.object[solution.culprit]).toBe(puzzle.target);
-      expect(checkDailyAnswer(solution, { suspect: solution.culprit, place: solution.place[solution.culprit]! })).toBe(true);
+      expect(
+        checkDailyAnswer(solution, {
+          suspect: solution.culprit,
+          place: solution.place[solution.culprit]!,
+        }),
+      ).toBe(true);
     }
   });
 
   it('checks answers strictly', () => {
     const { solution } = generateDaily('2026-10-23');
     const other = (solution.culprit + 1) % solution.place.length;
-    expect(checkDailyAnswer(solution, { suspect: other, place: solution.place[solution.culprit]! })).toBe(false);
-    expect(checkDailyAnswer(solution, { suspect: solution.culprit, place: (solution.place[solution.culprit]! + 1) % solution.place.length })).toBe(false);
+    expect(
+      checkDailyAnswer(solution, {
+        suspect: other,
+        place: solution.place[solution.culprit]!,
+      }),
+    ).toBe(false);
+    expect(
+      checkDailyAnswer(solution, {
+        suspect: solution.culprit,
+        place: (solution.place[solution.culprit]! + 1) % solution.place.length,
+      }),
+    ).toBe(false);
   });
 
   it('numbers dailies from the epoch', () => {
@@ -83,29 +126,37 @@ describe('Daily Brief generator (FR-DAILY-01/02)', () => {
   });
 
   it('has complete city packs', () => {
-    for (const c of CITY_PACKS) {
-      expect(c.names.length).toBeGreaterThanOrEqual(6);
-      expect(c.places.length).toBeGreaterThanOrEqual(6);
-      expect(c.objects.length).toBeGreaterThanOrEqual(6);
-      expect(new Set(c.names).size).toBe(c.names.length);
+    for (const cityPack of CITY_PACKS) {
+      expect(cityPack.names.length).toBeGreaterThanOrEqual(6);
+      expect(cityPack.places.length).toBeGreaterThanOrEqual(6);
+      expect(cityPack.objects.length).toBeGreaterThanOrEqual(6);
+      expect(new Set(cityPack.names).size).toBe(cityPack.names.length);
     }
   });
 
   it('rng helpers behave', () => {
-    const r = rng('x');
+    const random = rng('x');
     const xs = [1, 2, 3, 4, 5];
-    expect(r.shuffle(xs).sort()).toEqual(xs);
-    for (let i = 0; i < 100; i++) expect(r.int(3)).toBeLessThan(3);
+    expect(random.shuffle(xs).sort()).toEqual(xs);
+    for (let index = 0; index < 100; index++)
+      expect(random.int(3)).toBeLessThan(3);
   });
 });
 
 describe('Daily Brief text', () => {
   it('uses plural verbs for plural objects', () => {
-    for (let i = 0; i < 400; i++) {
-      const d = new Date(Date.parse('2026-10-01T00:00:00Z') + i * 86400000).toISOString().slice(0, 10);
-      const { puzzle } = generateDaily(d);
-      const text = puzzle.intro + ' ' + puzzle.clues.map((c) => c.text).join(' ');
-      expect(text).not.toMatch(/(binoculars|braai tongs|sunglasses) (was|has|does)\b/);
+    for (let index = 0; index < 400; index++) {
+      const date = new Date(
+        Date.parse('2026-10-01T00:00:00Z') + index * 86400000,
+      )
+        .toISOString()
+        .slice(0, 10);
+      const { puzzle } = generateDaily(date);
+      const text =
+        puzzle.intro + ' ' + puzzle.clues.map((clue) => clue.text).join(' ');
+      expect(text).not.toMatch(
+        /(binoculars|braai tongs|sunglasses) (was|has|does)\b/,
+      );
     }
   });
 });

@@ -2,8 +2,14 @@
   "_note": "Prices in minor units (cents / kobo). Change prices here, not in code. Paystack Case Pass plans must be created with the same amounts in each currency. Set a currency's provider to \"stripe\" once a Stripe account is available (see docs/09-PAYMENTS-SETUP.md).",
   "graceDays": 2,
   "currencies": {
-    "USD": { "provider": "paystack", "label": "US$ by Visa or Mastercard, from any country" },
-    "NGN": { "provider": "paystack", "label": "₦ Naira by card (single cases also by bank transfer or USSD)" }
+    "USD": {
+      "provider": "paystack",
+      "label": "US$ by Visa or Mastercard, from any country"
+    },
+    "NGN": {
+      "provider": "paystack",
+      "label": "₦ Naira by card (single cases also by bank transfer or USSD)"
+    }
   },
   "products": {
     "pass-monthly": {

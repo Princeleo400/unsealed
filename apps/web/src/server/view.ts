@@ -19,24 +19,41 @@ import type { CaseView, DebriefView } from '@/lib/view-types';
 export const FREE_HINTS_PER_CASE = 1;
 export const AD_HINTS_PER_CASE = 3;
 
-export const hintsUsed = (s: SessionState) => s.hints.nudge + s.hints.pointer + s.hints.reveal;
+export const hintsUsed = (sessionState: SessionState) =>
+  sessionState.hints.nudge +
+  sessionState.hints.pointer +
+  sessionState.hints.reveal;
 
-export function hintAllowance(s: SessionState, unlimited = false) {
+export function hintAllowance(sessionState: SessionState, unlimited = false) {
   if (unlimited) return { freeLeft: 0, adLeft: 0, unlimited: true };
-  const used = hintsUsed(s);
+  const used = hintsUsed(sessionState);
   return {
     freeLeft: Math.max(0, FREE_HINTS_PER_CASE - used),
-    adLeft: Math.max(0, Math.min(AD_HINTS_PER_CASE, FREE_HINTS_PER_CASE + AD_HINTS_PER_CASE - used)),
+    adLeft: Math.max(
+      0,
+      Math.min(
+        AD_HINTS_PER_CASE,
+        FREE_HINTS_PER_CASE + AD_HINTS_PER_CASE - used,
+      ),
+    ),
     unlimited: false,
   };
 }
 
-export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState, opts: { unlimitedHints?: boolean } = {}): CaseView {
-  const word = (id: string) => pub.words.find((w) => w.id === id)?.text ?? id;
-  const blank = (b: CasePublic['verdict']['how'][number]) => ({
-    blankId: b.blankId,
-    prompt: b.prompt,
-    options: b.wordIds.filter((id) => isWordAvailable(pub, s, id)).map((id) => ({ id, text: word(id) })),
+export function buildView(
+  pub: CasePublic,
+  sol: CaseSolution,
+  sessionState: SessionState,
+  opts: { unlimitedHints?: boolean } = {},
+): CaseView {
+  const word = (id: string) =>
+    pub.words.find((word) => word.id === id)?.text ?? id;
+  const blank = (blank: CasePublic['verdict']['how'][number]) => ({
+    blankId: blank.blankId,
+    prompt: blank.prompt,
+    options: blank.wordIds
+      .filter((id) => isWordAvailable(pub, sessionState, id))
+      .map((id) => ({ id, text: word(id) })),
   });
 
   const view: CaseView = {
@@ -61,48 +78,68 @@ export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState, o
         proofCount: pub.verdict.proofCount,
       },
     },
-    evidence: visibleEvidence(pub, s),
+    evidence: visibleEvidence(pub, sessionState),
     leads: {
-      available: availableLeads(pub, s),
-      followed: pub.leads.filter((l) => s.unlocked.includes(`lead:${l.id}`)),
+      available: availableLeads(pub, sessionState),
+      followed: pub.leads.filter((lead) =>
+        sessionState.unlocked.includes(`lead:${lead.id}`),
+      ),
     },
-    breakthroughs: s.breakthroughs.map((id) => ({ id, insight: sol.breakthroughs.find((b) => b.id === id)?.insight ?? '' })),
-    strings: s.strings,
-    revealedLines: s.revealedLines,
-    confrontAttempts: s.confrontAttempts,
-    read: s.read,
-    searches: s.searches,
-    clockMinutes: s.clockMinutes,
-    hints: s.hints,
-    hintAllowance: hintAllowance(s, opts.unlimitedHints),
-    accusations: s.accusations,
-    accusationsLeft: accusationsLeft(s),
-    status: s.status,
+    breakthroughs: sessionState.breakthroughs.map((id) => ({
+      id,
+      insight:
+        sol.breakthroughs.find((breakthrough) => breakthrough.id === id)
+          ?.insight ?? '',
+    })),
+    strings: sessionState.strings,
+    revealedLines: sessionState.revealedLines,
+    confrontAttempts: sessionState.confrontAttempts,
+    read: sessionState.read,
+    searches: sessionState.searches,
+    clockMinutes: sessionState.clockMinutes,
+    hints: sessionState.hints,
+    hintAllowance: hintAllowance(sessionState, opts.unlimitedHints),
+    accusations: sessionState.accusations,
+    accusationsLeft: accusationsLeft(sessionState),
+    status: sessionState.status,
   };
 
-  if (s.status !== 'active') view.debrief = buildDebrief(pub, sol, s);
+  if (sessionState.status !== 'active')
+    view.debrief = buildDebrief(pub, sol, sessionState);
   return view;
 }
 
-function buildDebrief(pub: CasePublic, sol: CaseSolution, s: SessionState): DebriefView {
-  const word = (id: string) => pub.words.find((w) => w.id === id)?.text ?? id;
+function buildDebrief(
+  pub: CasePublic,
+  sol: CaseSolution,
+  sessionState: SessionState,
+): DebriefView {
+  const word = (id: string) =>
+    pub.words.find((word) => word.id === id)?.text ?? id;
   const ev = (id: string) => {
-    const e = pub.evidence.find((x) => x.id === id);
-    return e ? `${e.number}. ${e.title}` : id;
+    const evidence = pub.evidence.find((evidence) => evidence.id === id);
+    return evidence ? `${evidence.number}. ${evidence.title}` : id;
   };
   return {
-    score: computeScore(s, sol, pub.parHours),
+    score: computeScore(sessionState, sol, pub.parHours),
     steps: sol.debrief,
     solution: {
       who: Object.values(sol.verdict.who)
-        .map((id) => pub.suspects.find((x) => x.id === id)?.name ?? id)
+        .map(
+          (id) => pub.suspects.find((suspect) => suspect.id === id)?.name ?? id,
+        )
         .join(', '),
       how: Object.values(sol.verdict.how).map((ids) => word(ids[0]!)),
       why: Object.values(sol.verdict.why).map((ids) => word(ids[0]!)),
       proofCore: sol.verdict.proof.core.map(ev),
     },
     breakthroughs: [...sol.breakthroughs]
-      .sort((a, b) => a.order - b.order)
-      .map((b) => ({ id: b.id, insight: b.insight, found: s.breakthroughs.includes(b.id), essential: b.essential })),
+      .sort((first, second) => first.order - second.order)
+      .map((breakthrough) => ({
+        id: breakthrough.id,
+        insight: breakthrough.insight,
+        found: sessionState.breakthroughs.includes(breakthrough.id),
+        essential: breakthrough.essential,
+      })),
   };
 }

@@ -22,8 +22,14 @@ function supabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-export async function joinWaitlist(input: WaitlistInput): Promise<WaitlistResult> {
-  const row = { email: input.email, country: input.country || null, source: input.source ?? 'landing' };
+export async function joinWaitlist(
+  input: WaitlistInput,
+): Promise<WaitlistResult> {
+  const row = {
+    email: input.email,
+    country: input.country || null,
+    source: input.source ?? 'landing',
+  };
   const db = supabase();
   if (db) {
     const { error } = await db.from('waitlist').insert(row);
@@ -31,13 +37,22 @@ export async function joinWaitlist(input: WaitlistInput): Promise<WaitlistResult
     if (error.code === '23505') return { status: 'exists' }; // unique violation
     throw new Error(`waitlist insert failed: ${error.message}`);
   }
-  if (process.env.NODE_ENV === 'production') throw new Error('Supabase env vars are missing in production');
+  if (process.env.NODE_ENV === 'production')
+    throw new Error('Supabase env vars are missing in production');
   // Dev fallback: a local JSONL file so the form works before Supabase is set up.
   const dir = join(process.cwd(), '.data');
   const file = join(dir, 'waitlist.jsonl');
   await mkdir(dir, { recursive: true });
   const existing = await readFile(file, 'utf8').catch(() => '');
-  if (existing.split('\n').some((l) => l && JSON.parse(l).email === row.email)) return { status: 'exists' };
-  await appendFile(file, JSON.stringify({ ...row, created_at: new Date().toISOString() }) + '\n');
+  if (
+    existing
+      .split('\n')
+      .some((line) => line && JSON.parse(line).email === row.email)
+  )
+    return { status: 'exists' };
+  await appendFile(
+    file,
+    JSON.stringify({ ...row, created_at: new Date().toISOString() }) + '\n',
+  );
   return { status: 'added' };
 }

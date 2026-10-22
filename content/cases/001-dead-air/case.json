@@ -6,88 +6,206 @@
   "city": { "name": "Cape Town", "country": "South Africa" },
   "difficulty": 3,
   "estMinutes": [45, 75],
-  "contentNotes": ["Death by blunt force (not shown)", "Stalking behaviour", "Workplace fraud"],
+  "contentNotes": [
+    "Death by blunt force (not shown)",
+    "Stalking behaviour",
+    "Workplace fraud"
+  ],
   "parHours": 5,
   "briefing": "**Friday, 6 March 2026.** *After Midnight with Thandi* was the most-loved late show on **Atlantic 99.4 FM**. At 01:31, producer **Sipho Dlamini** found host **Thandi Mokoena (41)** dead on the floor of Studio B.\n\nListeners heard Thandi introduce a song at **01:10**. The pathologist puts time of death **between 00:30 and 00:50**.\n\nSomeone kept her voice on air after she died. Read everything. Trust nobody. When you are sure, name the killer, say how it was done and why, and pin the three pieces of evidence that prove it.\n\nYou have three accusations. After that, the case goes cold.",
   "suspects": [
-    { "id": "sipho", "name": "Sipho Dlamini", "role": "Producer", "short": "Sipho" },
-    { "id": "marguerite", "name": "Marguerite Vos", "role": "Station manager", "short": "Marguerite" },
-    { "id": "daniel", "name": "Daniel Okafor", "role": "Rival presenter", "short": "Daniel" },
-    { "id": "lena", "name": "Lena Hartmann", "role": "Sponsor rep, Thandi's ex-partner", "short": "Lena" },
-    { "id": "jay", "name": "Jason \"Jay\" Petersen", "role": "Regular caller", "short": "Jay" }
+    {
+      "id": "sipho",
+      "name": "Sipho Dlamini",
+      "role": "Producer",
+      "short": "Sipho"
+    },
+    {
+      "id": "marguerite",
+      "name": "Marguerite Vos",
+      "role": "Station manager",
+      "short": "Marguerite"
+    },
+    {
+      "id": "daniel",
+      "name": "Daniel Okafor",
+      "role": "Rival presenter",
+      "short": "Daniel"
+    },
+    {
+      "id": "lena",
+      "name": "Lena Hartmann",
+      "role": "Sponsor rep, Thandi's ex-partner",
+      "short": "Lena"
+    },
+    {
+      "id": "jay",
+      "name": "Jason \"Jay\" Petersen",
+      "role": "Regular caller",
+      "short": "Jay"
+    }
   ],
   "evidence": [
     {
-      "id": "E-01", "tab": "documents", "number": 1,
+      "id": "E-01",
+      "tab": "documents",
+      "number": 1,
       "title": "Police incident report",
       "source": "SAPS Cape Town Central · Det. Sgt. N. Jacobs",
-      "body": { "type": "document", "markdown": "**Incident:** Sudden death, Atlantic 99.4 FM, Harbour House, Cape Town CBD.\n**Reported:** 01:36, 6 March 2026, by Sipho Dlamini (producer) via 10111.\n\nFirst officers arrived 01:49. The security guard, Mr F. Abrahams, let them in at the main door. The deceased, **Thandi Mokoena (41)**, presenter, lay face down beside the mixing desk in Studio B with a head wound. A glass-and-steel award plaque lay on the floor near her.\n\nFirst officers recorded a **possible fall** against the desk. Detectives and forensics entered at 02:20 using the police override badge.\n\nNotes for the investigation:\n- The station was on air the whole night. Music played automatically after 00:41.\n- A grey Corolla, plate **CA 412-778**, was reported loitering outside earlier. See the guard's night log.\n- Station manager Marguerite Vos was contacted at 02:05 and came in for interview at 03:40." },
+      "body": {
+        "type": "document",
+        "markdown": "**Incident:** Sudden death, Atlantic 99.4 FM, Harbour House, Cape Town CBD.\n**Reported:** 01:36, 6 March 2026, by Sipho Dlamini (producer) via 10111.\n\nFirst officers arrived 01:49. The security guard, Mr F. Abrahams, let them in at the main door. The deceased, **Thandi Mokoena (41)**, presenter, lay face down beside the mixing desk in Studio B with a head wound. A glass-and-steel award plaque lay on the floor near her.\n\nFirst officers recorded a **possible fall** against the desk. Detectives and forensics entered at 02:20 using the police override badge.\n\nNotes for the investigation:\n- The station was on air the whole night. Music played automatically after 00:41.\n- A grey Corolla, plate **CA 412-778**, was reported loitering outside earlier. See the guard's night log.\n- Station manager Marguerite Vos was contacted at 02:05 and came in for interview at 03:40."
+      },
       "timestamps": [
-        { "at": "2026-03-06T01:36", "label": "Sipho calls 10111", "suspectIds": ["sipho"], "place": "Atlantic FM building" },
+        {
+          "at": "2026-03-06T01:36",
+          "label": "Sipho calls 10111",
+          "suspectIds": ["sipho"],
+          "place": "Atlantic FM building"
+        },
         { "at": "2026-03-06T01:49", "label": "First officers arrive" }
       ]
     },
     {
-      "id": "E-02", "tab": "documents", "number": 2,
+      "id": "E-02",
+      "tab": "documents",
+      "number": 2,
       "title": "Pathologist's preliminary summary",
       "source": "Forensic Pathology Service · Dr A. Pillay",
-      "body": { "type": "document", "markdown": "**Cause of death:** blunt force trauma to the left temple.\n\nThe wound has a sharp right-angled edge. It is **not** consistent with the rounded edge of the mixing desk. It is consistent with a heavy object that has a hard corner.\n\n**Estimated time of death: between 00:30 and 00:50** on 6 March (body temperature, lividity, rigor).\n\nStomach contents: rooibos tea, recently drunk.\n\nI do not agree with \"fall\" as the manner of death." },
+      "body": {
+        "type": "document",
+        "markdown": "**Cause of death:** blunt force trauma to the left temple.\n\nThe wound has a sharp right-angled edge. It is **not** consistent with the rounded edge of the mixing desk. It is consistent with a heavy object that has a hard corner.\n\n**Estimated time of death: between 00:30 and 00:50** on 6 March (body temperature, lividity, rigor).\n\nStomach contents: rooibos tea, recently drunk.\n\nI do not agree with \"fall\" as the manner of death."
+      },
       "timestamps": [
         { "at": "2026-03-06T00:30", "label": "Earliest time of death" },
         { "at": "2026-03-06T00:50", "label": "Latest time of death" }
       ]
     },
     {
-      "id": "E-03", "tab": "photos", "number": 3,
+      "id": "E-03",
+      "tab": "photos",
+      "number": 3,
       "title": "Scene photo: Studio B",
       "source": "SAPS forensic photographer",
-      "body": { "type": "photo", "caption": "Studio B as found. Markers placed by forensics.", "scene": "A small radio studio. A body outline lies face down beside a large mixing desk. A glass-and-steel award plaque engraved 'Station of the Year 2024' lies on the carpet near the head. A mug of tea sits on the desk. A pair of headphones hangs from the desk by its cable. The studio wall clock reads 02:31. Window blinds into the producer's booth are pulled down.", "markers": [ { "n": 1, "label": "Body" }, { "n": 2, "label": "Award plaque, Station of the Year 2024" }, { "n": 3, "label": "Mug of rooibos tea" }, { "n": 4, "label": "Headphones on cable" }, { "n": 5, "label": "Blinds to producer's booth, down" } ], "stamp": "06/03/2026 02:31" },
+      "body": {
+        "type": "photo",
+        "caption": "Studio B as found. Markers placed by forensics.",
+        "scene": "A small radio studio. A body outline lies face down beside a large mixing desk. A glass-and-steel award plaque engraved 'Station of the Year 2024' lies on the carpet near the head. A mug of tea sits on the desk. A pair of headphones hangs from the desk by its cable. The studio wall clock reads 02:31. Window blinds into the producer's booth are pulled down.",
+        "markers": [
+          { "n": 1, "label": "Body" },
+          { "n": 2, "label": "Award plaque, Station of the Year 2024" },
+          { "n": 3, "label": "Mug of rooibos tea" },
+          { "n": 4, "label": "Headphones on cable" },
+          { "n": 5, "label": "Blinds to producer's booth, down" }
+        ],
+        "stamp": "06/03/2026 02:31"
+      },
       "timestamps": []
     },
     {
-      "id": "E-04", "tab": "records", "number": 4,
+      "id": "E-04",
+      "tab": "records",
+      "number": 4,
       "title": "Keycard log",
       "source": "Atlantic 99.4 FM · SecureDoor access export · 5–6 March",
-      "body": { "type": "log", "header": "ATLANTIC 99.4 FM · SECUREDOOR ACCESS EXPORT", "intro": "Every badge swipe at the main and side doors. Doors log both IN and OUT. Visitor badges start with V-.", "columns": ["Time", "Badge holder", "Dir", "Door"], "rows": [
-        ["22:40", "S. Dlamini", "IN", "Main"],
-        ["22:58", "T. Mokoena", "IN", "Main"],
-        ["23:30", "M. Vos", "OUT", "Main"],
-        ["00:15", "V-03 (L. Hartmann)", "IN", "Main"],
-        ["00:22", "M. Vos", "IN", "Side"],
-        ["00:24", "V-03 (L. Hartmann)", "OUT", "Main"],
-        ["00:28", "S. Dlamini", "OUT", "Side"],
-        ["00:52", "M. Vos", "OUT", "Side"],
-        ["00:53", "S. Dlamini", "IN", "Side"],
-        ["02:20", "SAPS override", "IN", "Main"]
-      ], "footnote": "Times are server time (SAST). The side door opens onto the staff lane." },
+      "body": {
+        "type": "log",
+        "header": "ATLANTIC 99.4 FM · SECUREDOOR ACCESS EXPORT",
+        "intro": "Every badge swipe at the main and side doors. Doors log both IN and OUT. Visitor badges start with V-.",
+        "columns": ["Time", "Badge holder", "Dir", "Door"],
+        "rows": [
+          ["22:40", "S. Dlamini", "IN", "Main"],
+          ["22:58", "T. Mokoena", "IN", "Main"],
+          ["23:30", "M. Vos", "OUT", "Main"],
+          ["00:15", "V-03 (L. Hartmann)", "IN", "Main"],
+          ["00:22", "M. Vos", "IN", "Side"],
+          ["00:24", "V-03 (L. Hartmann)", "OUT", "Main"],
+          ["00:28", "S. Dlamini", "OUT", "Side"],
+          ["00:52", "M. Vos", "OUT", "Side"],
+          ["00:53", "S. Dlamini", "IN", "Side"],
+          ["02:20", "SAPS override", "IN", "Main"]
+        ],
+        "footnote": "Times are server time (SAST). The side door opens onto the staff lane."
+      },
       "timestamps": [
-        { "at": "2026-03-05T22:40", "label": "Sipho badges in", "suspectIds": ["sipho"], "place": "Atlantic FM building" },
-        { "at": "2026-03-05T23:30", "label": "Marguerite badges out (main)", "suspectIds": ["marguerite"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:15", "label": "Lena badges in (visitor V-03)", "suspectIds": ["lena"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:22", "label": "Marguerite badges in (side door)", "suspectIds": ["marguerite"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:24", "label": "Lena badges out", "suspectIds": ["lena"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:28", "label": "Sipho badges out (side door)", "suspectIds": ["sipho"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:52", "label": "Marguerite badges out (side door)", "suspectIds": ["marguerite"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:53", "label": "Sipho badges in (side door)", "suspectIds": ["sipho"], "place": "Atlantic FM building" }
+        {
+          "at": "2026-03-05T22:40",
+          "label": "Sipho badges in",
+          "suspectIds": ["sipho"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-05T23:30",
+          "label": "Marguerite badges out (main)",
+          "suspectIds": ["marguerite"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:15",
+          "label": "Lena badges in (visitor V-03)",
+          "suspectIds": ["lena"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:22",
+          "label": "Marguerite badges in (side door)",
+          "suspectIds": ["marguerite"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:24",
+          "label": "Lena badges out",
+          "suspectIds": ["lena"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:28",
+          "label": "Sipho badges out (side door)",
+          "suspectIds": ["sipho"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:52",
+          "label": "Marguerite badges out (side door)",
+          "suspectIds": ["marguerite"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:53",
+          "label": "Sipho badges in (side door)",
+          "suspectIds": ["sipho"],
+          "place": "Atlantic FM building"
+        }
       ]
     },
     {
-      "id": "E-05", "tab": "records", "number": 5,
+      "id": "E-05",
+      "tab": "records",
+      "number": 5,
       "title": "Playout log",
       "source": "Atlantic 99.4 FM · playout system export · Studio B",
-      "body": { "type": "log", "header": "PLAYOUT LOG · 6 MARCH 00:00–01:35", "columns": ["Start", "Item", "Type"], "rows": [
-        ["00:05", "Thandi — link, phone lines open", "LIVE MIC"],
-        ["00:09", "Music (3 tracks)", "MUSIC"],
-        ["00:24", "Thandi — link, caller \"Jay from Bellville\"", "LIVE MIC"],
-        ["00:31", "\"Long Song\" (7:02)", "MUSIC"],
-        ["00:38", "Sponsor block A (3 spots)", "ADS"],
-        ["00:41", "Auto-playlist (6 tracks)", "MUSIC"],
-        ["01:10", "Thandi — link into next song", "LINK"],
-        ["01:12", "Auto-playlist (4 tracks)", "MUSIC"],
-        ["01:28", "SILENCE DETECTED", "ALARM"]
-      ], "footnote": "Type codes: LIVE MIC = microphone opened in the studio · LINK = presenter speech (live mic or VT) · VT = voice track (pre-recorded file) · ADS = sponsor spots · ALARM = dead-air alarm." },
+      "body": {
+        "type": "log",
+        "header": "PLAYOUT LOG · 6 MARCH 00:00–01:35",
+        "columns": ["Start", "Item", "Type"],
+        "rows": [
+          ["00:05", "Thandi — link, phone lines open", "LIVE MIC"],
+          ["00:09", "Music (3 tracks)", "MUSIC"],
+          ["00:24", "Thandi — link, caller \"Jay from Bellville\"", "LIVE MIC"],
+          ["00:31", "\"Long Song\" (7:02)", "MUSIC"],
+          ["00:38", "Sponsor block A (3 spots)", "ADS"],
+          ["00:41", "Auto-playlist (6 tracks)", "MUSIC"],
+          ["01:10", "Thandi — link into next song", "LINK"],
+          ["01:12", "Auto-playlist (4 tracks)", "MUSIC"],
+          ["01:28", "SILENCE DETECTED", "ALARM"]
+        ],
+        "footnote": "Type codes: LIVE MIC = microphone opened in the studio · LINK = presenter speech (live mic or VT) · VT = voice track (pre-recorded file) · ADS = sponsor spots · ALARM = dead-air alarm."
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:24", "label": "Thandi live on air with caller Jay" },
+        {
+          "at": "2026-03-06T00:24",
+          "label": "Thandi live on air with caller Jay"
+        },
         { "at": "2026-03-06T00:31", "label": "\"Long Song\" starts (7 min)" },
         { "at": "2026-03-06T00:41", "label": "Auto-playlist starts" },
         { "at": "2026-03-06T01:10", "label": "Thandi's voice on air (LINK)" },
@@ -95,145 +213,390 @@
       ]
     },
     {
-      "id": "E-06", "tab": "records", "number": 6,
+      "id": "E-06",
+      "tab": "records",
+      "number": 6,
       "title": "Listener SMS line",
       "source": "Atlantic 99.4 FM · studio text line · 00:55–01:20",
-      "body": { "type": "chat", "thread": "Text line 31994", "messages": [
-        { "from": "+27 82 *** 1190", "at": "00:57", "text": "Thandi this playlist is fire tonight" },
-        { "from": "Jay B", "at": "01:03", "text": "Thandi why did the guard chase me away?? I only wanted to say hi" },
-        { "from": "+27 71 *** 4402", "at": "01:11", "text": "Easter?? lol Thandi you ok? It's March" },
-        { "from": "Auntie Bev, Mitchells Plain", "at": "01:11", "text": "Happy Easter to you too my darling, a bit early hey!" },
-        { "from": "+27 60 *** 8833", "at": "01:14", "text": "Is this a repeat??" },
-        { "from": "+27 82 *** 1190", "at": "01:19", "text": "Shout out to Mitchells Plain!" }
-      ], "note": "Texts appear on the producer's screen. Nobody replied after 00:55." },
+      "body": {
+        "type": "chat",
+        "thread": "Text line 31994",
+        "messages": [
+          {
+            "from": "+27 82 *** 1190",
+            "at": "00:57",
+            "text": "Thandi this playlist is fire tonight"
+          },
+          {
+            "from": "Jay B",
+            "at": "01:03",
+            "text": "Thandi why did the guard chase me away?? I only wanted to say hi"
+          },
+          {
+            "from": "+27 71 *** 4402",
+            "at": "01:11",
+            "text": "Easter?? lol Thandi you ok? It's March"
+          },
+          {
+            "from": "Auntie Bev, Mitchells Plain",
+            "at": "01:11",
+            "text": "Happy Easter to you too my darling, a bit early hey!"
+          },
+          {
+            "from": "+27 60 *** 8833",
+            "at": "01:14",
+            "text": "Is this a repeat??"
+          },
+          {
+            "from": "+27 82 *** 1190",
+            "at": "01:19",
+            "text": "Shout out to Mitchells Plain!"
+          }
+        ],
+        "note": "Texts appear on the producer's screen. Nobody replied after 00:55."
+      },
       "timestamps": [
         { "at": "2026-03-06T01:11", "label": "Listeners text about \"Easter\"" }
       ]
     },
     {
-      "id": "E-07", "tab": "photos", "number": 7,
+      "id": "E-07",
+      "tab": "photos",
+      "number": 7,
       "title": "Studio B wall calendar",
       "source": "SAPS forensic photographer",
-      "body": { "type": "photo", "caption": "Wall calendar beside the studio door, open at March 2026.", "scene": "A printed wall calendar open at MARCH 2026. Friday 6 is circled in red marker with 'Sponsor review Mon 9th — M.' written underneath. A sticky note on the edge points forward to April: 'Easter weekend 3–6 April: holiday cover, all links pre-recorded (VT).'", "stamp": "06/03/2026 02:40" },
+      "body": {
+        "type": "photo",
+        "caption": "Wall calendar beside the studio door, open at March 2026.",
+        "scene": "A printed wall calendar open at MARCH 2026. Friday 6 is circled in red marker with 'Sponsor review Mon 9th — M.' written underneath. A sticky note on the edge points forward to April: 'Easter weekend 3–6 April: holiday cover, all links pre-recorded (VT).'",
+        "stamp": "06/03/2026 02:40"
+      },
       "timestamps": []
     },
     {
-      "id": "E-08", "tab": "statements", "number": 8,
+      "id": "E-08",
+      "tab": "statements",
+      "number": 8,
       "title": "Statement: Sipho Dlamini",
       "source": "Interview by Det. Sgt. N. Jacobs",
-      "body": { "type": "statement", "suspectId": "sipho", "interviewedAt": "6 March, 02:50", "lines": [
-        { "n": 1, "text": "I've produced Thandi's show for six years. She was family." },
-        { "n": 2, "text": "At 00:28 I went out the side door for a smoke. I stood outside the whole time, maybe 25 minutes." },
-        { "n": 3, "text": "When I came back at 00:53 the auto-playlist was running and the Studio B blinds were down. She does that when she's prepping." },
-        { "n": 4, "text": "I heard her link at 01:10 through the booth speakers. I was reading the text line. It sounded normal." },
-        { "n": 5, "text": "At 01:28 the silence alarm went. I knocked, then went in. She was on the floor." },
-        { "n": 6, "text": "Yes, she said she wanted a new producer. We'd sorted it out." }
-      ] },
+      "body": {
+        "type": "statement",
+        "suspectId": "sipho",
+        "interviewedAt": "6 March, 02:50",
+        "lines": [
+          {
+            "n": 1,
+            "text": "I've produced Thandi's show for six years. She was family."
+          },
+          {
+            "n": 2,
+            "text": "At 00:28 I went out the side door for a smoke. I stood outside the whole time, maybe 25 minutes."
+          },
+          {
+            "n": 3,
+            "text": "When I came back at 00:53 the auto-playlist was running and the Studio B blinds were down. She does that when she's prepping."
+          },
+          {
+            "n": 4,
+            "text": "I heard her link at 01:10 through the booth speakers. I was reading the text line. It sounded normal."
+          },
+          {
+            "n": 5,
+            "text": "At 01:28 the silence alarm went. I knocked, then went in. She was on the floor."
+          },
+          {
+            "n": 6,
+            "text": "Yes, she said she wanted a new producer. We'd sorted it out."
+          }
+        ]
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:40", "label": "Sipho says he was smoking outside", "suspectIds": ["sipho"], "place": "Outside the side door (his claim)" }
+        {
+          "at": "2026-03-06T00:40",
+          "label": "Sipho says he was smoking outside",
+          "suspectIds": ["sipho"],
+          "place": "Outside the side door (his claim)"
+        }
       ]
     },
     {
-      "id": "E-09", "tab": "statements", "number": 9,
+      "id": "E-09",
+      "tab": "statements",
+      "number": 9,
       "title": "Statement: Marguerite Vos",
       "source": "Interview by Det. Sgt. N. Jacobs",
-      "body": { "type": "statement", "suspectId": "marguerite", "interviewedAt": "6 March, 03:40", "lines": [
-        { "n": 1, "text": "I've run Atlantic for nine years. Thandi was our biggest star." },
-        { "n": 2, "text": "I left at about 23:30 and went home. I didn't come back." },
-        { "n": 3, "text": "I couldn't sleep, so I drove out for petrol at about ten past one. I have the receipt." },
-        { "n": 4, "text": "Thandi and I never had a problem. Not about work, not about anything." },
-        { "n": 5, "text": "Thandi never used voice tracks on her own show. She was always live. Everyone knows that." },
-        { "n": 6, "text": "Sipho and Thandi had been fighting about his job. Ask him." }
-      ] },
+      "body": {
+        "type": "statement",
+        "suspectId": "marguerite",
+        "interviewedAt": "6 March, 03:40",
+        "lines": [
+          {
+            "n": 1,
+            "text": "I've run Atlantic for nine years. Thandi was our biggest star."
+          },
+          {
+            "n": 2,
+            "text": "I left at about 23:30 and went home. I didn't come back."
+          },
+          {
+            "n": 3,
+            "text": "I couldn't sleep, so I drove out for petrol at about ten past one. I have the receipt."
+          },
+          {
+            "n": 4,
+            "text": "Thandi and I never had a problem. Not about work, not about anything."
+          },
+          {
+            "n": 5,
+            "text": "Thandi never used voice tracks on her own show. She was always live. Everyone knows that."
+          },
+          {
+            "n": 6,
+            "text": "Sipho and Thandi had been fighting about his job. Ask him."
+          }
+        ]
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:25", "label": "Marguerite says she was at home", "suspectIds": ["marguerite"], "place": "Home in Tamboerskloof (her claim)" }
+        {
+          "at": "2026-03-06T00:25",
+          "label": "Marguerite says she was at home",
+          "suspectIds": ["marguerite"],
+          "place": "Home in Tamboerskloof (her claim)"
+        }
       ]
     },
     {
-      "id": "E-10", "tab": "statements", "number": 10,
+      "id": "E-10",
+      "tab": "statements",
+      "number": 10,
       "title": "Statement: Daniel Okafor",
       "source": "Interview by Det. Sgt. N. Jacobs",
-      "body": { "type": "statement", "suspectId": "daniel", "interviewedAt": "6 March, 09:15", "lines": [
-        { "n": 1, "text": "Thandi and I were rivals on air and friends off air. Mostly." },
-        { "n": 2, "text": "Yes, I sent her an angry voice note. She told management I wasn't ready for prime time." },
-        { "n": 3, "text": "I didn't leave my flat after ten o'clock. I was alone." },
-        { "n": 4, "text": "I never went near the station. Check whatever you like." }
-      ] },
+      "body": {
+        "type": "statement",
+        "suspectId": "daniel",
+        "interviewedAt": "6 March, 09:15",
+        "lines": [
+          {
+            "n": 1,
+            "text": "Thandi and I were rivals on air and friends off air. Mostly."
+          },
+          {
+            "n": 2,
+            "text": "Yes, I sent her an angry voice note. She told management I wasn't ready for prime time."
+          },
+          {
+            "n": 3,
+            "text": "I didn't leave my flat after ten o'clock. I was alone."
+          },
+          {
+            "n": 4,
+            "text": "I never went near the station. Check whatever you like."
+          }
+        ]
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:30", "label": "Daniel says he was at home", "suspectIds": ["daniel"], "place": "Flat in Gardens (his claim)" }
+        {
+          "at": "2026-03-06T00:30",
+          "label": "Daniel says he was at home",
+          "suspectIds": ["daniel"],
+          "place": "Flat in Gardens (his claim)"
+        }
       ]
     },
     {
-      "id": "E-11", "tab": "statements", "number": 11,
+      "id": "E-11",
+      "tab": "statements",
+      "number": 11,
       "title": "Statement: Lena Hartmann",
       "source": "Interview by Det. Sgt. N. Jacobs",
-      "body": { "type": "statement", "suspectId": "lena", "interviewedAt": "6 March, 10:00", "lines": [
-        { "n": 1, "text": "Thandi and I split up in January. It hurt, but we were adults about it." },
-        { "n": 2, "text": "I came to the station at about quarter past twelve to return her house keys. Security gave me a visitor badge." },
-        { "n": 3, "text": "We spoke for a few minutes in the corridor during a song. She was cold with me. I left before half past." },
-        { "n": 4, "text": "I went straight to La Mesa in Green Point to meet my friend Mia." },
-        { "n": 5, "text": "I work for Rooibos & Co, one of the station's sponsors. Weeks ago I told Thandi our invoices from Atlantic looked higher than the airtime we got." }
-      ] },
+      "body": {
+        "type": "statement",
+        "suspectId": "lena",
+        "interviewedAt": "6 March, 10:00",
+        "lines": [
+          {
+            "n": 1,
+            "text": "Thandi and I split up in January. It hurt, but we were adults about it."
+          },
+          {
+            "n": 2,
+            "text": "I came to the station at about quarter past twelve to return her house keys. Security gave me a visitor badge."
+          },
+          {
+            "n": 3,
+            "text": "We spoke for a few minutes in the corridor during a song. She was cold with me. I left before half past."
+          },
+          {
+            "n": 4,
+            "text": "I went straight to La Mesa in Green Point to meet my friend Mia."
+          },
+          {
+            "n": 5,
+            "text": "I work for Rooibos & Co, one of the station's sponsors. Weeks ago I told Thandi our invoices from Atlantic looked higher than the airtime we got."
+          }
+        ]
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:30", "label": "Lena says she was at La Mesa", "suspectIds": ["lena"], "place": "La Mesa, Green Point (her claim)" }
+        {
+          "at": "2026-03-06T00:30",
+          "label": "Lena says she was at La Mesa",
+          "suspectIds": ["lena"],
+          "place": "La Mesa, Green Point (her claim)"
+        }
       ]
     },
     {
-      "id": "E-12", "tab": "records", "number": 12,
+      "id": "E-12",
+      "tab": "records",
+      "number": 12,
       "title": "Security guard's night log",
       "source": "Harbour House security · F. Abrahams",
-      "body": { "type": "log", "header": "NIGHT LOG · HARBOUR HOUSE MAIN GATE", "columns": ["Time", "Entry"], "rows": [
-        ["22:30", "Shift start. All quiet."],
-        ["23:31", "Ms Vos leaves by main gate, white Polo."],
-        ["00:14", "Visitor Ms L. Hartmann to see T. Mokoena. Badge V-03 issued."],
-        ["00:20", "Grey Corolla CA 412-778 parked opposite main door. Male, 30s, says he is 'Jay, a friend of Thandi's'. Told him no visitors."],
-        ["00:20", "White Polo parked in staff side lane. Did not see driver."],
-        ["00:25", "Badge V-03 returned by Ms Hartmann. She left on foot towards Green Point."],
-        ["00:26", "Told driver of CA 412-778 to move on. He drove off towards the N1."],
-        ["00:29", "Mr Dlamini crossed the road to Mama Rosa's café."],
-        ["00:54", "White Polo gone from side lane."],
-        ["01:33", "Mr Dlamini ran to the gate: 'Call the police!'"],
-        ["01:49", "SAPS arrived. Let them in at main door."]
-      ] },
+      "body": {
+        "type": "log",
+        "header": "NIGHT LOG · HARBOUR HOUSE MAIN GATE",
+        "columns": ["Time", "Entry"],
+        "rows": [
+          ["22:30", "Shift start. All quiet."],
+          ["23:31", "Ms Vos leaves by main gate, white Polo."],
+          [
+            "00:14",
+            "Visitor Ms L. Hartmann to see T. Mokoena. Badge V-03 issued."
+          ],
+          [
+            "00:20",
+            "Grey Corolla CA 412-778 parked opposite main door. Male, 30s, says he is 'Jay, a friend of Thandi's'. Told him no visitors."
+          ],
+          [
+            "00:20",
+            "White Polo parked in staff side lane. Did not see driver."
+          ],
+          [
+            "00:25",
+            "Badge V-03 returned by Ms Hartmann. She left on foot towards Green Point."
+          ],
+          [
+            "00:26",
+            "Told driver of CA 412-778 to move on. He drove off towards the N1."
+          ],
+          ["00:29", "Mr Dlamini crossed the road to Mama Rosa's café."],
+          ["00:54", "White Polo gone from side lane."],
+          ["01:33", "Mr Dlamini ran to the gate: 'Call the police!'"],
+          ["01:49", "SAPS arrived. Let them in at main door."]
+        ]
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:20", "label": "Jay's car parked outside", "suspectIds": ["jay"], "place": "Outside the station" },
+        {
+          "at": "2026-03-06T00:20",
+          "label": "Jay's car parked outside",
+          "suspectIds": ["jay"],
+          "place": "Outside the station"
+        },
         { "at": "2026-03-06T00:20", "label": "White Polo in the staff lane" },
-        { "at": "2026-03-06T00:26", "label": "Jay told to move on", "suspectIds": ["jay"], "place": "Outside the station" },
-        { "at": "2026-03-06T00:29", "label": "Sipho crosses to Mama Rosa's café", "suspectIds": ["sipho"], "place": "Mama Rosa's café" },
+        {
+          "at": "2026-03-06T00:26",
+          "label": "Jay told to move on",
+          "suspectIds": ["jay"],
+          "place": "Outside the station"
+        },
+        {
+          "at": "2026-03-06T00:29",
+          "label": "Sipho crosses to Mama Rosa's café",
+          "suspectIds": ["sipho"],
+          "place": "Mama Rosa's café"
+        },
         { "at": "2026-03-06T00:54", "label": "White Polo gone" }
       ]
     },
     {
-      "id": "E-13", "tab": "phone", "number": 13,
+      "id": "E-13",
+      "tab": "phone",
+      "number": 13,
       "title": "Thandi's phone",
       "source": "Device extraction · SAPS digital forensics",
-      "body": { "type": "phone", "owner": "Thandi Mokoena",
+      "body": {
+        "type": "phone",
+        "owner": "Thandi Mokoena",
         "messages": [
-          { "thread": "Marguerite (work)", "messages": [
-            { "from": "Thandi", "at": "Thu 17:02", "text": "Marguerite, can we talk about the Rooibos & Co numbers? Something doesn't add up.", "me": true },
-            { "from": "Marguerite", "at": "Thu 17:40", "text": "Billing system error. I'll sort it out. Don't worry about it." },
-            { "from": "Marguerite", "at": "00:12", "text": "Are you still at the station? Need five minutes." },
-            { "from": "Thandi", "at": "00:13", "text": "On air till 2. Monday.", "me": true }
-          ] },
-          { "thread": "Lena", "messages": [
-            { "from": "Lena", "at": "00:09", "text": "Bringing your keys now. 5 min." },
-            { "from": "Thandi", "at": "00:10", "text": "Fine.", "me": true }
-          ] },
-          { "thread": "Sipho", "messages": [
-            { "from": "Thandi", "at": "22:10", "text": "Bring rooibos pls", "me": true },
-            { "from": "Sipho", "at": "22:11", "text": "Always" }
-          ] },
-          { "thread": "Daniel", "messages": [
-            { "from": "Daniel", "at": "23:58", "text": "[Voice note, 1:42]" }
-          ] }
+          {
+            "thread": "Marguerite (work)",
+            "messages": [
+              {
+                "from": "Thandi",
+                "at": "Thu 17:02",
+                "text": "Marguerite, can we talk about the Rooibos & Co numbers? Something doesn't add up.",
+                "me": true
+              },
+              {
+                "from": "Marguerite",
+                "at": "Thu 17:40",
+                "text": "Billing system error. I'll sort it out. Don't worry about it."
+              },
+              {
+                "from": "Marguerite",
+                "at": "00:12",
+                "text": "Are you still at the station? Need five minutes."
+              },
+              {
+                "from": "Thandi",
+                "at": "00:13",
+                "text": "On air till 2. Monday.",
+                "me": true
+              }
+            ]
+          },
+          {
+            "thread": "Lena",
+            "messages": [
+              {
+                "from": "Lena",
+                "at": "00:09",
+                "text": "Bringing your keys now. 5 min."
+              },
+              { "from": "Thandi", "at": "00:10", "text": "Fine.", "me": true }
+            ]
+          },
+          {
+            "thread": "Sipho",
+            "messages": [
+              {
+                "from": "Thandi",
+                "at": "22:10",
+                "text": "Bring rooibos pls",
+                "me": true
+              },
+              { "from": "Sipho", "at": "22:11", "text": "Always" }
+            ]
+          },
+          {
+            "thread": "Daniel",
+            "messages": [
+              { "from": "Daniel", "at": "23:58", "text": "[Voice note, 1:42]" }
+            ]
+          }
         ],
         "calls": [
-          { "at": "23:59", "who": "Daniel", "dir": "missed", "duration": "0:00" },
-          { "at": "00:05", "who": "Unknown number", "dir": "missed", "duration": "0:00" }
+          {
+            "at": "23:59",
+            "who": "Daniel",
+            "dir": "missed",
+            "duration": "0:00"
+          },
+          {
+            "at": "00:05",
+            "who": "Unknown number",
+            "dir": "missed",
+            "duration": "0:00"
+          }
         ],
         "notes": [
-          { "title": "Show prep 6 March", "text": "Open with Long Song. Jay will call, keep it short. Sponsor block A at 00:38." },
-          { "title": "Easter cover", "text": "Recorded all the holiday links on 14 Feb. Done!" }
+          {
+            "title": "Show prep 6 March",
+            "text": "Open with Long Song. Jay will call, keep it short. Sponsor block A at 00:38."
+          },
+          {
+            "title": "Easter cover",
+            "text": "Recorded all the holiday links on 14 Feb. Done!"
+          }
         ],
         "health": [
           { "t": "00:20", "bpm": 76 },
@@ -246,211 +609,540 @@
         "locations": []
       },
       "timestamps": [
-        { "at": "2026-03-06T00:12", "label": "Marguerite texts: 'Need five minutes'", "suspectIds": ["marguerite"] },
-        { "at": "2026-03-06T00:35", "label": "Thandi's heart rate spikes to 138" },
-        { "at": "2026-03-06T00:36", "label": "Thandi's watch: no pulse detected" }
+        {
+          "at": "2026-03-06T00:12",
+          "label": "Marguerite texts: 'Need five minutes'",
+          "suspectIds": ["marguerite"]
+        },
+        {
+          "at": "2026-03-06T00:35",
+          "label": "Thandi's heart rate spikes to 138"
+        },
+        {
+          "at": "2026-03-06T00:36",
+          "label": "Thandi's watch: no pulse detected"
+        }
       ]
     },
     {
-      "id": "E-14", "tab": "records", "number": 14,
+      "id": "E-14",
+      "tab": "records",
+      "number": 14,
       "title": "Voice note from Daniel (transcript)",
       "source": "From Thandi's phone · received 23:58",
-      "body": { "type": "audio", "lines": [
-        { "t": "0:00", "speaker": "Daniel", "text": "Thandi. Really? You went to Marguerite and said I'm 'not ready'? After everything?" },
-        { "t": "0:38", "speaker": "Daniel", "text": "You know what, enjoy your little throne. One day it's going to be my voice in that chair." },
-        { "t": "1:20", "speaker": "Daniel", "text": "I can't even talk to you right now—" },
-        { "t": "1:31", "speaker": "Daniel", "text": "Hold on, my ride's here. I'm going out. We'll talk." }
-      ], "note": "A car horn can be heard at 1:30." },
+      "body": {
+        "type": "audio",
+        "lines": [
+          {
+            "t": "0:00",
+            "speaker": "Daniel",
+            "text": "Thandi. Really? You went to Marguerite and said I'm 'not ready'? After everything?"
+          },
+          {
+            "t": "0:38",
+            "speaker": "Daniel",
+            "text": "You know what, enjoy your little throne. One day it's going to be my voice in that chair."
+          },
+          {
+            "t": "1:20",
+            "speaker": "Daniel",
+            "text": "I can't even talk to you right now—"
+          },
+          {
+            "t": "1:31",
+            "speaker": "Daniel",
+            "text": "Hold on, my ride's here. I'm going out. We'll talk."
+          }
+        ],
+        "note": "A car horn can be heard at 1:30."
+      },
       "timestamps": [
-        { "at": "2026-03-05T23:58", "label": "Daniel sends angry voice note; says his ride is there", "suspectIds": ["daniel"] }
+        {
+          "at": "2026-03-05T23:58",
+          "label": "Daniel sends angry voice note; says his ride is there",
+          "suspectIds": ["daniel"]
+        }
       ]
     },
     {
-      "id": "E-15", "tab": "records", "number": 15,
+      "id": "E-15",
+      "tab": "records",
+      "number": 15,
       "title": "Petrol receipt",
       "source": "Handed in by Marguerite Vos at interview",
-      "body": { "type": "receipt", "merchant": "Beach Road Fuel, Sea Point", "lines": ["Pump 4 · Unleaded 95", "23.4 L", "R 512.46", "Card ****7710 · M VOS"], "at": "06/03/2026 01:12:37" },
+      "body": {
+        "type": "receipt",
+        "merchant": "Beach Road Fuel, Sea Point",
+        "lines": [
+          "Pump 4 · Unleaded 95",
+          "23.4 L",
+          "R 512.46",
+          "Card ****7710 · M VOS"
+        ],
+        "at": "06/03/2026 01:12:37"
+      },
       "timestamps": [
-        { "at": "2026-03-06T01:12", "label": "Marguerite buys petrol", "suspectIds": ["marguerite"], "place": "Beach Road Fuel, Sea Point" }
+        {
+          "at": "2026-03-06T01:12",
+          "label": "Marguerite buys petrol",
+          "suspectIds": ["marguerite"],
+          "place": "Beach Road Fuel, Sea Point"
+        }
       ]
     },
     {
-      "id": "E-16", "tab": "records", "number": 16,
+      "id": "E-16",
+      "tab": "records",
+      "number": 16,
       "title": "Map: travel times",
       "source": "Investigation team · night-time drive times",
       "gate": { "kind": "lead", "id": "L1" },
-      "body": { "type": "map", "description": "Drive times measured by the investigation team at 01:00 on a weeknight.", "points": [
-        { "id": "station", "label": "Atlantic 99.4 FM, Harbour House (CBD)" },
-        { "id": "fuel", "label": "Beach Road Fuel, Sea Point" },
-        { "id": "home", "label": "M. Vos home, Tamboerskloof" },
-        { "id": "lamesa", "label": "La Mesa, Green Point" },
-        { "id": "cafe", "label": "Mama Rosa's café (opposite the station)" }
-      ], "travel": [
-        { "from": "station", "to": "fuel", "minutes": 8, "mode": "car" },
-        { "from": "home", "to": "fuel", "minutes": 11, "mode": "car" },
-        { "from": "station", "to": "home", "minutes": 6, "mode": "car" },
-        { "from": "station", "to": "lamesa", "minutes": 4, "mode": "foot" },
-        { "from": "station", "to": "cafe", "minutes": 1, "mode": "foot" }
-      ] },
+      "body": {
+        "type": "map",
+        "description": "Drive times measured by the investigation team at 01:00 on a weeknight.",
+        "points": [
+          { "id": "station", "label": "Atlantic 99.4 FM, Harbour House (CBD)" },
+          { "id": "fuel", "label": "Beach Road Fuel, Sea Point" },
+          { "id": "home", "label": "M. Vos home, Tamboerskloof" },
+          { "id": "lamesa", "label": "La Mesa, Green Point" },
+          { "id": "cafe", "label": "Mama Rosa's café (opposite the station)" }
+        ],
+        "travel": [
+          { "from": "station", "to": "fuel", "minutes": 8, "mode": "car" },
+          { "from": "home", "to": "fuel", "minutes": 11, "mode": "car" },
+          { "from": "station", "to": "home", "minutes": 6, "mode": "car" },
+          { "from": "station", "to": "lamesa", "minutes": 4, "mode": "foot" },
+          { "from": "station", "to": "cafe", "minutes": 1, "mode": "foot" }
+        ]
+      },
       "timestamps": []
     },
     {
-      "id": "E-17", "tab": "records", "number": 17,
+      "id": "E-17",
+      "tab": "records",
+      "number": 17,
       "title": "Playout files and schedule: VT",
       "source": "Atlantic 99.4 FM · playout system · archive search result",
       "gate": { "kind": "search", "id": "E-17" },
-      "body": { "type": "log", "header": "AUDIO FILES MATCHING 'VT' · WITH SCHEDULE HISTORY", "columns": ["File", "Recorded", "Scheduled by", "Scheduled at", "Plays at"], "rows": [
-        ["VT_THANDI_EASTER_01.wav", "14 Feb 21:05 · tmokoena", "—", "—", "Holiday cover, 3 Apr"],
-        ["VT_THANDI_EASTER_02.wav", "14 Feb 21:07 · tmokoena", "mvos", "6 Mar 00:44", "6 Mar 01:10"],
-        ["VT_THANDI_EASTER_03.wav", "14 Feb 21:09 · tmokoena", "—", "—", "Holiday cover, 4 Apr"],
-        ["AUTO-PLAYLIST (6 tracks)", "—", "mvos", "6 Mar 00:40", "6 Mar 00:41"]
-      ], "footnote": "Transcript of VT_THANDI_EASTER_02: \"…that's Long Song again by request. And happy Easter weekend, Cape Town! Here's one for the road.\" · Scheduling permissions: mvos (manager), sdlamini (producer)." },
+      "body": {
+        "type": "log",
+        "header": "AUDIO FILES MATCHING 'VT' · WITH SCHEDULE HISTORY",
+        "columns": [
+          "File",
+          "Recorded",
+          "Scheduled by",
+          "Scheduled at",
+          "Plays at"
+        ],
+        "rows": [
+          [
+            "VT_THANDI_EASTER_01.wav",
+            "14 Feb 21:05 · tmokoena",
+            "—",
+            "—",
+            "Holiday cover, 3 Apr"
+          ],
+          [
+            "VT_THANDI_EASTER_02.wav",
+            "14 Feb 21:07 · tmokoena",
+            "mvos",
+            "6 Mar 00:44",
+            "6 Mar 01:10"
+          ],
+          [
+            "VT_THANDI_EASTER_03.wav",
+            "14 Feb 21:09 · tmokoena",
+            "—",
+            "—",
+            "Holiday cover, 4 Apr"
+          ],
+          [
+            "AUTO-PLAYLIST (6 tracks)",
+            "—",
+            "mvos",
+            "6 Mar 00:40",
+            "6 Mar 00:41"
+          ]
+        ],
+        "footnote": "Transcript of VT_THANDI_EASTER_02: \"…that's Long Song again by request. And happy Easter weekend, Cape Town! Here's one for the road.\" · Scheduling permissions: mvos (manager), sdlamini (producer)."
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:40", "label": "Auto-playlist loaded by user mvos", "suspectIds": ["marguerite"], "place": "Atlantic FM building" },
-        { "at": "2026-03-06T00:44", "label": "Easter VT scheduled for 01:10 by user mvos", "suspectIds": ["marguerite"], "place": "Atlantic FM building" }
+        {
+          "at": "2026-03-06T00:40",
+          "label": "Auto-playlist loaded by user mvos",
+          "suspectIds": ["marguerite"],
+          "place": "Atlantic FM building"
+        },
+        {
+          "at": "2026-03-06T00:44",
+          "label": "Easter VT scheduled for 01:10 by user mvos",
+          "suspectIds": ["marguerite"],
+          "place": "Atlantic FM building"
+        }
       ]
     },
     {
-      "id": "E-18", "tab": "records", "number": 18,
+      "id": "E-18",
+      "tab": "records",
+      "number": 18,
       "title": "Sponsor billing vs aired spots",
       "source": "Atlantic 99.4 FM finance · Rooibos & Co account · February 2026",
       "gate": { "kind": "lead", "id": "L2" },
-      "body": { "type": "log", "header": "ROOIBOS & CO · SPOTS INVOICED VS SPOTS AIRED", "columns": ["Week", "Invoiced", "Aired (playout)", "Gap"], "rows": [
-        ["2–8 Feb", "40", "28", "12"],
-        ["9–15 Feb", "40", "27", "13"],
-        ["16–22 Feb", "40", "29", "11"],
-        ["23–29 Feb", "40", "28", "12"]
-      ], "footnote": "Every invoice carries an 'ad verification fee' of R 18,500 paid to MV Media Solutions (Pty) Ltd. Approved by: M. Vos." },
+      "body": {
+        "type": "log",
+        "header": "ROOIBOS & CO · SPOTS INVOICED VS SPOTS AIRED",
+        "columns": ["Week", "Invoiced", "Aired (playout)", "Gap"],
+        "rows": [
+          ["2–8 Feb", "40", "28", "12"],
+          ["9–15 Feb", "40", "27", "13"],
+          ["16–22 Feb", "40", "29", "11"],
+          ["23–29 Feb", "40", "28", "12"]
+        ],
+        "footnote": "Every invoice carries an 'ad verification fee' of R 18,500 paid to MV Media Solutions (Pty) Ltd. Approved by: M. Vos."
+      },
       "timestamps": []
     },
     {
-      "id": "E-19", "tab": "documents", "number": 19,
+      "id": "E-19",
+      "tab": "documents",
+      "number": 19,
       "title": "Company register extract: MV Media Solutions",
       "source": "Companies register · archive search result",
       "gate": { "kind": "search", "id": "E-19" },
-      "body": { "type": "document", "markdown": "**MV Media Solutions (Pty) Ltd**\n\nRegistered: 11 May 2023\nStatus: active\nBusiness: advertising verification services\n\n**Sole director: Marguerite Anne Vos**\nRegistered address: 7 Upper Kloof Lane, Tamboerskloof, Cape Town" },
+      "body": {
+        "type": "document",
+        "markdown": "**MV Media Solutions (Pty) Ltd**\n\nRegistered: 11 May 2023\nStatus: active\nBusiness: advertising verification services\n\n**Sole director: Marguerite Anne Vos**\nRegistered address: 7 Upper Kloof Lane, Tamboerskloof, Cape Town"
+      },
       "timestamps": []
     },
     {
-      "id": "E-20", "tab": "photos", "number": 20,
+      "id": "E-20",
+      "tab": "photos",
+      "number": 20,
       "title": "CCTV stills: Mama Rosa's café",
       "source": "Mama Rosa's café · camera 2",
       "gate": { "kind": "lead", "id": "L3" },
-      "body": { "type": "photo", "caption": "Four stills from the café across the road from the station.", "scene": "Four timestamped CCTV stills of a small late-night café. In each, a man in an Atlantic 99.4 FM hoodie sits at the corner table with a phone to his ear: 00:30, 00:38, 00:45, 00:52. In the last still he is standing and paying.", "markers": [ { "n": 1, "label": "00:30 — man in Atlantic FM hoodie sits down" }, { "n": 2, "label": "00:38 — on the phone" }, { "n": 3, "label": "00:45 — on the phone" }, { "n": 4, "label": "00:52 — paying, leaving" } ], "stamp": "CAM2 06-03-2026" },
+      "body": {
+        "type": "photo",
+        "caption": "Four stills from the café across the road from the station.",
+        "scene": "Four timestamped CCTV stills of a small late-night café. In each, a man in an Atlantic 99.4 FM hoodie sits at the corner table with a phone to his ear: 00:30, 00:38, 00:45, 00:52. In the last still he is standing and paying.",
+        "markers": [
+          { "n": 1, "label": "00:30 — man in Atlantic FM hoodie sits down" },
+          { "n": 2, "label": "00:38 — on the phone" },
+          { "n": 3, "label": "00:45 — on the phone" },
+          { "n": 4, "label": "00:52 — paying, leaving" }
+        ],
+        "stamp": "CAM2 06-03-2026"
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:30", "label": "Sipho on camera in the café", "suspectIds": ["sipho"], "place": "Mama Rosa's café" },
-        { "at": "2026-03-06T00:52", "label": "Sipho leaves the café", "suspectIds": ["sipho"], "place": "Mama Rosa's café" }
+        {
+          "at": "2026-03-06T00:30",
+          "label": "Sipho on camera in the café",
+          "suspectIds": ["sipho"],
+          "place": "Mama Rosa's café"
+        },
+        {
+          "at": "2026-03-06T00:52",
+          "label": "Sipho leaves the café",
+          "suspectIds": ["sipho"],
+          "place": "Mama Rosa's café"
+        }
       ]
     },
     {
-      "id": "E-21", "tab": "records", "number": 21,
+      "id": "E-21",
+      "tab": "records",
+      "number": 21,
       "title": "Ride receipts: Daniel Okafor",
       "source": "RideNow app · provided by Daniel Okafor",
       "gate": { "kind": "confront", "id": "C-2" },
-      "body": { "type": "receipt", "merchant": "RideNow", "lines": ["Trip 1 · pick-up 23:59 Kloof St, Gardens → drop-off 00:14 Main Rd, Sea Point (The Blue Fin)", "Trip 2 · pick-up 01:34 Main Rd, Sea Point → drop-off 01:51 Kloof St, Gardens", "Paid by card · D OKAFOR"], "at": "5–6 March 2026" },
+      "body": {
+        "type": "receipt",
+        "merchant": "RideNow",
+        "lines": [
+          "Trip 1 · pick-up 23:59 Kloof St, Gardens → drop-off 00:14 Main Rd, Sea Point (The Blue Fin)",
+          "Trip 2 · pick-up 01:34 Main Rd, Sea Point → drop-off 01:51 Kloof St, Gardens",
+          "Paid by card · D OKAFOR"
+        ],
+        "at": "5–6 March 2026"
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:14", "label": "Daniel dropped at The Blue Fin, Sea Point", "suspectIds": ["daniel"], "place": "The Blue Fin, Sea Point" },
-        { "at": "2026-03-06T01:34", "label": "Daniel picked up in Sea Point", "suspectIds": ["daniel"], "place": "The Blue Fin, Sea Point" }
+        {
+          "at": "2026-03-06T00:14",
+          "label": "Daniel dropped at The Blue Fin, Sea Point",
+          "suspectIds": ["daniel"],
+          "place": "The Blue Fin, Sea Point"
+        },
+        {
+          "at": "2026-03-06T01:34",
+          "label": "Daniel picked up in Sea Point",
+          "suspectIds": ["daniel"],
+          "place": "The Blue Fin, Sea Point"
+        }
       ]
     },
     {
-      "id": "E-22", "tab": "records", "number": 22,
+      "id": "E-22",
+      "tab": "records",
+      "number": 22,
       "title": "Lena's messages and bill",
       "source": "Provided by Lena Hartmann",
       "gate": { "kind": "breakthrough", "id": "BT-5" },
-      "body": { "type": "chat", "thread": "Mia", "messages": [
-        { "from": "Lena", "at": "00:27", "text": "Here. Still shaking. She was so cold.", "me": true },
-        { "from": "Mia", "at": "00:28", "text": "Order wine, I'm 2 min away" },
-        { "from": "Mia", "at": "00:31", "text": "Parking now" }
-      ], "note": "La Mesa, Green Point · table 6 · bill opened 00:29, closed 01:41 · 2 guests" },
+      "body": {
+        "type": "chat",
+        "thread": "Mia",
+        "messages": [
+          {
+            "from": "Lena",
+            "at": "00:27",
+            "text": "Here. Still shaking. She was so cold.",
+            "me": true
+          },
+          {
+            "from": "Mia",
+            "at": "00:28",
+            "text": "Order wine, I'm 2 min away"
+          },
+          { "from": "Mia", "at": "00:31", "text": "Parking now" }
+        ],
+        "note": "La Mesa, Green Point · table 6 · bill opened 00:29, closed 01:41 · 2 guests"
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:29", "label": "Lena's table opened at La Mesa", "suspectIds": ["lena"], "place": "La Mesa, Green Point" },
-        { "at": "2026-03-06T01:41", "label": "Lena's bill closed", "suspectIds": ["lena"], "place": "La Mesa, Green Point" }
+        {
+          "at": "2026-03-06T00:29",
+          "label": "Lena's table opened at La Mesa",
+          "suspectIds": ["lena"],
+          "place": "La Mesa, Green Point"
+        },
+        {
+          "at": "2026-03-06T01:41",
+          "label": "Lena's bill closed",
+          "suspectIds": ["lena"],
+          "place": "La Mesa, Green Point"
+        }
       ]
     },
     {
-      "id": "E-23", "tab": "records", "number": 23,
+      "id": "E-23",
+      "tab": "records",
+      "number": 23,
       "title": "Traffic camera hits: CA 412-778",
       "source": "City traffic cameras · archive search result",
       "gate": { "kind": "search", "id": "E-23" },
-      "body": { "type": "log", "header": "NUMBER-PLATE CAMERA HITS · CA 412-778 (GREY TOYOTA COROLLA)", "columns": ["Time", "Camera"], "rows": [
-        ["00:33", "N1 outbound, Paarden Eiland"],
-        ["00:41", "N1 outbound, Montague Gardens"],
-        ["00:52", "Voortrekker Rd, Bellville"]
-      ], "footnote": "Registered owner: Jason Petersen, Bellville." },
+      "body": {
+        "type": "log",
+        "header": "NUMBER-PLATE CAMERA HITS · CA 412-778 (GREY TOYOTA COROLLA)",
+        "columns": ["Time", "Camera"],
+        "rows": [
+          ["00:33", "N1 outbound, Paarden Eiland"],
+          ["00:41", "N1 outbound, Montague Gardens"],
+          ["00:52", "Voortrekker Rd, Bellville"]
+        ],
+        "footnote": "Registered owner: Jason Petersen, Bellville."
+      },
       "timestamps": [
-        { "at": "2026-03-06T00:33", "label": "Jay's car on the N1 heading out of town", "suspectIds": ["jay"], "place": "N1 outbound" },
-        { "at": "2026-03-06T00:52", "label": "Jay's car in Bellville", "suspectIds": ["jay"], "place": "Bellville" }
+        {
+          "at": "2026-03-06T00:33",
+          "label": "Jay's car on the N1 heading out of town",
+          "suspectIds": ["jay"],
+          "place": "N1 outbound"
+        },
+        {
+          "at": "2026-03-06T00:52",
+          "label": "Jay's car in Bellville",
+          "suspectIds": ["jay"],
+          "place": "Bellville"
+        }
       ]
     },
     {
-      "id": "E-24", "tab": "documents", "number": 24,
+      "id": "E-24",
+      "tab": "documents",
+      "number": 24,
       "title": "Thandi's handwritten note",
       "source": "Found in Thandi's show folder",
       "gate": { "kind": "confront", "id": "C-1" },
-      "body": { "type": "document", "markdown": "*(handwritten, blue pen)*\n\nRooibos & Co: billed 40 a week, played 28??\n\nAds billed ≠ ads played.\n\nWho is MV Media??\n\nAsk M on Monday or go to the board. Lena was right." },
+      "body": {
+        "type": "document",
+        "markdown": "*(handwritten, blue pen)*\n\nRooibos & Co: billed 40 a week, played 28??\n\nAds billed ≠ ads played.\n\nWho is MV Media??\n\nAsk M on Monday or go to the board. Lena was right."
+      },
       "timestamps": []
     },
     {
-      "id": "E-25", "tab": "documents", "number": 25,
+      "id": "E-25",
+      "tab": "documents",
+      "number": 25,
       "title": "Lab note: the award plaque",
       "source": "Forensic Science Lab · item 2",
       "gate": { "kind": "lead", "id": "L4" },
-      "body": { "type": "document", "markdown": "**Item 2:** glass-and-steel award plaque, 'Station of the Year 2024', 2.1 kg.\n\nBlood and hair matching the deceased on the top right corner. The corner matches the wound shape described by the pathologist.\n\nThe surface was wiped. Black wool fibres were caught on the base edge, consistent with gloves. No usable fingerprints." },
+      "body": {
+        "type": "document",
+        "markdown": "**Item 2:** glass-and-steel award plaque, 'Station of the Year 2024', 2.1 kg.\n\nBlood and hair matching the deceased on the top right corner. The corner matches the wound shape described by the pathologist.\n\nThe surface was wiped. Black wool fibres were caught on the base edge, consistent with gloves. No usable fingerprints."
+      },
       "timestamps": []
     },
     {
-      "id": "E-26", "tab": "documents", "number": 26,
+      "id": "E-26",
+      "tab": "documents",
+      "number": 26,
       "title": "HR: Easter holiday cover rota",
       "source": "Atlantic 99.4 FM · HR",
       "gate": { "kind": "lead", "id": "L5" },
-      "body": { "type": "document", "markdown": "**Easter 2026 cover, 3–6 April**\n\n*After Midnight with Thandi* will run on pre-recorded voice tracks (VT) over the long weekend. Thandi recorded all links on 14 February.\n\nVT files are stored in the playout library. Only management and producers can schedule VT items: logins **mvos** (Marguerite Vos) and **sdlamini** (Sipho Dlamini)." },
+      "body": {
+        "type": "document",
+        "markdown": "**Easter 2026 cover, 3–6 April**\n\n*After Midnight with Thandi* will run on pre-recorded voice tracks (VT) over the long weekend. Thandi recorded all links on 14 February.\n\nVT files are stored in the playout library. Only management and producers can schedule VT items: logins **mvos** (Marguerite Vos) and **sdlamini** (Sipho Dlamini)."
+      },
       "timestamps": []
     }
   ],
   "leads": [
-    { "id": "L1", "title": "Check the drive from the station to the petrol station", "costHours": 1 },
-    { "id": "L2", "title": "Request the station's sponsor billing records", "costHours": 2 },
-    { "id": "L3", "title": "Canvass the businesses across the road", "costHours": 1 },
-    { "id": "L4", "title": "Request forensic results on the award plaque", "costHours": 2 },
-    { "id": "L5", "title": "Ask HR about pre-recorded links", "costHours": 1, "gate": { "kind": "breakthrough", "id": "BT-1" } }
+    {
+      "id": "L1",
+      "title": "Check the drive from the station to the petrol station",
+      "costHours": 1
+    },
+    {
+      "id": "L2",
+      "title": "Request the station's sponsor billing records",
+      "costHours": 2
+    },
+    {
+      "id": "L3",
+      "title": "Canvass the businesses across the road",
+      "costHours": 1
+    },
+    {
+      "id": "L4",
+      "title": "Request forensic results on the award plaque",
+      "costHours": 2
+    },
+    {
+      "id": "L5",
+      "title": "Ask HR about pre-recorded links",
+      "costHours": 1,
+      "gate": { "kind": "breakthrough", "id": "BT-1" }
+    }
   ],
-  "archive": { "label": "Search the station archive and city records", "placeholder": "A name, a code, a plate number…" },
+  "archive": {
+    "label": "Search the station archive and city records",
+    "placeholder": "A name, a code, a plate number…"
+  },
   "words": [
-    { "id": "m-plaque", "text": "struck her with the award plaque", "revealedBy": ["E-03", "E-25"] },
-    { "id": "m-cable", "text": "strangled her with a headphone cable", "revealedBy": ["E-03"] },
-    { "id": "m-desk", "text": "pushed her against the mixing desk", "revealedBy": ["E-01"] },
+    {
+      "id": "m-plaque",
+      "text": "struck her with the award plaque",
+      "revealedBy": ["E-03", "E-25"]
+    },
+    {
+      "id": "m-cable",
+      "text": "strangled her with a headphone cable",
+      "revealedBy": ["E-03"]
+    },
+    {
+      "id": "m-desk",
+      "text": "pushed her against the mixing desk",
+      "revealedBy": ["E-01"]
+    },
     { "id": "m-tea", "text": "poisoned her tea", "revealedBy": ["E-03"] },
-    { "id": "t-0030", "text": "between 00:30 and 00:40", "revealedBy": ["E-02"] },
-    { "id": "t-0040", "text": "between 00:40 and 00:50", "revealedBy": ["E-02"] },
-    { "id": "t-0050", "text": "between 00:50 and 01:10", "revealedBy": ["E-02"] },
+    {
+      "id": "t-0030",
+      "text": "between 00:30 and 00:40",
+      "revealedBy": ["E-02"]
+    },
+    {
+      "id": "t-0040",
+      "text": "between 00:40 and 00:50",
+      "revealedBy": ["E-02"]
+    },
+    {
+      "id": "t-0050",
+      "text": "between 00:50 and 01:10",
+      "revealedBy": ["E-02"]
+    },
     { "id": "t-0110", "text": "after 01:10", "revealedBy": ["E-05"] },
-    { "id": "k-vt", "text": "scheduled a pre-recorded voice track for 01:10", "revealedBy": ["E-17", "BT-2"] },
-    { "id": "k-clock", "text": "changed the studio clock", "revealedBy": ["E-03"] },
-    { "id": "k-sipho", "text": "had Sipho cover for her", "revealedBy": ["E-08"] },
-    { "id": "k-blinds", "text": "pulled the blinds so no one could see in", "revealedBy": ["E-03", "E-08"] },
-    { "id": "y-fraud", "text": "to stop Thandi exposing her sponsor-billing fraud", "revealedBy": ["E-24", "E-18", "BT-6"] },
-    { "id": "y-breakup", "text": "jealousy after their break-up", "revealedBy": ["E-11"] },
-    { "id": "y-slot", "text": "anger over a prime-time slot", "revealedBy": ["E-14"] },
-    { "id": "y-obsession", "text": "an obsession with her", "revealedBy": ["E-12"] },
+    {
+      "id": "k-vt",
+      "text": "scheduled a pre-recorded voice track for 01:10",
+      "revealedBy": ["E-17", "BT-2"]
+    },
+    {
+      "id": "k-clock",
+      "text": "changed the studio clock",
+      "revealedBy": ["E-03"]
+    },
+    {
+      "id": "k-sipho",
+      "text": "had Sipho cover for her",
+      "revealedBy": ["E-08"]
+    },
+    {
+      "id": "k-blinds",
+      "text": "pulled the blinds so no one could see in",
+      "revealedBy": ["E-03", "E-08"]
+    },
+    {
+      "id": "y-fraud",
+      "text": "to stop Thandi exposing her sponsor-billing fraud",
+      "revealedBy": ["E-24", "E-18", "BT-6"]
+    },
+    {
+      "id": "y-breakup",
+      "text": "jealousy after their break-up",
+      "revealedBy": ["E-11"]
+    },
+    {
+      "id": "y-slot",
+      "text": "anger over a prime-time slot",
+      "revealedBy": ["E-14"]
+    },
+    {
+      "id": "y-obsession",
+      "text": "an obsession with her",
+      "revealedBy": ["E-12"]
+    },
     { "id": "y-job", "text": "fear of losing a job", "revealedBy": ["E-08"] }
   ],
   "verdict": {
-    "who": [ { "blankId": "killer", "prompt": "Who killed Thandi?" } ],
+    "who": [{ "blankId": "killer", "prompt": "Who killed Thandi?" }],
     "how": [
-      { "blankId": "method", "prompt": "How was she killed?", "wordIds": ["m-plaque", "m-cable", "m-desk", "m-tea"] },
-      { "blankId": "time", "prompt": "When did she die?", "wordIds": ["t-0030", "t-0040", "t-0050", "t-0110"] },
-      { "blankId": "trick", "prompt": "How did the killer make it seem she was alive?", "wordIds": ["k-vt", "k-clock", "k-sipho", "k-blinds"] }
+      {
+        "blankId": "method",
+        "prompt": "How was she killed?",
+        "wordIds": ["m-plaque", "m-cable", "m-desk", "m-tea"]
+      },
+      {
+        "blankId": "time",
+        "prompt": "When did she die?",
+        "wordIds": ["t-0030", "t-0040", "t-0050", "t-0110"]
+      },
+      {
+        "blankId": "trick",
+        "prompt": "How did the killer make it seem she was alive?",
+        "wordIds": ["k-vt", "k-clock", "k-sipho", "k-blinds"]
+      }
     ],
     "why": [
-      { "blankId": "motive", "prompt": "Why?", "wordIds": ["y-fraud", "y-breakup", "y-slot", "y-obsession", "y-job"] }
+      {
+        "blankId": "motive",
+        "prompt": "Why?",
+        "wordIds": ["y-fraud", "y-breakup", "y-slot", "y-obsession", "y-job"]
+      }
     ],
     "proofCount": 3
   },
   "nudges": [
-    { "stuckPointId": "BT-1", "text": "Compare when she died with when she was heard." },
-    { "stuckPointId": "BT-2", "text": "Read what the listeners noticed, then look around the studio." },
-    { "stuckPointId": "BT-3", "text": "Someone put that voice on air. Who could, and were they there?" },
+    {
+      "stuckPointId": "BT-1",
+      "text": "Compare when she died with when she was heard."
+    },
+    {
+      "stuckPointId": "BT-2",
+      "text": "Read what the listeners noticed, then look around the studio."
+    },
+    {
+      "stuckPointId": "BT-3",
+      "text": "Someone put that voice on air. Who could, and were they there?"
+    },
     { "stuckPointId": "BT-4", "text": "Does everyone's story match the doors?" }
   ]
 }

@@ -1,0 +1,12 @@
+# Generated or third-party files
+node_modules
+.next
+dist
+coverage
+pnpm-lock.yaml
+next-env.d.ts
+*.tsbuildinfo
+apps/web/.data
+
+# Prose documents are written by hand; Prettier formats code and data files
+*.md

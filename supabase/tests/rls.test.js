@@ -9,8 +9,8 @@ import { PGlite } from '@electric-sql/pglite';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const MIGRATIONS = join(import.meta.dirname, '../migrations');
-const A = '11111111-1111-1111-1111-111111111111';
-const B = '22222222-2222-2222-2222-222222222222';
+const USER_A = '11111111-1111-1111-1111-111111111111';
+const USER_B = '22222222-2222-2222-2222-222222222222';
 let db;
 
 const SUPABASE_STUB = `
@@ -27,11 +27,15 @@ const SUPABASE_STUB = `
 `;
 
 async function as(user, fn) {
-  await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${user ?? ''}', false); set role ${user ? 'authenticated' : 'anon'};`);
+  await db.exec(
+    `reset role; select set_config('request.jwt.claim.sub', '${user ?? ''}', false); set role ${user ? 'authenticated' : 'anon'};`,
+  );
   try {
     return await fn();
   } finally {
-    await db.exec(`reset role; select set_config('request.jwt.claim.sub', '', false);`);
+    await db.exec(
+      `reset role; select set_config('request.jwt.claim.sub', '', false);`,
+    );
   }
 }
 const rows = async (sql, params) => (await db.query(sql, params)).rows;
@@ -39,67 +43,191 @@ const rows = async (sql, params) => (await db.query(sql, params)).rows;
 beforeAll(async () => {
   db = new PGlite();
   await db.exec(SUPABASE_STUB);
-  for (const f of readdirSync(MIGRATIONS).sort()) await db.exec(readFileSync(join(MIGRATIONS, f), 'utf8'));
-  await db.exec(`insert into auth.users (id, email) values ('${A}', 'a@example.com'), ('${B}', 'b@example.com');`);
+  for (const migrationFile of readdirSync(MIGRATIONS).sort())
+    await db.exec(readFileSync(join(MIGRATIONS, migrationFile), 'utf8'));
+  await db.exec(
+    `insert into auth.users (id, email) values ('${USER_A}', 'a@example.com'), ('${USER_B}', 'b@example.com');`,
+  );
 });
 
 describe('accounts migration', () => {
   it('creates a profile for every new user', async () => {
-    expect((await rows('select id from public.profiles order by id')).map((r) => r.id)).toEqual([A, B]);
+    expect(
+      (await rows('select id from public.profiles order by id')).map(
+        (row) => row.id,
+      ),
+    ).toEqual([USER_A, USER_B]);
   });
 
   it('profiles: users see and edit only their own', async () => {
-    await as(A, async () => {
-      expect(await rows('select id from public.profiles')).toEqual([{ id: A }]);
-      await db.query(`update public.profiles set display_name = 'Ada' where id = $1`, [B]); // silently affects 0 rows
-      await db.query(`update public.profiles set display_name = 'Ada' where id = $1`, [A]);
+    await as(USER_A, async () => {
+      expect(await rows('select id from public.profiles')).toEqual([
+        { id: USER_A },
+      ]);
+      await db.query(
+        `update public.profiles set display_name = 'Ada' where id = $1`,
+        [USER_B],
+      ); // silently affects 0 rows
+      await db.query(
+        `update public.profiles set display_name = 'Ada' where id = $1`,
+        [USER_A],
+      );
     });
-    expect((await rows(`select display_name from public.profiles where id = $1`, [B]))[0].display_name).toBeNull();
-    expect((await rows(`select display_name from public.profiles where id = $1`, [A]))[0].display_name).toBe('Ada');
+    expect(
+      (
+        await rows(`select display_name from public.profiles where id = $1`, [
+          USER_B,
+        ])
+      )[0].display_name,
+    ).toBeNull();
+    expect(
+      (
+        await rows(`select display_name from public.profiles where id = $1`, [
+          USER_A,
+        ])
+      )[0].display_name,
+    ).toBe('Ada');
   });
 
   it('play_saves: own rows only, cannot write as someone else', async () => {
-    await as(A, () => db.query(`insert into public.play_saves (user_id, case_id, token) values ($1, '001-dead-air', 'tokA')`, [A]));
-    await as(B, () => db.query(`insert into public.play_saves (user_id, case_id, token) values ($1, '001-dead-air', 'tokB')`, [B]));
-    await expect(as(A, () => db.query(`insert into public.play_saves (user_id, case_id, token) values ($1, 'x', 'evil')`, [B]))).rejects.toThrow(/row-level security/);
-    expect(await as(A, () => rows('select token from public.play_saves'))).toEqual([{ token: 'tokA' }]);
-    await as(A, () => db.query(`update public.play_saves set token = 'hacked' where user_id = $1`, [B]));
-    expect((await rows(`select token from public.play_saves where user_id = $1`, [B]))[0].token).toBe('tokB');
+    await as(USER_A, () =>
+      db.query(
+        `insert into public.play_saves (user_id, case_id, token) values ($1, '001-dead-air', 'tokA')`,
+        [USER_A],
+      ),
+    );
+    await as(USER_B, () =>
+      db.query(
+        `insert into public.play_saves (user_id, case_id, token) values ($1, '001-dead-air', 'tokB')`,
+        [USER_B],
+      ),
+    );
+    await expect(
+      as(USER_A, () =>
+        db.query(
+          `insert into public.play_saves (user_id, case_id, token) values ($1, 'x', 'evil')`,
+          [USER_B],
+        ),
+      ),
+    ).rejects.toThrow(/row-level security/);
+    expect(
+      await as(USER_A, () => rows('select token from public.play_saves')),
+    ).toEqual([{ token: 'tokA' }]);
+    await as(USER_A, () =>
+      db.query(
+        `update public.play_saves set token = 'hacked' where user_id = $1`,
+        [USER_B],
+      ),
+    );
+    expect(
+      (
+        await rows(`select token from public.play_saves where user_id = $1`, [
+          USER_B,
+        ])
+      )[0].token,
+    ).toBe('tokB');
   });
 
   it('anonymous visitors see nothing', async () => {
-    expect(await as(null, () => rows('select * from public.play_saves'))).toEqual([]);
-    expect(await as(null, () => rows('select * from public.profiles'))).toEqual([]);
-    await expect(as(null, () => db.query(`insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-22', true, 0, 60)`, [A]))).rejects.toThrow(/row-level security/);
+    expect(
+      await as(null, () => rows('select * from public.play_saves')),
+    ).toEqual([]);
+    expect(await as(null, () => rows('select * from public.profiles'))).toEqual(
+      [],
+    );
+    await expect(
+      as(null, () =>
+        db.query(
+          `insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-22', true, 0, 60)`,
+          [USER_A],
+        ),
+      ),
+    ).rejects.toThrow(/row-level security/);
   });
 
   it('daily_results: insert own once, no rewriting', async () => {
-    await as(A, () => db.query(`insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-22', false, 3, 200)`, [A]));
-    await expect(as(A, () => db.query(`insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-22', true, 0, 10)`, [A]))).rejects.toThrow(/duplicate key/);
-    await as(A, () => db.query(`update public.daily_results set solved = true where user_id = $1`, [A])); // no update policy: 0 rows
-    expect((await rows(`select solved from public.daily_results where user_id = $1`, [A]))[0].solved).toBe(false);
-    await expect(as(A, () => db.query(`insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-21', true, 9, 10)`, [A]))).rejects.toThrow(/check constraint/);
+    await as(USER_A, () =>
+      db.query(
+        `insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-22', false, 3, 200)`,
+        [USER_A],
+      ),
+    );
+    await expect(
+      as(USER_A, () =>
+        db.query(
+          `insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-22', true, 0, 10)`,
+          [USER_A],
+        ),
+      ),
+    ).rejects.toThrow(/duplicate key/);
+    await as(USER_A, () =>
+      db.query(
+        `update public.daily_results set solved = true where user_id = $1`,
+        [USER_A],
+      ),
+    ); // no update policy: 0 rows
+    expect(
+      (
+        await rows(
+          `select solved from public.daily_results where user_id = $1`,
+          [USER_A],
+        )
+      )[0].solved,
+    ).toBe(false);
+    await expect(
+      as(USER_A, () =>
+        db.query(
+          `insert into public.daily_results (user_id, date, solved, wrong, seconds) values ($1, '2026-10-21', true, 9, 10)`,
+          [USER_A],
+        ),
+      ),
+    ).rejects.toThrow(/check constraint/);
   });
 
   it('waitlist is closed to everyone but the server', async () => {
-    await expect(as(A, () => db.query(`insert into public.waitlist (email) values ('x@example.com')`))).rejects.toThrow(/row-level security/);
-    expect(await as(A, () => rows('select * from public.waitlist'))).toEqual([]);
+    await expect(
+      as(USER_A, () =>
+        db.query(
+          `insert into public.waitlist (email) values ('x@example.com')`,
+        ),
+      ),
+    ).rejects.toThrow(/row-level security/);
+    expect(
+      await as(USER_A, () => rows('select * from public.waitlist')),
+    ).toEqual([]);
   });
 
   it('sign-up trigger still works but cannot be called directly by players', async () => {
-    const C = '33333333-3333-3333-3333-333333333333';
+    const USER_C = '33333333-3333-3333-3333-333333333333';
     for (const role of ['anon', 'authenticated'])
-      expect((await rows(`select has_function_privilege('${role}', 'public.handle_new_user()', 'execute') as ok`))[0].ok).toBe(false);
-    await db.query(`insert into auth.users (id, email) values ($1, 'c@example.com')`, [C]);
-    expect(await rows('select id from public.profiles where id = $1', [C])).toEqual([{ id: C }]);
+      expect(
+        (
+          await rows(
+            `select has_function_privilege('${role}', 'public.handle_new_user()', 'execute') as ok`,
+          )
+        )[0].ok,
+      ).toBe(false);
+    await db.query(
+      `insert into auth.users (id, email) values ($1, 'c@example.com')`,
+      [USER_C],
+    );
+    expect(
+      await rows('select id from public.profiles where id = $1', [USER_C]),
+    ).toEqual([{ id: USER_C }]);
   });
 
   it('deleting the account removes all of the player’s data', async () => {
-    await db.query(`delete from auth.users where id = $1`, [A]);
-    for (const t of ['profiles', 'play_saves', 'daily_results']) {
-      const col = t === 'profiles' ? 'id' : 'user_id';
-      expect(await rows(`select 1 from public.${t} where ${col} = $1`, [A])).toEqual([]);
+    await db.query(`delete from auth.users where id = $1`, [USER_A]);
+    for (const table of ['profiles', 'play_saves', 'daily_results']) {
+      const col = table === 'profiles' ? 'id' : 'user_id';
+      expect(
+        await rows(`select 1 from public.${table} where ${col} = $1`, [USER_A]),
+      ).toEqual([]);
     }
-    expect(await rows(`select 1 from public.play_saves where user_id = $1`, [B])).toHaveLength(1);
+    expect(
+      await rows(`select 1 from public.play_saves where user_id = $1`, [
+        USER_B,
+      ]),
+    ).toHaveLength(1);
   });
 });

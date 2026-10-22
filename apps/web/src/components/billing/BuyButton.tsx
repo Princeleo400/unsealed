@@ -14,7 +14,16 @@ type Props = {
 };
 
 /** Starts a Stripe / Paystack checkout. Signed-out players are sent to sign in first, then back here. */
-export function BuyButton({ productId, currency, caseSlug, back, signedIn, disabled, label, primary }: Props) {
+export function BuyButton({
+  productId,
+  currency,
+  caseSlug,
+  back,
+  signedIn,
+  disabled,
+  label,
+  primary,
+}: Props) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -32,16 +41,23 @@ export function BuyButton({ productId, currency, caseSlug, back, signedIn, disab
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ productId, currency, caseSlug, back }),
       });
-      const j = (await res.json().catch(() => null)) as { ok: boolean; url?: string; code?: string; message?: string } | null;
-      if (j?.ok && j.url) {
-        window.location.href = j.url;
+      const reply = (await res.json().catch(() => null)) as {
+        ok: boolean;
+        url?: string;
+        code?: string;
+        message?: string;
+      } | null;
+      if (reply?.ok && reply.url) {
+        window.location.href = reply.url;
         return;
       }
-      if (j?.code === 'sign_in') {
+      if (reply?.code === 'sign_in') {
         window.location.href = `/signin?next=${encodeURIComponent(here)}`;
         return;
       }
-      setErr(j?.message ?? 'Couldn’t start the checkout. Please try again.');
+      setErr(
+        reply?.message ?? 'Couldn’t start the checkout. Please try again.',
+      );
     } catch {
       setErr('Couldn’t reach the server. Check your connection and try again.');
     }
@@ -55,7 +71,9 @@ export function BuyButton({ productId, currency, caseSlug, back, signedIn, disab
         onClick={() => void buy()}
         disabled={disabled || busy}
         className={`h-12 rounded-xl px-5 font-extrabold disabled:opacity-50 ${
-          primary ? 'bg-amber text-ink hover:bg-amber-soft' : 'border border-line-strong text-paper hover:border-amber'
+          primary
+            ? 'bg-amber text-ink hover:bg-amber-soft'
+            : 'border border-line-strong text-paper hover:border-amber'
         }`}
       >
         {busy ? 'Opening checkout…' : label}

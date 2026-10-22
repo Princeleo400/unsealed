@@ -10,22 +10,40 @@ export type TimelineEvent = {
 };
 
 /** Every timestamp from evidence the player has READ, in time order. */
-export function buildTimeline(pub: CasePublic, state: SessionState): TimelineEvent[] {
+export function buildTimeline(
+  pub: CasePublic,
+  state: SessionState,
+): TimelineEvent[] {
   const events: TimelineEvent[] = [];
-  for (const e of pub.evidence) {
-    if (!state.read.includes(e.id)) continue;
-    for (const t of e.timestamps) {
-      events.push({ at: t.at, label: t.label, evidenceId: e.id, suspectIds: t.suspectIds ?? [], place: t.place });
+  for (const evidence of pub.evidence) {
+    if (!state.read.includes(evidence.id)) continue;
+    for (const timestamp of evidence.timestamps) {
+      events.push({
+        at: timestamp.at,
+        label: timestamp.label,
+        evidenceId: evidence.id,
+        suspectIds: timestamp.suspectIds ?? [],
+        place: timestamp.place,
+      });
     }
   }
-  return events.sort((x, y) => (x.at === y.at ? x.evidenceId.localeCompare(y.evidenceId) : x.at.localeCompare(y.at)));
+  return events.sort((first, second) =>
+    first.at === second.at
+      ? first.evidenceId.localeCompare(second.evidenceId)
+      : first.at.localeCompare(second.at),
+  );
 }
 
-export type Placement = { suspectId: string; at: string; place: string; evidenceId?: string };
+export type Placement = {
+  suspectId: string;
+  at: string;
+  place: string;
+  evidenceId?: string;
+};
 
 const toMinutes = (stamp: string): number => {
-  const d = new Date(`${stamp}:00Z`);
-  return Math.round(d.getTime() / 60000);
+  const date = new Date(`${stamp}:00Z`);
+  return Math.round(date.getTime() / 60000);
 };
 
 /**
@@ -40,16 +58,35 @@ export function findConflicts(
   windowMinutes = 10,
 ): { suspectId: string; a: Placement; b: Placement }[] {
   const fromEvidence: Placement[] = buildTimeline(pub, state).flatMap((ev) =>
-    ev.place ? ev.suspectIds.map((s) => ({ suspectId: s, at: ev.at, place: ev.place as string, evidenceId: ev.evidenceId })) : [],
+    ev.place
+      ? ev.suspectIds.map((suspectId) => ({
+          suspectId: suspectId,
+          at: ev.at,
+          place: ev.place as string,
+          evidenceId: ev.evidenceId,
+        }))
+      : [],
   );
   const all = [...placements, ...fromEvidence];
   const conflicts: { suspectId: string; a: Placement; b: Placement }[] = [];
-  for (let i = 0; i < all.length; i++) {
-    for (let j = i + 1; j < all.length; j++) {
-      const a = all[i]!;
-      const b = all[j]!;
-      if (a.suspectId !== b.suspectId || a.place === b.place) continue;
-      if (Math.abs(toMinutes(a.at) - toMinutes(b.at)) < windowMinutes) conflicts.push({ suspectId: a.suspectId, a, b });
+  for (let index = 0; index < all.length; index++) {
+    for (let innerIndex = index + 1; innerIndex < all.length; innerIndex++) {
+      const placement = all[index]!;
+      const otherPlacement = all[innerIndex]!;
+      if (
+        placement.suspectId !== otherPlacement.suspectId ||
+        placement.place === otherPlacement.place
+      )
+        continue;
+      if (
+        Math.abs(toMinutes(placement.at) - toMinutes(otherPlacement.at)) <
+        windowMinutes
+      )
+        conflicts.push({
+          suspectId: placement.suspectId,
+          a: placement,
+          b: otherPlacement,
+        });
     }
   }
   return conflicts;

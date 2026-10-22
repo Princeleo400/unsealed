@@ -9,13 +9,19 @@ import { currentUser } from '@/server/supabase';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function POST(req: Request, ctx: { params: Promise<{ slug: string }> }) {
+export async function POST(
+  req: Request,
+  ctx: { params: Promise<{ slug: string }> },
+) {
   const { slug } = await ctx.params;
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ ok: false, error: { code: 'bad_json', message: 'Invalid JSON.' } }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: { code: 'bad_json', message: 'Invalid JSON.' } },
+      { status: 400 },
+    );
   }
   const user = await currentUser();
 
@@ -25,12 +31,21 @@ export async function POST(req: Request, ctx: { params: Promise<{ slug: string }
   if (user && billing) {
     try {
       access = await loadAccess(billing, user.id);
-    } catch (e) {
-      console.error('access check failed', e);
+    } catch (error) {
+      console.error('access check failed', error);
       access = catalogEntry(slug)?.productId ? 'error' : null; // free cases carry on without perks
     }
   }
 
-  const { status, json } = await handlePlay(slug, body, user ? { userId: user.id, store: await supabaseSaveStore(), access } : { access });
-  return NextResponse.json(json, { status, headers: { 'Cache-Control': user ? 'private, no-store' : 'no-store' } });
+  const { status, json } = await handlePlay(
+    slug,
+    body,
+    user
+      ? { userId: user.id, store: await supabaseSaveStore(), access }
+      : { access },
+  );
+  return NextResponse.json(json, {
+    status,
+    headers: { 'Cache-Control': user ? 'private, no-store' : 'no-store' },
+  });
 }

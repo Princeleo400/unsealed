@@ -50,4 +50,5 @@ export const CATALOG: CatalogEntry[] = [
   },
 ];
 
-export const catalogEntry = (slug: string) => CATALOG.find((c) => c.slug === slug);
+export const catalogEntry = (slug: string) =>
+  CATALOG.find((catalogEntry) => catalogEntry.slug === slug);

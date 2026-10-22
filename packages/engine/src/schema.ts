@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 /** ISO-like local timestamp of the case night, e.g. "2026-03-06T00:22". Sorts lexically. */
-const Stamp = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, 'timestamp must be YYYY-MM-DDTHH:MM');
+const Stamp = z
+  .string()
+  .regex(
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/,
+    'timestamp must be YYYY-MM-DDTHH:MM',
+  );
 const Id = z.string().min(1);
 
 export const GateSchema = z.object({
@@ -18,7 +23,12 @@ export const TimestampSchema = z.object({
 });
 export type CaseTimestamp = z.infer<typeof TimestampSchema>;
 
-const ChatMessage = z.object({ from: z.string(), at: z.string(), text: z.string(), me: z.boolean().optional() });
+const ChatMessage = z.object({
+  from: z.string(),
+  at: z.string(),
+  text: z.string(),
+  me: z.boolean().optional(),
+});
 
 export const EvidenceBodySchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('document'), markdown: z.string().min(1) }),
@@ -26,7 +36,9 @@ export const EvidenceBodySchema = z.discriminatedUnion('type', [
     type: z.literal('photo'),
     caption: z.string().min(1),
     scene: z.string().min(1), // written description used for the illustration brief + screen readers
-    markers: z.array(z.object({ n: z.number().int(), label: z.string() })).optional(),
+    markers: z
+      .array(z.object({ n: z.number().int(), label: z.string() }))
+      .optional(),
     stamp: z.string().optional(),
     asset: z.string().optional(),
   }),
@@ -46,7 +58,15 @@ export const EvidenceBodySchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('handwriting'),
-    entries: z.array(z.object({ text: z.string(), signedBy: z.string().optional(), ink: z.string() })).min(1),
+    entries: z
+      .array(
+        z.object({
+          text: z.string(),
+          signedBy: z.string().optional(),
+          ink: z.string(),
+        }),
+      )
+      .min(1),
     note: z.string().optional(),
   }),
   z.object({
@@ -60,27 +80,55 @@ export const EvidenceBodySchema = z.discriminatedUnion('type', [
     type: z.literal('map'),
     description: z.string(),
     points: z.array(z.object({ id: Id, label: z.string() })).min(2),
-    travel: z.array(z.object({ from: Id, to: Id, minutes: z.number().positive(), mode: z.string() })).min(1),
+    travel: z
+      .array(
+        z.object({
+          from: Id,
+          to: Id,
+          minutes: z.number().positive(),
+          mode: z.string(),
+        }),
+      )
+      .min(1),
   }),
   z.object({
     type: z.literal('statement'),
     suspectId: Id,
     interviewedAt: z.string(),
-    lines: z.array(z.object({ n: z.number().int().positive(), text: z.string() })).min(1),
+    lines: z
+      .array(z.object({ n: z.number().int().positive(), text: z.string() }))
+      .min(1),
   }),
   z.object({
     type: z.literal('audio'),
-    lines: z.array(z.object({ t: z.string(), speaker: z.string(), text: z.string() })).min(1),
+    lines: z
+      .array(z.object({ t: z.string(), speaker: z.string(), text: z.string() }))
+      .min(1),
     note: z.string().optional(),
   }),
   z.object({
     type: z.literal('phone'),
     owner: z.string(),
-    messages: z.array(z.object({ thread: z.string(), messages: z.array(ChatMessage) })).default([]),
-    calls: z.array(z.object({ at: z.string(), who: z.string(), dir: z.enum(['in', 'out', 'missed']), duration: z.string() })).default([]),
-    notes: z.array(z.object({ title: z.string(), text: z.string() })).default([]),
+    messages: z
+      .array(z.object({ thread: z.string(), messages: z.array(ChatMessage) }))
+      .default([]),
+    calls: z
+      .array(
+        z.object({
+          at: z.string(),
+          who: z.string(),
+          dir: z.enum(['in', 'out', 'missed']),
+          duration: z.string(),
+        }),
+      )
+      .default([]),
+    notes: z
+      .array(z.object({ title: z.string(), text: z.string() }))
+      .default([]),
     health: z.array(z.object({ t: z.string(), bpm: z.number() })).default([]),
-    locations: z.array(z.object({ t: z.string(), place: z.string() })).default([]),
+    locations: z
+      .array(z.object({ t: z.string(), place: z.string() }))
+      .default([]),
   }),
 ]);
 export type EvidenceBody = z.infer<typeof EvidenceBodySchema>;
@@ -97,7 +145,12 @@ export const EvidenceSchema = z.object({
 });
 export type Evidence = z.infer<typeof EvidenceSchema>;
 
-export const SuspectSchema = z.object({ id: Id, name: z.string(), role: z.string(), short: z.string() });
+export const SuspectSchema = z.object({
+  id: Id,
+  name: z.string(),
+  role: z.string(),
+  short: z.string(),
+});
 
 export const LeadSchema = z.object({
   id: Id,
@@ -115,7 +168,11 @@ export const WordSchema = z.object({
 });
 export type Word = z.infer<typeof WordSchema>;
 
-const Blank = z.object({ blankId: Id, prompt: z.string(), wordIds: z.array(Id).min(2) });
+const Blank = z.object({
+  blankId: Id,
+  prompt: z.string(),
+  wordIds: z.array(Id).min(2),
+});
 
 export const CasePublicSchema = z.object({
   id: Id,
@@ -143,7 +200,11 @@ export const CasePublicSchema = z.object({
 });
 export type CasePublic = z.infer<typeof CasePublicSchema>;
 
-export const RelationSchema = z.enum(['contradiction', 'corroboration', 'link']);
+export const RelationSchema = z.enum([
+  'contradiction',
+  'corroboration',
+  'link',
+]);
 export type Relation = z.infer<typeof RelationSchema>;
 
 export const CaseSolutionSchema = z.object({
@@ -166,17 +227,27 @@ export const CaseSolutionSchema = z.object({
       statementId: Id,
       line: z.number().int().positive(),
       evidenceIds: z.array(Id).min(1),
-      revealLines: z.array(z.object({ n: z.string(), text: z.string() })).min(1),
+      revealLines: z
+        .array(z.object({ n: z.string(), text: z.string() }))
+        .min(1),
     }),
   ),
-  archiveIndex: z.array(z.object({ evidenceId: Id, terms: z.array(z.string().min(2)).min(1) })),
+  archiveIndex: z.array(
+    z.object({ evidenceId: Id, terms: z.array(z.string().min(2)).min(1) }),
+  ),
   verdict: z.object({
     who: z.record(Id, Id),
     how: z.record(Id, z.array(Id).min(1)),
     why: z.record(Id, z.array(Id).min(1)),
-    proof: z.object({ core: z.array(Id), support: z.array(Id), }),
+    proof: z.object({ core: z.array(Id), support: z.array(Id) }),
   }),
-  hints: z.array(z.object({ stuckPointId: Id, pointer: z.string(), reveal: z.string() })),
-  debrief: z.array(z.object({ step: z.number().int(), time: z.string(), text: z.string() })).min(1),
+  hints: z.array(
+    z.object({ stuckPointId: Id, pointer: z.string(), reveal: z.string() }),
+  ),
+  debrief: z
+    .array(
+      z.object({ step: z.number().int(), time: z.string(), text: z.string() }),
+    )
+    .min(1),
 });
 export type CaseSolution = z.infer<typeof CaseSolutionSchema>;
