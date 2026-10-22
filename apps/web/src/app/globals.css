@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+/* Design tokens: docs/02-GDD.md §10 — "noir paper" */
+@theme {
+  --color-ink: #14110f;
+  --color-walnut: #2a211b;
+  --color-cocoa: #241c17;
+  --color-line: #3a2f27;
+  --color-line-strong: #5c4f42;
+  --color-paper: #f3ebdd;
+  --color-paper-2: #fbf7f0;
+  --color-paper-line: #dccfb9;
+  --color-muted: #c9bba6;
+  --color-faint: #a89a86;
+  --color-body: #e6dccb;
+  --color-amber: #e8b83a;
+  --color-amber-soft: #f3d27a;
+  --color-amber-wash: #f6de94;
+  --color-red: #c2412d;
+  --color-red-text: #e26a52;
+  --color-red-soft: #f08a74;
+  --color-green: #3f7d5c;
+  --color-green-text: #6cc293;
+
+  --font-sans: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Long-form case documents */
+.doc p {
+  margin: 0 0 0.75rem;
+}
+.doc ul {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.doc strong {
+  font-weight: 800;
+}
+
+@keyframes shimmer {
+  0% { box-shadow: 0 0 0 0 rgb(232 184 58 / 0.7); }
+  100% { box-shadow: 0 0 0 14px rgb(232 184 58 / 0); }
+}
+.shimmer {
+  animation: shimmer 1.1s ease-out 2;
+}
