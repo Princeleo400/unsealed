@@ -29,7 +29,7 @@ export function SiteFooter() {
     <footer className="mx-auto w-full max-w-6xl border-t border-walnut px-4 py-8 text-sm text-faint sm:px-6">
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
         <p>© 2026 UNSEALED. All cases are works of fiction.</p>
-        <p>Made in Lagos for detectives everywhere.</p>
+        <p>Detective cases from around the world.</p>
       </div>
     </footer>
   );

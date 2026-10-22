@@ -115,7 +115,7 @@ Full revenue scenarios are in [05-MONETIZATION](05-MONETIZATION.md) §8.
 
 1. **BR-1 Fair play.** Every case must be solvable from the evidence alone. No case ships without passing the fairness checklist and ≥5 blind playtests ([06-CASE-AUTHORING-GUIDE](06-CASE-AUTHORING-GUIDE.md)).
 2. **BR-2 No pay-to-win.** Money never buys an answer. Hints cost score, not cash. Free players can get extra hints by watching a rewarded ad, capped per case.
-3. **BR-3 No ads inside a case.** Ads only appear around free content (after a Daily Brief, on the lobby). They never interrupt someone reading evidence.
+3. **BR-3 No ads interrupt a case.** Ads never pop up while someone is reading evidence. The only ad inside a case is the **opt-in rewarded video for a hint**, which the player chooses to watch. Other ads appear only around free content (after a Daily Brief, on the lobby).
 4. **BR-4 Guests play free.** In co-op and Party Mode, only the host needs to own the case or Party Pass. Invitees play free, which is how the game spreads.
 5. **BR-5 Buy once, play everywhere.** A purchase on any platform unlocks the content on all platforms under the same account (subject to store rules; see [05-MONETIZATION](05-MONETIZATION.md) §6).
 6. **BR-6 Regional pricing.** Prices follow store price tiers and purchasing-power adjustments (e.g. Naira pricing via Paystack on web).

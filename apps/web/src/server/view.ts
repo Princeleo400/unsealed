@@ -11,10 +11,23 @@ import {
 } from '@unsealed/engine';
 import type { CaseView, DebriefView } from '@/lib/view-types';
 
-/** Free players get this many hints per case (FR-HINT-03). Case Pass will lift it. */
-export const FREE_HINTS_PER_CASE = 3;
+/**
+ * Hint allowance for free players (FR-HINT-03): the first hint per case is free, then each further
+ * hint is unlocked by an opt-in rewarded video, up to AD_HINTS_PER_CASE. Case Pass (later) = unlimited, no ads.
+ */
+export const FREE_HINTS_PER_CASE = 1;
+export const AD_HINTS_PER_CASE = 3;
 
 export const hintsUsed = (s: SessionState) => s.hints.nudge + s.hints.pointer + s.hints.reveal;
+
+export function hintAllowance(s: SessionState) {
+  const used = hintsUsed(s);
+  return {
+    freeLeft: Math.max(0, FREE_HINTS_PER_CASE - used),
+    adLeft: Math.max(0, Math.min(AD_HINTS_PER_CASE, FREE_HINTS_PER_CASE + AD_HINTS_PER_CASE - used)),
+    unlimited: false,
+  };
+}
 
 export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState): CaseView {
   const word = (id: string) => pub.words.find((w) => w.id === id)?.text ?? id;
@@ -59,7 +72,7 @@ export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState): 
     searches: s.searches,
     clockMinutes: s.clockMinutes,
     hints: s.hints,
-    hintsLeft: Math.max(0, FREE_HINTS_PER_CASE - hintsUsed(s)),
+    hintAllowance: hintAllowance(s),
     accusations: s.accusations,
     accusationsLeft: accusationsLeft(s),
     status: s.status,

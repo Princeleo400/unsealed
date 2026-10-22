@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { CaseView } from '@/lib/view-types';
+import type { AdReward, CaseView } from '@/lib/view-types';
+import { showRewardedAd } from '@/components/ads/rewarded';
 import { IconClose } from '@/components/icons';
 import { mdToHtml } from './EvidenceBody';
 import type { Toast } from './usePlay';
@@ -69,37 +70,112 @@ export function HintModal({
   open: boolean;
   busy: boolean;
   onClose: () => void;
-  onHint: (tier: 'nudge' | 'pointer' | 'reveal') => Promise<string | null>;
+  onHint: (tier: 'nudge' | 'pointer' | 'reveal', adReward?: AdReward) => Promise<string | null>;
 }) {
+  type Tier = 'nudge' | 'pointer' | 'reveal';
   const [text, setText] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  const [devAd, setDevAd] = useState<{ tier: Tier; seconds: number } | null>(null);
+  const [loadingAd, setLoadingAd] = useState(false);
+  const { freeLeft, adLeft, unlimited } = view.hintAllowance;
+  const needsAd = !unlimited && freeLeft === 0;
+  const noneLeft = !unlimited && freeLeft === 0 && adLeft === 0;
+
+  // Development stand-in for a rewarded video: a 5-second countdown.
+  useEffect(() => {
+    if (!devAd) return;
+    if (devAd.seconds <= 0) {
+      const tier = devAd.tier;
+      setDevAd(null);
+      void onHint(tier, { provider: 'dev', id: `dev-${Date.now()}` }).then(setText);
+      return;
+    }
+    const t = setTimeout(() => setDevAd((d) => (d ? { ...d, seconds: d.seconds - 1 } : d)), 1000);
+    return () => clearTimeout(t);
+  }, [devAd, onHint]);
+
+  const ask = async (tier: Tier) => {
+    setNote(null);
+    if (!needsAd) return setText(await onHint(tier));
+    setLoadingAd(true);
+    const outcome = await showRewardedAd();
+    setLoadingAd(false);
+    if (outcome.status === 'dev-simulate') return setDevAd({ tier, seconds: 5 });
+    if (outcome.status === 'closed') return setNote('Watch the video to the end to unlock the hint.');
+    setText(await onHint(tier, outcome.reward));
+  };
+
   const tiers = [
     { id: 'nudge' as const, label: 'Nudge', cost: 10, help: 'Which direction to look' },
     { id: 'pointer' as const, label: 'Pointer', cost: 30, help: 'Which items to compare' },
     { id: 'reveal' as const, label: 'Reveal', cost: 75, help: 'Tells you the breakthrough' },
   ];
+  const close = () => {
+    setText(null);
+    setNote(null);
+    setDevAd(null);
+    onClose();
+  };
+
+  if (devAd) {
+    return (
+      <Modal open={open} onClose={close} label="Video ad">
+        <div className="flex flex-col items-center gap-4 py-6 text-center">
+          <span className="font-mono text-[11px] tracking-[0.2em] text-faint">TEST AD · DEVELOPMENT ONLY</span>
+          <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-dashed border-line-strong bg-walnut">
+            <span className="font-mono text-5xl font-semibold text-amber">{devAd.seconds}</span>
+          </div>
+          <p className="text-sm text-muted">In production a short rewarded video plays here. Your hint unlocks when it ends.</p>
+          <button type="button" onClick={() => setDevAd(null)} className="text-sm font-bold text-muted underline">
+            Stop video (no hint)
+          </button>
+        </div>
+      </Modal>
+    );
+  }
+
   return (
-    <Modal open={open} onClose={() => { setText(null); onClose(); }} label="Hints">
+    <Modal open={open} onClose={close} label="Hints">
       <h2 className="text-2xl font-extrabold">Need a hint?</h2>
-      <p className="mt-1 text-sm text-muted">
-        Hints never cost money. They cost score. {view.hintsLeft !== null && <b className="text-paper">{view.hintsLeft} free hints left for this case.</b>}
+      <p className="mt-1 text-sm leading-relaxed text-muted">
+        Hints cost score, never money.{' '}
+        {unlimited ? (
+          <b className="text-paper">Unlimited hints with Case Pass.</b>
+        ) : freeLeft > 0 ? (
+          <b className="text-paper">Your first hint is free.</b>
+        ) : adLeft > 0 ? (
+          <b className="text-paper">Watch a short video to unlock each hint ({adLeft} left for this case).</b>
+        ) : (
+          <b className="text-paper">You’ve used every hint for this case.</b>
+        )}
       </p>
       <div className="mt-4 flex flex-col gap-2">
         {tiers.map((t) => (
           <button
             key={t.id}
             type="button"
-            disabled={busy || view.hintsLeft === 0}
-            onClick={async () => setText(await onHint(t.id))}
-            className="flex items-center justify-between rounded-xl border border-line-strong px-4 py-3 text-left hover:border-amber disabled:opacity-50"
+            disabled={busy || loadingAd || noneLeft}
+            onClick={() => void ask(t.id)}
+            className="flex items-center justify-between gap-3 rounded-xl border border-line-strong px-4 py-3 text-left hover:border-amber disabled:opacity-50"
           >
             <span>
               <span className="block font-extrabold">{t.label}</span>
               <span className="block text-xs text-muted">{t.help}</span>
             </span>
-            <span className="font-mono text-sm text-red-soft">−{t.cost}</span>
+            <span className="flex shrink-0 flex-col items-end gap-0.5">
+              <span className="font-mono text-sm text-red-soft">−{t.cost}</span>
+              <span className="text-[11px] font-bold text-amber">{needsAd ? '▶ Watch video' : 'Free'}</span>
+            </span>
           </button>
         ))}
       </div>
+      {loadingAd && <p role="status" className="mt-3 text-sm text-muted">Loading video…</p>}
+      {note && <p role="status" className="mt-3 text-sm font-semibold text-red-soft">{note}</p>}
+      {noneLeft && (
+        <p className="mt-3 rounded-xl border border-line p-3 text-sm text-body">
+          Case Pass gives unlimited hints with no ads. Coming soon.
+        </p>
+      )}
       {text && (
         <p role="status" className="mt-4 rounded-xl border border-amber bg-line p-4 leading-relaxed">
           {text}

@@ -163,9 +163,9 @@ export function CasePlayer({ slug }: { slug: string }) {
             <span className="hidden text-faint sm:inline">/ par {view.case.parHours}h</span>
           </span>
           {!closed && (
-            <button type="button" onClick={() => setShowHints(true)} aria-label={`Hints, ${view.hintsLeft ?? 'unlimited'} left`} className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-line bg-walnut px-3 text-xs font-bold">
+            <button type="button" onClick={() => setShowHints(true)} className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-line bg-walnut px-3 text-xs font-bold">
               <IconBulb className="h-4 w-4 text-amber" />
-              {view.hintsLeft ?? ''}
+              Hint
             </button>
           )}
         </div>
@@ -275,8 +275,8 @@ export function CasePlayer({ slug }: { slug: string }) {
         open={showHints}
         busy={busy}
         onClose={() => setShowHints(false)}
-        onHint={async (tier) => {
-          const r = await send({ type: 'hint', tier });
+        onHint={async (tier, adReward) => {
+          const r = await send({ type: 'hint', tier, adReward });
           return r?.result.type === 'hint' ? r.result.text : null;
         }}
       />

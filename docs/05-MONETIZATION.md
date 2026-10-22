@@ -54,7 +54,7 @@ Related: [01-BRD](01-BRD.md) §8 business rules · [03-FRD](03-FRD.md) §14
 | Other cases | Buy individually | ✅ All, including new monthly releases |
 | Daily Brief (today) | ✅ | ✅ |
 | Daily archive | Last 7 days | ✅ Full |
-| Hints per case | 3 + 3 via rewarded ads | Unlimited (still cost score) |
+| Hints per case | 1 free + 3 via rewarded videos | Unlimited (still cost score) |
 | Ads | Rewarded + max 3 interstitials/day after Daily | ❌ None |
 | Co-op host | Only for owned cases | ✅ Any case |
 | Co-op guest | ✅ Free | ✅ |
@@ -65,9 +65,9 @@ Related: [01-BRD](01-BRD.md) §8 business rules · [03-FRD](03-FRD.md) §14
 
 ## 5. Ads plan
 
-- **Network:** Google AdMob (mobile). Web ads are **off at launch**: they hurt the premium feel and pay little. Re-evaluate later on the Daily Brief page only.
+- **Network:** Google AdMob (mobile) and Google Ad Manager rewarded ads (web, hints only). Other web ad formats are **off at launch**: they hurt the premium feel and pay little. Re-evaluate later on the Daily Brief page only.
 - **Placements:**
-  - **Rewarded:** "+1 hint" (max 3 per case), "Retry today's Daily after a fail".
+  - **Rewarded:** "+1 hint" after the free one (max 3 per case, web and mobile), "Retry today's Daily after a fail". Web uses Google Ad Manager rewarded ads (mainly fills on mobile browsers); if no ad fills, the hint is given anyway.
   - **Interstitial:** after finishing a Daily Brief, at most once per session and 3 per day. Never in the first session of a new user.
 - **No banners** in the case player.
 - **Consent:** Google UMP for GDPR, ATT on iOS (FRD FR-PAY-09).
