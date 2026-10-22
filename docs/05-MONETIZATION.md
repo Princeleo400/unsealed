@@ -76,8 +76,8 @@ Related: [01-BRD](01-BRD.md) §8 business rules · [03-FRD](03-FRD.md) §14
 
 | Channel | Provider | Fees (indicative) | Notes |
 |---|---|---|---|
-| Web — global | Stripe | ~3% + fixed fee | Cards, Apple Pay, Google Pay, local methods |
-| Web — Africa | Paystack | ~1.5% + fixed fee (NG local) | NGN, GHS, KES, ZAR; cards, bank transfer, USSD |
+| Web — Naira | Paystack | ~1.5% + fixed fee (NG local cards) | Cards, bank transfer, USSD |
+| Web — US$ / international | Paystack (international payments + USD on a Zenith USD domiciliary account) | 3.9% + ₦100 on international cards (Paystack's published rate; re-check) | Visa / Mastercard from any country. **Stripe isn't available to Nigerian businesses**; revisit Stripe (via a US company, e.g. Stripe Atlas) or a merchant of record once revenue justifies it |
 | iOS | App Store via RevenueCat | 15% (Small Business Program, under $1M/yr) / 30% | Must offer IAP for digital content in the app |
 | Android | Google Play via RevenueCat | 15% on the first $1M/yr; 15% on subscriptions | Google's announced "Own Billing" programme is rolling out by region [2] |
 

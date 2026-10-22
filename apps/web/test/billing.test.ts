@@ -2,10 +2,11 @@ import { createHmac } from 'node:crypto';
 import type Stripe from 'stripe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CATALOG } from '@/lib/catalog';
-import { PRICING, currencyForCountry, formatPrice, priceOf } from '@/lib/pricing';
+import { PRICING, currencyForCountry, formatPrice, priceOf, providerFor, trialDays } from '@/lib/pricing';
 import type { PlayResponse } from '@/lib/view-types';
 import { accessFrom, canOpen, loadAccess, NO_ACCESS } from '@/server/billing/access';
-import { fulfilPaystackCharge, fulfilStripeSession, type PaystackCharge, type StripeReader } from '@/server/billing/fulfil';
+import { fulfilPaystackCharge, fulfilStripeSession, paystackPlanFor, type PaystackCharge, type StripeReader } from '@/server/billing/fulfil';
+import { sellable } from '@/server/billing/checkout';
 import { verifyPaystackSignature } from '@/server/billing/paystack';
 import { MemoryBillingStore } from '@/server/billing/store';
 import { handlePaystackEvent, handleStripeEvent } from '@/server/billing/webhooks';
@@ -69,6 +70,8 @@ beforeEach(() => {
   store = new MemoryBillingStore();
   vi.stubEnv('PAYSTACK_PLAN_PASS_MONTHLY', 'PLN_month');
   vi.stubEnv('PAYSTACK_PLAN_PASS_ANNUAL', 'PLN_year');
+  vi.stubEnv('PAYSTACK_PLAN_PASS_MONTHLY_USD', 'PLN_month_usd');
+  vi.stubEnv('PAYSTACK_PLAN_PASS_ANNUAL_USD', 'PLN_year_usd');
 });
 afterEach(() => vi.unstubAllEnvs());
 
@@ -200,6 +203,38 @@ describe('Paystack fulfilment', () => {
     expect((await fulfilPaystackCharge(pscharge(), store, V)).status).toBe('ignored');
     expect((await fulfilPaystackCharge(pscharge({ metadata: {}, customer: { customer_code: 'CUS_unknown' } }), store)).status).toBe('ignored');
     expect(store.ents.size).toBe(0);
+  });
+
+  it('US$ through Paystack (no Stripe in Nigeria): cases and passes, checked against US$ prices', async () => {
+    expect(providerFor('USD')).toBe('paystack');
+    expect(trialDays('pass-annual', 'USD')).toBe(0); // Paystack charges on day one: no trial is promised
+    const usdCase = pscharge({ reference: 'usd1', currency: 'USD', amount: priceOf('case-standard', 'USD') });
+    expect((await fulfilPaystackCharge(usdCase, store)).status).toBe('granted');
+    expect(store.payments.get('paystack|usd1')).toMatchObject({ currency: 'USD', amountMinor: 299 });
+    const pass = pscharge({ reference: 'usd2', currency: 'USD', amount: priceOf('pass-annual', 'USD'), plan: { plan_code: 'PLN_year_usd' }, metadata: { user_id: U, product_id: 'pass-annual' } });
+    expect((await fulfilPaystackCharge(pass, store)).status).toBe('granted');
+    expect((await loadAccess(store, U)).pass?.productId).toBe('pass-annual');
+  });
+
+  it('refuses a Naira amount on a US$ price, and a plan charged in the wrong currency', async () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    expect(await fulfilPaystackCharge(pscharge({ currency: 'USD', amount: priceOf('case-standard', 'NGN') }), store)).toMatchObject({ reason: 'amount mismatch' });
+    expect(await fulfilPaystackCharge(pscharge({ currency: 'NGN', plan: { plan_code: 'PLN_year_usd' } }), store)).toMatchObject({ reason: 'plan currency mismatch' });
+    expect(store.ents.size).toBe(0);
+    spy.mockRestore();
+  });
+
+  it('each currency needs its own Paystack plan before the pass goes on sale', () => {
+    expect(paystackPlanFor('pass-monthly', 'USD')).toBe('PLN_month_usd');
+    expect(paystackPlanFor('pass-monthly', 'NGN')).toBe('PLN_month');
+    expect(paystackPlanFor('case-standard', 'USD')).toBeNull();
+    vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'x');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://x.supabase.co');
+    vi.stubEnv('PAYSTACK_SECRET_KEY', 'sk_test_x');
+    expect(sellable('pass-annual', 'USD')).toBe(true);
+    vi.stubEnv('PAYSTACK_PLAN_PASS_ANNUAL_USD', '');
+    expect(sellable('pass-annual', 'USD')).toBe(false);
+    expect(sellable('case-standard', 'USD')).toBe(true);
   });
 
   it('webhook signatures: valid passes, tampered or missing fails', () => {

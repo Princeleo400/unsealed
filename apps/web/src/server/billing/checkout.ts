@@ -26,7 +26,7 @@ export function sellable(productId: ProductId, currency: Currency): boolean {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) return false; // purchases are recorded with the service role
   if (providerFor(currency) === 'stripe') return stripeEnabled();
   if (!paystackEnabled()) return false;
-  return product(productId).kind === 'case' || Boolean(paystackPlanFor(productId));
+  return product(productId).kind === 'case' || Boolean(paystackPlanFor(productId, currency));
 }
 
 type Start = {
@@ -99,12 +99,13 @@ export async function startCheckout(p: Start): Promise<{ url: string }> {
     return { url: session.url };
   }
 
-  if (!paystackEnabled()) throw new CheckoutError('unavailable', 'Naira payments aren’t switched on yet.', 503);
-  const plan = prod.kind === 'pass' ? paystackPlanFor(p.productId) : undefined;
-  if (prod.kind === 'pass' && !plan) throw new CheckoutError('unavailable', 'The Naira Case Pass isn’t set up yet.', 503);
+  if (!paystackEnabled()) throw new CheckoutError('unavailable', 'Payments aren’t switched on yet.', 503);
+  const plan = prod.kind === 'pass' ? paystackPlanFor(p.productId, p.currency) : undefined;
+  if (prod.kind === 'pass' && !plan) throw new CheckoutError('unavailable', `The Case Pass in ${p.currency} isn’t set up yet.`, 503);
   const reference = `uns_${randomUUID().replace(/-/g, '')}`;
   const tx = await initializeTransaction({
     email: p.user.email,
+    currency: p.currency,
     amountMinor: amount,
     reference,
     callbackUrl: `${p.origin}/checkout/success?provider=paystack`, // Paystack appends ?reference=…

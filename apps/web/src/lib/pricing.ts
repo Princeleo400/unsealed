@@ -46,9 +46,11 @@ export const providerFor = (currency: Currency): Provider => PRICING.currencies[
 export const isProductId = (x: unknown): x is ProductId => typeof x === 'string' && Object.hasOwn(PRICING.products, x);
 export const isCurrency = (x: unknown): x is Currency => typeof x === 'string' && (CURRENCIES as readonly string[]).includes(x);
 
+/** Free-trial days. Only Stripe checkouts support trials here; Paystack charges on day one. */
 export function trialDays(id: ProductId, currency: Currency): number {
   const p = PRICING.products[id];
-  return p.kind === 'pass' ? (p.trialDays?.[currency] ?? 0) : 0;
+  if (p.kind !== 'pass' || providerFor(currency) !== 'stripe') return 0;
+  return p.trialDays?.[currency] ?? 0;
 }
 
 /** "$4.99", "₦2,000". Whole Naira amounts drop the kobo. */
