@@ -1,0 +1,15 @@
+{
+  "name": "@unsealed/content-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'content-tools: covered by lint-cases and golden'",
+    "lint-cases": "tsx src/lint-cases.ts",
+    "golden": "tsx src/golden.ts",
+    "pack-case": "tsx src/pack-case.ts"
+  },
+  "dependencies": { "@unsealed/engine": "workspace:*" },
+  "devDependencies": { "typescript": "^5.6.3", "tsx": "^4.19.2", "@types/node": "^22.9.0" }
+}

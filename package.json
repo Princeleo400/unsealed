@@ -1,0 +1,14 @@
+{
+  "name": "unsealed",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "dev": "pnpm --filter @unsealed/web dev",
+    "build": "pnpm --filter @unsealed/web build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "case:lint": "pnpm --filter @unsealed/content-tools lint-cases",
+    "case:golden": "pnpm --filter @unsealed/content-tools golden",
+    "case:pack": "pnpm --filter @unsealed/content-tools pack-case"
+  }
+}

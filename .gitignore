@@ -1,0 +1,14 @@
+node_modules
+dist
+.next
+.expo
+.env*
+!.env.example
+*.log
+coverage
+
+.data
+.next
+next-env.d.ts
+
+apps
