@@ -1,0 +1,177 @@
+import 'server-only';
+import type { ProductId } from '@/lib/pricing';
+import { adminSupabase } from '../supabase';
+
+export type Source = 'stripe' | 'paystack' | 'promo' | 'admin';
+
+export type Grant = {
+  userId: string;
+  kind: 'pass' | 'case';
+  caseId?: string | null;
+  source: Source;
+  ref: string;
+  productId: ProductId;
+  /** null = never expires */
+  expiresAt: Date | null;
+  mode: 'extend' | 'set';
+};
+
+export type PaymentRecord = {
+  userId: string;
+  provider: 'stripe' | 'paystack';
+  ref: string;
+  productId: ProductId;
+  amountMinor: number;
+  currency: string;
+};
+
+export type EntitlementRow = { kind: 'pass' | 'case'; caseId: string | null; productId: string; source: Source; expiresAt: Date | null };
+
+/** Everything billing writes or reads. Swappable so fulfilment rules can be unit-tested without a database. */
+export interface BillingStore {
+  grant(g: Grant): Promise<void>;
+  recordPayment(p: PaymentRecord): Promise<void>;
+  /** A refund: the entitlement bought with this payment stops working. */
+  revoke(source: Source, ref: string): Promise<void>;
+  /** Active (unexpired, unrevoked) entitlements. */
+  active(userId: string, now?: Date): Promise<EntitlementRow[]>;
+  /** True if the player has ever had a Case Pass (used to offer the free trial only once). */
+  everHadPass(userId: string): Promise<boolean>;
+  getCustomer(userId: string): Promise<{ stripe: string | null; paystack: string | null }>;
+  setCustomer(userId: string, ids: { stripe?: string; paystack?: string }): Promise<void>;
+  userForCustomer(provider: 'stripe' | 'paystack', customerId: string): Promise<string | null>;
+}
+
+/** Supabase store using the service role (server only). Null when the service role key isn't set. */
+export function supabaseBillingStore(): BillingStore | null {
+  const db = adminSupabase();
+  if (!db) return null;
+  const fail = (what: string, error: unknown) => {
+    throw new Error(`billing store: ${what} failed: ${(error as { message?: string })?.message ?? String(error)}`);
+  };
+  return {
+    async grant(g) {
+      const { error } = await db.rpc('grant_entitlement', {
+        p_user: g.userId,
+        p_kind: g.kind,
+        p_case: g.caseId ?? null,
+        p_source: g.source,
+        p_ref: g.ref,
+        p_product: g.productId,
+        p_expires: g.expiresAt ? g.expiresAt.toISOString() : null,
+        p_mode: g.mode,
+      });
+      if (error) fail('grant', error);
+    },
+    async recordPayment(p) {
+      const { error } = await db.from('payments').upsert(
+        { user_id: p.userId, provider: p.provider, provider_ref: p.ref, product_id: p.productId, amount_minor: p.amountMinor, currency: p.currency.toUpperCase() },
+        { onConflict: 'provider,provider_ref', ignoreDuplicates: true },
+      );
+      if (error) fail('recordPayment', error);
+    },
+    async revoke(source, ref) {
+      const now = new Date().toISOString();
+      const a = await db.from('entitlements').update({ revoked_at: now, updated_at: now }).eq('source', source).eq('source_ref', ref).is('revoked_at', null);
+      if (a.error) fail('revoke', a.error);
+      if (source === 'stripe' || source === 'paystack') {
+        const b = await db.from('payments').update({ status: 'refunded' }).eq('provider', source).eq('provider_ref', ref);
+        if (b.error) fail('revoke payment', b.error);
+      }
+    },
+    async active(userId, now = new Date()) {
+      const { data, error } = await db
+        .from('entitlements')
+        .select('kind, case_id, product_id, source, expires_at')
+        .eq('user_id', userId)
+        .is('revoked_at', null)
+        .or(`expires_at.is.null,expires_at.gt.${now.toISOString()}`);
+      if (error) fail('active', error);
+      return (data ?? []).map((r) => ({
+        kind: r.kind as 'pass' | 'case',
+        caseId: (r.case_id as string | null) ?? null,
+        productId: r.product_id as string,
+        source: r.source as Source,
+        expiresAt: r.expires_at ? new Date(r.expires_at as string) : null,
+      }));
+    },
+    async everHadPass(userId) {
+      const { count, error } = await db.from('entitlements').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('kind', 'pass');
+      if (error) fail('everHadPass', error);
+      return (count ?? 0) > 0;
+    },
+    async getCustomer(userId) {
+      const { data, error } = await db.from('billing_customers').select('stripe_customer_id, paystack_customer_code').eq('user_id', userId).maybeSingle();
+      if (error) fail('getCustomer', error);
+      return { stripe: (data?.stripe_customer_id as string | null) ?? null, paystack: (data?.paystack_customer_code as string | null) ?? null };
+    },
+    async setCustomer(userId, ids) {
+      const row: Record<string, string> = { user_id: userId, updated_at: new Date().toISOString() };
+      if (ids.stripe) row.stripe_customer_id = ids.stripe;
+      if (ids.paystack) row.paystack_customer_code = ids.paystack;
+      const { error } = await db.from('billing_customers').upsert(row, { onConflict: 'user_id' });
+      if (error) fail('setCustomer', error);
+    },
+    async userForCustomer(provider, customerId) {
+      const col = provider === 'stripe' ? 'stripe_customer_id' : 'paystack_customer_code';
+      const { data, error } = await db.from('billing_customers').select('user_id').eq(col, customerId).maybeSingle();
+      if (error) fail('userForCustomer', error);
+      return (data?.user_id as string | undefined) ?? null;
+    },
+  };
+}
+
+/** In-memory store for tests; mirrors the SQL rules in grant_entitlement. */
+export class MemoryBillingStore implements BillingStore {
+  ents = new Map<string, Grant & { revoked: boolean }>();
+  payments = new Map<string, PaymentRecord & { status: 'paid' | 'refunded' }>();
+  customers = new Map<string, { stripe: string | null; paystack: string | null }>();
+  failing = false;
+  private check() {
+    if (this.failing) throw new Error('db down');
+  }
+  async grant(g: Grant) {
+    this.check();
+    const key = `${g.source}|${g.ref}`;
+    const prev = this.ents.get(key);
+    if (!prev) return void this.ents.set(key, { ...g, revoked: false });
+    if (prev.userId !== g.userId) return; // never move an entitlement to someone else
+    let expiresAt: Date | null;
+    if (g.mode === 'set') expiresAt = g.expiresAt;
+    else if (!prev.expiresAt || !g.expiresAt) expiresAt = null;
+    else expiresAt = prev.expiresAt > g.expiresAt ? prev.expiresAt : g.expiresAt;
+    this.ents.set(key, { ...prev, expiresAt });
+  }
+  async recordPayment(p: PaymentRecord) {
+    this.check();
+    const key = `${p.provider}|${p.ref}`;
+    if (!this.payments.has(key)) this.payments.set(key, { ...p, status: 'paid' });
+  }
+  async revoke(source: Source, ref: string) {
+    this.check();
+    const e = this.ents.get(`${source}|${ref}`);
+    if (e) e.revoked = true;
+    const p = this.payments.get(`${source}|${ref}`);
+    if (p) p.status = 'refunded';
+  }
+  async active(userId: string, now = new Date()) {
+    this.check();
+    return [...this.ents.values()]
+      .filter((e) => e.userId === userId && !e.revoked && (!e.expiresAt || e.expiresAt > now))
+      .map((e) => ({ kind: e.kind, caseId: e.caseId ?? null, productId: e.productId, source: e.source, expiresAt: e.expiresAt }));
+  }
+  async everHadPass(userId: string) {
+    return [...this.ents.values()].some((e) => e.userId === userId && e.kind === 'pass');
+  }
+  async getCustomer(userId: string) {
+    return this.customers.get(userId) ?? { stripe: null, paystack: null };
+  }
+  async setCustomer(userId: string, ids: { stripe?: string; paystack?: string }) {
+    const prev = await this.getCustomer(userId);
+    this.customers.set(userId, { stripe: ids.stripe ?? prev.stripe, paystack: ids.paystack ?? prev.paystack });
+  }
+  async userForCustomer(provider: 'stripe' | 'paystack', id: string) {
+    for (const [u, c] of this.customers) if (c[provider] === id) return u;
+    return null;
+  }
+}

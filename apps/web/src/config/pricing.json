@@ -1,0 +1,33 @@
+{
+  "_note": "Prices in minor units (cents / kobo). Change prices here, not in code. Paystack Case Pass plans must be created with the same NGN amounts (see docs/09-PAYMENTS-SETUP.md).",
+  "graceDays": 2,
+  "currencies": {
+    "USD": { "provider": "stripe", "label": "US$ (card, Apple Pay, Google Pay)" },
+    "NGN": { "provider": "paystack", "label": "₦ Naira by card (single cases also by bank transfer or USSD)" }
+  },
+  "products": {
+    "pass-monthly": {
+      "kind": "pass",
+      "name": "Case Pass — monthly",
+      "interval": "month",
+      "prices": { "USD": 499, "NGN": 200000 }
+    },
+    "pass-annual": {
+      "kind": "pass",
+      "name": "Case Pass — annual",
+      "interval": "year",
+      "trialDays": { "USD": 7 },
+      "prices": { "USD": 2999, "NGN": 1500000 }
+    },
+    "case-standard": {
+      "kind": "case",
+      "name": "Single case",
+      "prices": { "USD": 299, "NGN": 100000 }
+    },
+    "case-premium": {
+      "kind": "case",
+      "name": "Single premium case",
+      "prices": { "USD": 499, "NGN": 150000 }
+    }
+  }
+}

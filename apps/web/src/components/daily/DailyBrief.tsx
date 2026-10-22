@@ -83,7 +83,31 @@ export function DailyBrief({ date }: { date?: string }) {
     return () => clearInterval(t);
   }, []);
 
-  const history = useMemo(() => load<History>(HISTORY_KEY) ?? {}, [s?.status]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Account sync: merge the account's history into this browser, and upload results played while signed out.
+  const [signedIn, setSignedIn] = useState(false);
+  const [historyVersion, setHistoryVersion] = useState(0);
+  useEffect(() => {
+    fetch('/api/daily/results')
+      .then((r) => r.json())
+      .then((j: { ok: boolean; signedIn: boolean; history?: History }) => {
+        if (!j.ok || !j.signedIn || !j.history) return;
+        setSignedIn(true);
+        const local = load<History>(HISTORY_KEY) ?? {};
+        const remote = j.history;
+        save(HISTORY_KEY, { ...local, ...remote }); // the account's record of a day wins
+        const missing = Object.entries(local)
+          .filter(([d]) => !remote[d])
+          .sort(([a], [b]) => (a < b ? 1 : -1))
+          .slice(0, 60)
+          .map(([date, r]) => ({ date, ...r }));
+        if (missing.length)
+          void fetch('/api/daily/results', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ results: missing }) }).catch(() => undefined);
+        setHistoryVersion((v) => v + 1);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const history = useMemo(() => load<History>(HISTORY_KEY) ?? {}, [s?.status, historyVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const finish = useCallback(
     (status: 'solved' | 'failed', solution: Solution, wrong: number) => {
@@ -92,12 +116,20 @@ export function DailyBrief({ date }: { date?: string }) {
         if (!prev) return prev;
         const seconds = Math.round((Date.now() - prev.startedAt) / 1000);
         const h = load<History>(HISTORY_KEY) ?? {};
-        if (!h[daily.id]) h[daily.id] = { solved: status === 'solved', wrong, seconds };
+        if (!h[daily.id]) {
+          h[daily.id] = { solved: status === 'solved', wrong, seconds };
+          if (signedIn)
+            void fetch('/api/daily/results', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ results: [{ date: daily.id, ...h[daily.id] }] }),
+            }).catch(() => undefined);
+        }
         save(HISTORY_KEY, h);
         return { ...prev, status, solution, seconds, wrong };
       });
     },
-    [daily],
+    [daily, signedIn],
   );
 
   if (error) return <p role="alert" className="py-20 text-center text-body">{error}</p>;

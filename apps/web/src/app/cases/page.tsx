@@ -1,17 +1,24 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { SiteFooter, SiteHeader } from '@/components/SiteHeader';
+import { headers } from 'next/headers';
 import { CATALOG } from '@/lib/catalog';
+import { currencyForCountry, formatPrice, priceOf } from '@/lib/pricing';
 
 export const metadata: Metadata = { title: 'Case files' };
 
-export default function CasesPage() {
+export default async function CasesPage() {
+  const h = await headers();
+  const currency = currencyForCountry(h.get('x-vercel-ip-country') ?? h.get('cf-ipcountry'));
   return (
     <>
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 sm:px-6">
         <h1 className="text-4xl font-extrabold tracking-tight">Case files</h1>
         <p className="mt-2 text-body">Every case is fair play: the answer is always in the file.</p>
+        <Link href="/pass" className="mt-4 inline-block rounded-xl border border-amber px-4 py-2 text-sm font-extrabold text-amber hover:bg-amber hover:text-ink">
+          Case Pass: every case, unlimited hints, no ads
+        </Link>
         <ul className="mt-8 flex flex-col gap-4">
           {CATALOG.map((c) => (
             <li key={c.slug} className="flex flex-col gap-4 rounded-2xl border border-line bg-walnut p-5 sm:flex-row sm:items-center">
@@ -22,12 +29,12 @@ export default function CasesPage() {
                 <h2 className="mt-1 text-xl font-extrabold">{c.title}</h2>
                 <p className="mt-1 text-sm text-body">{c.hook}</p>
                 <p className="mt-2 text-xs font-semibold text-muted">
-                  {c.minutes} · difficulty {c.difficulty}/5 · {c.price === 'free' ? 'Free' : 'Paid · or Case Pass'}
+                  {c.minutes} · difficulty {c.difficulty}/5 · {c.productId ? `${formatPrice(priceOf(c.productId, currency), currency)} · or included in Case Pass` : 'Free'}
                 </p>
               </div>
               {c.status === 'playable' ? (
                 <Link href={`/play/${c.slug}`} className="rounded-xl bg-amber px-6 py-3 text-center font-extrabold text-ink hover:bg-amber-soft">
-                  Play
+                  {c.productId ? 'Open' : 'Play free'}
                 </Link>
               ) : (
                 <span className="rounded-xl border border-line-strong px-6 py-3 text-center font-bold text-muted">Coming soon</span>

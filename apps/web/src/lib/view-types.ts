@@ -58,7 +58,7 @@ export type DebriefView = {
 };
 
 export type PlayAction =
-  | { type: 'start' }
+  | { type: 'start'; fresh?: boolean }
   | { type: 'view' }
   | { type: 'read'; evidenceId: string }
   | { type: 'lead'; leadId: string }
@@ -81,5 +81,22 @@ export type PlayResult =
   | { type: 'none' };
 
 export type PlayResponse =
-  | { ok: true; token: string; view: CaseView; result: PlayResult; unlocked: { id: string; number: number; title: string }[] }
-  | { ok: false; error: { code: string; message: string }; token?: string; view?: CaseView };
+  | {
+      ok: true;
+      token: string;
+      view: CaseView;
+      result: PlayResult;
+      unlocked: { id: string; number: number; title: string }[];
+      /** Account sync: where the progress came from on start, and whether this action was saved to the account. */
+      sync?: { signedIn: boolean; source: 'account' | 'device' | 'new'; saved: boolean; board?: unknown };
+    }
+  | { ok: false; error: { code: string; message: string }; token?: string; view?: CaseView; paywall?: PaywallInfo };
+
+/** What the player owns, safe to send to the browser. */
+export type AccessSummary = {
+  pass: { productId: string; source: string; expiresAt: string | null } | null;
+  cases: string[];
+};
+
+/** Sent with a 402 when a paid case is opened without access. */
+export type PaywallInfo = { slug: string; title: string; productId: 'case-standard' | 'case-premium'; signedIn: boolean };

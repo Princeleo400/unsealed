@@ -29,8 +29,8 @@ function useIsDesktop() {
 }
 
 export function CasePlayer({ slug }: { slug: string }) {
-  const { view, error, busy, send, restart, retry, toasts, toast, dismiss } = usePlay(slug);
-  const { board, update, reset } = useLocalBoard(slug);
+  const { view, error, busy, send, restart, retry, toasts, toast, dismiss, sync, remoteBoard } = usePlay(slug);
+  const { board, update, reset } = useLocalBoard(slug, { remoteBoard, signedIn: sync?.signedIn });
   const isDesktop = useIsDesktop();
   const [panel, setPanel] = useState<Panel>('file');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -65,6 +65,29 @@ export function CasePlayer({ slug }: { slug: string }) {
     const i = list.findIndex((e) => e.id === selected.id);
     return { prev: list[i - 1]?.id, next: list[i + 1]?.id };
   }, [view, selected]);
+
+  if (error?.paywall) {
+    const p = error.paywall;
+    const back = `/play/${p.slug}`;
+    return (
+      <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-6 text-center">
+        <p className="font-mono text-xs tracking-[0.25em] text-red-text">SEALED FILE</p>
+        <h1 className="text-3xl font-extrabold">{p.title}</h1>
+        <p className="text-body">
+          Unlock this case once and keep it forever, or get Case Pass for every case with unlimited hints and no ads.
+        </p>
+        <Link href={`/pass?case=${encodeURIComponent(p.slug)}&back=${encodeURIComponent(back)}`} className="flex h-12 items-center justify-center rounded-xl bg-amber font-extrabold text-ink">
+          See prices
+        </Link>
+        {!p.signedIn && (
+          <Link href={`/signin?next=${encodeURIComponent(back)}`} className="flex h-12 items-center justify-center rounded-xl border border-line-strong font-extrabold">
+            I already bought it: sign in
+          </Link>
+        )}
+        <Link href="/play/001-dead-air" className="text-sm font-bold text-amber">Play Case #001 free instead</Link>
+      </main>
+    );
+  }
 
   if (error) {
     const sessionLost = error.code === 'session_invalid';
@@ -155,6 +178,7 @@ export function CasePlayer({ slug }: { slug: string }) {
             </button>
             <p className="truncate text-xs text-muted">
               {view.read.length}/{view.case.totalEvidence} read · {view.breakthroughs.length}/{view.case.totalBreakthroughs} breakthroughs
+              {sync?.signedIn ? (sync.saved ? ' · saved to account' : ' · not synced') : ''}
             </p>
           </div>
           <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-line px-3 py-1.5 font-mono text-xs" aria-label={`Investigation clock ${formatClock(view.clockMinutes)}, par ${view.case.parHours} hours`}>

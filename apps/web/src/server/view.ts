@@ -13,14 +13,16 @@ import type { CaseView, DebriefView } from '@/lib/view-types';
 
 /**
  * Hint allowance for free players (FR-HINT-03): the first hint per case is free, then each further
- * hint is unlocked by an opt-in rewarded video, up to AD_HINTS_PER_CASE. Case Pass (later) = unlimited, no ads.
+ * hint is unlocked by an opt-in rewarded video, up to AD_HINTS_PER_CASE. Case Pass = unlimited, no ads
+ * (hints still cost score).
  */
 export const FREE_HINTS_PER_CASE = 1;
 export const AD_HINTS_PER_CASE = 3;
 
 export const hintsUsed = (s: SessionState) => s.hints.nudge + s.hints.pointer + s.hints.reveal;
 
-export function hintAllowance(s: SessionState) {
+export function hintAllowance(s: SessionState, unlimited = false) {
+  if (unlimited) return { freeLeft: 0, adLeft: 0, unlimited: true };
   const used = hintsUsed(s);
   return {
     freeLeft: Math.max(0, FREE_HINTS_PER_CASE - used),
@@ -29,7 +31,7 @@ export function hintAllowance(s: SessionState) {
   };
 }
 
-export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState): CaseView {
+export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState, opts: { unlimitedHints?: boolean } = {}): CaseView {
   const word = (id: string) => pub.words.find((w) => w.id === id)?.text ?? id;
   const blank = (b: CasePublic['verdict']['how'][number]) => ({
     blankId: b.blankId,
@@ -72,7 +74,7 @@ export function buildView(pub: CasePublic, sol: CaseSolution, s: SessionState): 
     searches: s.searches,
     clockMinutes: s.clockMinutes,
     hints: s.hints,
-    hintAllowance: hintAllowance(s),
+    hintAllowance: hintAllowance(s, opts.unlimitedHints),
     accusations: s.accusations,
     accusationsLeft: accusationsLeft(s),
     status: s.status,

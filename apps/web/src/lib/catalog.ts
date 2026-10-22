@@ -1,3 +1,5 @@
+import type { CaseProductId } from './pricing';
+
 /** Public, spoiler-free catalogue of cases for the library and landing page. */
 export type CatalogEntry = {
   slug: string;
@@ -7,7 +9,8 @@ export type CatalogEntry = {
   hook: string;
   minutes: string;
   difficulty: number;
-  price: 'free' | 'paid';
+  /** null = free for everyone; otherwise the product that unlocks it (also included in Case Pass). */
+  productId: CaseProductId | null;
   status: 'playable' | 'coming-soon';
 };
 
@@ -20,7 +23,7 @@ export const CATALOG: CatalogEntry[] = [
     hook: 'She was dead by 00:40. So who was talking on air at 01:10?',
     minutes: '45–75 min',
     difficulty: 3,
-    price: 'free',
+    productId: null,
     status: 'playable',
   },
   {
@@ -31,7 +34,7 @@ export const CATALOG: CatalogEntry[] = [
     hook: 'A wedding reception. Four hundred guests. One glass that should never have been poured.',
     minutes: '60–90 min',
     difficulty: 4,
-    price: 'paid',
+    productId: 'case-standard',
     status: 'coming-soon',
   },
   {
@@ -42,7 +45,9 @@ export const CATALOG: CatalogEntry[] = [
     hook: 'A boutique hotel during a tech conference. The key card says nobody went in.',
     minutes: '45–75 min',
     difficulty: 3,
-    price: 'paid',
+    productId: 'case-standard',
     status: 'coming-soon',
   },
 ];
+
+export const catalogEntry = (slug: string) => CATALOG.find((c) => c.slug === slug);
