@@ -137,6 +137,8 @@ Related: [02-GDD](02-GDD.md) (design intent) · [04-TECH-ARCHITECTURE](04-TECH-A
 | FR-DAILY-06 | Archive of past Dailies: last 7 days free, full archive with Case Pass. | S | P2 | B |
 | FR-DAILY-07 | Daily leaderboard (fastest correct, friends + global). | C | P3 | B |
 
+> **Status (22 Oct 2026):** FR-DAILY-01, 02 (Sunday uses the Chief generator until Story Briefs are written), 03, 05 and 06 are built on the web (`/daily`). Grading happens on the server, and 8,000 generated puzzles were verified to have exactly one solution. Streaks are kept in the browser for now; they move to accounts later. Not built yet: the Streak Shield (needs Case Pass), the Friday lying witness, and leaderboards.
+
 ## 12. Co-op rooms (COOP)
 
 | ID | Requirement | Pri | Phase | Plat |

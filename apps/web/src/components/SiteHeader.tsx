@@ -7,6 +7,9 @@ export function SiteHeader() {
         UNSEALED
       </Link>
       <nav aria-label="Main" className="flex items-center gap-2 sm:gap-4">
+        <Link href="/daily" className="px-2 py-2 text-sm font-semibold text-muted hover:text-paper">
+          Daily
+        </Link>
         <Link href="/cases" className="hidden px-2 py-2 text-sm font-semibold text-muted hover:text-paper sm:inline">
           Cases
         </Link>
@@ -17,7 +20,8 @@ export function SiteHeader() {
           href="/play/001-dead-air"
           className="rounded-full bg-amber px-4 py-2.5 text-sm font-extrabold text-ink hover:bg-amber-soft"
         >
-          Play Case #001 free
+          <span className="sm:hidden">Play free</span>
+          <span className="hidden sm:inline">Play Case #001 free</span>
         </Link>
       </nav>
     </header>

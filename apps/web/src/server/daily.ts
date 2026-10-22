@@ -1,0 +1,61 @@
+import 'server-only';
+import { DAILY_EPOCH, DIFFICULTY_LABEL, checkDailyAnswer, generateDaily, type DailyPuzzle, type DailySolution } from '@unsealed/engine';
+import { z } from 'zod';
+
+/** Free players can open today's Daily and the previous 6 (FR-DAILY-06). */
+export const ARCHIVE_DAYS = 7;
+
+const salt = () => process.env.DAILY_SALT || 'unsealed';
+const cache = new Map<string, { puzzle: DailyPuzzle; solution: DailySolution }>();
+
+export const todayUTC = (now = new Date()) => now.toISOString().slice(0, 10);
+
+export function isOpenDate(date: string, now = new Date()): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  const t = Date.parse(`${date}T00:00:00Z`);
+  const today = Date.parse(`${todayUTC(now)}T00:00:00Z`);
+  return !Number.isNaN(t) && t <= today && t > today - ARCHIVE_DAYS * 86400000 && t >= Date.parse(`${DAILY_EPOCH}T00:00:00Z`);
+}
+
+function get(date: string) {
+  let hit = cache.get(date);
+  if (!hit) {
+    hit = generateDaily(date, salt());
+    cache.set(date, hit);
+    if (cache.size > 30) cache.delete(cache.keys().next().value as string);
+  }
+  return hit;
+}
+
+export type DailyView = DailyPuzzle & { difficultyLabel: string; archive: string[]; today: string };
+
+export function dailyView(date: string, now = new Date()): DailyView {
+  const { puzzle } = get(date);
+  const today = todayUTC(now);
+  const archive = Array.from({ length: ARCHIVE_DAYS }, (_, i) => new Date(Date.parse(`${today}T00:00:00Z`) - i * 86400000).toISOString().slice(0, 10)).filter((d) =>
+    isOpenDate(d, now),
+  );
+  return { ...puzzle, difficultyLabel: DIFFICULTY_LABEL[puzzle.difficulty], archive, today };
+}
+
+export const DailyRequest = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('answer'), date: z.string(), suspect: z.number().int().min(0).max(9), place: z.number().int().min(0).max(9) }),
+  z.object({ type: z.literal('reveal'), date: z.string() }),
+]);
+
+/** Grading happens here so the answer is never in the page. Reveal is for players who used all 3 tries. */
+export function handleDaily(body: unknown, now = new Date()) {
+  const parsed = DailyRequest.safeParse(body);
+  if (!parsed.success) return { status: 400, json: { ok: false as const, message: 'Invalid request.' } };
+  const req = parsed.data;
+  if (!isOpenDate(req.date, now)) return { status: 404, json: { ok: false as const, message: 'That Daily Brief is not available.' } };
+  const { puzzle, solution } = get(req.date);
+  const full = {
+    culprit: solution.culprit,
+    place: solution.place[solution.culprit]!,
+    rows: puzzle.suspects.map((_, i) => ({ suspect: i, place: solution.place[i]!, object: solution.object[i]! })),
+  };
+  if (req.type === 'reveal') return { status: 200, json: { ok: true as const, correct: false, solution: full } };
+  const correct = checkDailyAnswer(solution, { suspect: req.suspect, place: req.place });
+  return { status: 200, json: { ok: true as const, correct, solution: correct ? full : undefined } };
+}
