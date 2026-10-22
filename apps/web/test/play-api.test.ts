@@ -62,12 +62,17 @@ describe('play API', () => {
     expect(r.json.ok).toBe(false);
   });
 
-  it('caps free hints at 3', () => {
+  it('gives 1 free hint, then needs a rewarded video for up to 3 more', () => {
     let t = ok({ type: 'start' }).token;
-    for (let i = 0; i < 3; i++) t = ok({ type: 'hint', tier: 'nudge' }, t).token;
-    const r = call({ type: 'hint', tier: 'nudge' }, t);
-    expect(r.status).toBe(422);
-    expect(!r.json.ok && r.json.error.code).toBe('hint_limit');
+    const first = ok({ type: 'hint', tier: 'nudge' }, t);
+    expect(first.view.hintAllowance).toEqual({ freeLeft: 0, adLeft: 3, unlimited: false });
+    t = first.token;
+    const noAd = call({ type: 'hint', tier: 'nudge' }, t);
+    expect(noAd.status).toBe(422);
+    expect(!noAd.json.ok && noAd.json.error.code).toBe('ad_required');
+    for (let i = 0; i < 3; i++) t = ok({ type: 'hint', tier: 'pointer', adReward: { provider: 'gam', id: `ad${i}` } }, t).token;
+    const over = call({ type: 'hint', tier: 'nudge', adReward: { provider: 'gam', id: 'ad9' } }, t);
+    expect(!over.json.ok && over.json.error.code).toBe('hint_limit');
   });
 
   it('can be solved end to end through the API, and only then shows the debrief', () => {

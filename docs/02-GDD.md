@@ -127,7 +127,7 @@ The solution is a **fill-in-the-blanks report** in four tabs:
 2. **Pointer:** "Compare Records 18 with Statement 4, line 3."
 3. **Reveal:** names the Breakthrough directly.
 
-Each tier costs score. Subscribers get unlimited hints (still with a score cost). Free players get 3 per case, plus up to 3 more by watching rewarded ads. Hints can **never** be bought with money (BRD BR-2).
+Each tier costs score. Free players get **1 free hint per case**. After that, each hint is unlocked by an opt-in **rewarded video**, up to 3 more per case. If no ad is available, the player still gets the hint. Case Pass subscribers get unlimited hints and no ads (hints still cost score). Hints can **never** be bought with money (BRD BR-2).
 
 ### 4.11 Debrief — [NEW combination]
 After the case is solved or goes cold, the player sees:
@@ -151,6 +151,8 @@ After the case is solved or goes cold, the player sees:
 | **Seasons** *(v2)* | 1 / co-op | 4 weekly episodes × 30 min | Case Pass | Serialised story, like Hunt A Killer episodes. A **Living Witness** texts you between episodes via push notification (Duskwood). |
 | **Weekend Race** *(v2)* | Teams | 1 case, 48 h | Case Pass | Global leaderboard on fewest hours used and fewest accusations. |
 | **Case Variants / Remix** *(v2)* | 1 / co-op | — | Case Pass | **[NEW]** Replay a solved case where a *different suspect* is guilty. Key evidence changes, so it's anti-spoiler and adds replay value. |
+
+**Naming: Case vs Episode.** A *case* is a complete standalone mystery. It's the genre's word, and what players search for in the app stores. *Episodes* only exist inside a *Season*: a serial story released in weekly parts that are played in order. The UI never calls a standalone case an episode.
 
 ## 6. Daily Brief (the growth engine)
 

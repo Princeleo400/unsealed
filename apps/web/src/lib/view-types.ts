@@ -33,14 +33,22 @@ export type CaseView = {
   searches: string[];
   clockMinutes: number;
   hints: { nudge: number; pointer: number; reveal: number };
-  hintsLeft: number | null;
+  /** freeLeft: hints with no ad; adLeft: hints unlocked by a rewarded video; unlimited: Case Pass. */
+  hintAllowance: { freeLeft: number; adLeft: number; unlimited: boolean };
   accusations: { correctSections: number }[];
   accusationsLeft: number;
   status: 'active' | 'solved' | 'cold';
   debrief?: DebriefView;
 };
 
-export type VerdictBlankView = { blankId: string; prompt: string; options: { id: string; text: string }[] };
+/**
+ * Proof the player finished a rewarded video. On the web this can't be verified server-side
+ * (Google's web rewarded ads have no server callback), so the server also caps ad hints per case.
+ * On mobile, AdMob server-side verification will fill `id` with a verifiable token.
+ */
+export type AdReward = { provider: 'gam' | 'no-fill' | 'dev'; id: string };
+
+export type VerdictBlankView ={ blankId: string; prompt: string; options: { id: string; text: string }[] };
 
 export type DebriefView = {
   score: ScoreBreakdown;
@@ -57,7 +65,7 @@ export type PlayAction =
   | { type: 'string'; a: string; b: string; relation: Relation }
   | { type: 'confront'; statementId: string; line: number; evidenceId: string }
   | { type: 'search'; query: string }
-  | { type: 'hint'; tier: 'nudge' | 'pointer' | 'reveal' }
+  | { type: 'hint'; tier: 'nudge' | 'pointer' | 'reveal'; adReward?: AdReward }
   | {
       type: 'verdict';
       answer: { who: Record<string, string>; how: Record<string, string>; why: Record<string, string>; proof: string[] };

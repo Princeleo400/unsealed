@@ -111,7 +111,7 @@ Related: [02-GDD](02-GDD.md) (design intent) · [04-TECH-ARCHITECTURE](04-TECH-A
 |---|---|---|---|---|
 | FR-HINT-01 | Three hint tiers (Nudge, Pointer, Reveal) chosen by the case's current "stuck point" (next unfound essential Breakthrough). | M | P1 | B |
 | FR-HINT-02 | Score cost shown before use: −10 / −30 / −75. | M | P1 | B |
-| FR-HINT-03 | Free players: 3 hints per case + up to 3 via rewarded ads (mobile) — Case Pass: unlimited. | M | P2 | B |
+| FR-HINT-03 | Free players: 1 free hint per case, then up to 3 more each unlocked by an opt-in rewarded video (web: Google Ad Manager rewarded; mobile: AdMob). If no ad fills, the hint is given anyway. Case Pass: unlimited, no ads. Server enforces the caps. *(Web: built.)* | M | P1 | B |
 | FR-HINT-04 | Hints are never sold for money. | M | — | B |
 
 ## 10. Debrief, scoring and share (DEB)
@@ -136,6 +136,8 @@ Related: [02-GDD](02-GDD.md) (design intent) · [04-TECH-ARCHITECTURE](04-TECH-A
 | FR-DAILY-05 | Emoji share grid copied to clipboard / share sheet (GDD §6 format). | M | P1 | B |
 | FR-DAILY-06 | Archive of past Dailies: last 7 days free, full archive with Case Pass. | S | P2 | B |
 | FR-DAILY-07 | Daily leaderboard (fastest correct, friends + global). | C | P3 | B |
+
+> **Status (22 Oct 2026):** FR-DAILY-01, 02 (Sunday uses the Chief generator until Story Briefs are written), 03, 05 and 06 are built on the web (`/daily`). Grading happens on the server, and 8,000 generated puzzles were verified to have exactly one solution. Streaks are kept in the browser for now; they move to accounts later. Not built yet: the Streak Shield (needs Case Pass), the Friday lying witness, and leaderboards.
 
 ## 12. Co-op rooms (COOP)
 
@@ -170,7 +172,7 @@ Related: [02-GDD](02-GDD.md) (design intent) · [04-TECH-ARCHITECTURE](04-TECH-A
 | FR-PAY-05 | Restore purchases (mobile); manage subscription link (web portal / store settings). | M | P2 | B |
 | FR-PAY-06 | Paywall screens show the exact price, renewal terms, trial terms and a cancel-anytime note (store compliance). | M | P1 | B |
 | FR-PAY-07 | Promo codes: a code can grant a case, a pass for N days, or a discount (used for B2B, influencers, giveaways). | S | P2 | B |
-| FR-PAY-08 | Ads (free tier only): rewarded ad for hints; interstitial at most once after a Daily Brief and **never** inside a case. Frequency cap ≤3 interstitials/day. | M | P2 | M |
+| FR-PAY-08 | Ads (free tier only): opt-in rewarded video for hints (the only ad shown inside a case); interstitial at most once after a Daily Brief, **never** inside a case. Frequency cap ≤3 interstitials/day. | M | P1/P2 | B |
 | FR-PAY-09 | Consent: ad personalisation consent (UMP/GDPR) and iOS ATT prompt before personalised ads. | M | P2 | M |
 
 ## 15. Notifications (NOTIF)

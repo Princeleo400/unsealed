@@ -16,7 +16,7 @@ import { z } from 'zod';
 import type { PlayResponse, PlayResult } from '@/lib/view-types';
 import { getCase } from './cases';
 import { signState, verifyState } from './session';
-import { FREE_HINTS_PER_CASE, buildView, hintsUsed } from './view';
+import { AD_HINTS_PER_CASE, FREE_HINTS_PER_CASE, buildView, hintsUsed } from './view';
 
 const Action = z.discriminatedUnion('type', [
   z.object({ type: z.literal('start') }),
@@ -26,7 +26,11 @@ const Action = z.discriminatedUnion('type', [
   z.object({ type: z.literal('string'), a: z.string().max(20), b: z.string().max(20), relation: z.enum(['contradiction', 'corroboration', 'link']) }),
   z.object({ type: z.literal('confront'), statementId: z.string().max(20), line: z.number().int().min(1).max(99), evidenceId: z.string().max(20) }),
   z.object({ type: z.literal('search'), query: z.string().max(60) }),
-  z.object({ type: z.literal('hint'), tier: z.enum(['nudge', 'pointer', 'reveal']) }),
+  z.object({
+    type: z.literal('hint'),
+    tier: z.enum(['nudge', 'pointer', 'reveal']),
+    adReward: z.object({ provider: z.enum(['gam', 'no-fill', 'dev']), id: z.string().max(100) }).optional(),
+  }),
   z.object({
     type: z.literal('verdict'),
     answer: z.object({
@@ -100,8 +104,13 @@ export function handlePlay(slug: string, body: unknown): { status: number; json:
         break;
       }
       case 'hint': {
-        if (hintsUsed(state) >= FREE_HINTS_PER_CASE)
-          throw new ActionError('hint_limit', `You've used all ${FREE_HINTS_PER_CASE} free hints for this case.`);
+        const used = hintsUsed(state);
+        if (used >= FREE_HINTS_PER_CASE + AD_HINTS_PER_CASE)
+          throw new ActionError('hint_limit', 'You’ve used every hint for this case. Case Pass gives unlimited hints with no ads.');
+        if (used >= FREE_HINTS_PER_CASE && !action.adReward)
+          throw new ActionError('ad_required', 'Watch a short video to unlock this hint.');
+        if (action.adReward?.provider === 'dev' && process.env.NODE_ENV === 'production')
+          throw new ActionError('ad_required', 'Watch a short video to unlock this hint.');
         const r = getHint(pub, sol, state, action.tier);
         state = r.state;
         result = { type: 'hint', tier: action.tier, text: r.text, cost: r.scoreCost };

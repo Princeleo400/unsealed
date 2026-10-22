@@ -56,8 +56,8 @@ export default function Home() {
               <Link href="/play/001-dead-air" className="rounded-xl bg-amber px-6 py-3.5 font-extrabold text-ink hover:bg-amber-soft">
                 Open the case file
               </Link>
-              <Link href="#waitlist" className="rounded-xl border border-line-strong px-6 py-3.5 font-bold text-paper hover:border-amber">
-                Join the waitlist
+              <Link href="/daily" className="rounded-xl border border-line-strong px-6 py-3.5 font-bold text-paper hover:border-amber">
+                Try today’s 5-minute brief
               </Link>
             </div>
             <p className="text-sm text-faint">Free · 45–75 minutes · plays in your browser · no account needed</p>
