@@ -30,6 +30,7 @@
 | 06 | [Case Authoring Guide](docs/06-CASE-AUTHORING-GUIDE.md) | The fair-play contract, build order, sizing, recipes, quality gates, playtest protocol |
 | 07 | [Pilot Case 001 — "Dead Air"](docs/07-PILOT-CASE-001.md) | ⚠️ Spoilers. Full outline of the free launch case |
 | 08 | [Roadmap](docs/08-ROADMAP.md) | Phases 0–4, weekly plan, content calendar, budget, open decisions |
+| 09 | [Payments setup](docs/09-PAYMENTS-SETUP.md) | Stripe + Paystack keys, plans, webhooks, test cards, go-live checklist |
 | — | [CLAUDE.md](CLAUDE.md) | Build rules for AI-assisted development in this repo |
 
 ## Stack
@@ -40,7 +41,7 @@ Next.js · TypeScript · Tailwind · Expo (React Native) · Supabase · Vercel �
 
 ```bash
 pnpm install
-pnpm dev            # web app at http://localhost:3000 (landing, /cases, /play/001-dead-air)
+pnpm dev            # web app at http://localhost:3003 (landing, /daily, /cases, /play/001-dead-air)
 pnpm build          # production build of the web app
 pnpm test           # engine unit tests (Vitest, coverage)
 pnpm typecheck
@@ -50,7 +51,8 @@ pnpm case:pack -- --pdf   # builds the paper playtest packs into dist/<case>/
 ```
 
 - `apps/web`: the Next.js web app. The landing page and waitlist are in `src/app/page.tsx` and `api/waitlist`. The case player is `src/components/player/*`, and it's graded on the server by `api/play/[slug]`.
-- `supabase/migrations`: database tables. Only the waitlist exists so far.
+- `apps/web/src/server/billing`: payments. Prices live in `apps/web/src/config/pricing.json`; `entitlements` in the database is the one source of truth for access.
+- `supabase/migrations`: database tables (waitlist, accounts, payments). `supabase/tests` runs them on PGlite and checks row-level security.
 - `packages/engine`: the pure TypeScript game rules (schema, actions, scoring, timeline, linter, golden path)
 - `packages/content-tools`: CLI wrappers plus the playtest-pack generator
 - `content/cases/<id>/case.json` is the public file; `solution.json` must stay server-only
@@ -60,7 +62,12 @@ pnpm case:pack -- --pdf   # builds the paper playtest packs into dist/<case>/
 | Variable | Needed for | Without it |
 |---|---|---|
 | `SESSION_SECRET` | Signing play sessions (32+ characters, `openssl rand -base64 48`) | Dev uses a built-in secret; **production refuses to start a case** |
-| `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Saving waitlist sign-ups | Dev saves to `apps/web/.data/waitlist.jsonl`; production returns an error |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts: sign-in, progress and streaks synced across devices | No sign-in; progress stays in the browser |
+| `SUPABASE_SERVICE_ROLE_KEY` | Saving waitlist sign-ups, deleting accounts (server only, never public) | Dev saves the waitlist to `apps/web/.data/waitlist.jsonl`; production returns an error |
+| `NEXT_PUBLIC_AUTH_GOOGLE`, `NEXT_PUBLIC_AUTH_APPLE` | Showing Google / Apple sign-in buttons (`1` = on) | Email sign-in only |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | US$ checkout, renewals, refunds ([setup](docs/09-PAYMENTS-SETUP.md)) | US$ buttons show "Not on sale yet" |
+| `PAYSTACK_SECRET_KEY`, `PAYSTACK_PLAN_PASS_MONTHLY`, `PAYSTACK_PLAN_PASS_ANNUAL` | Naira checkout and Case Pass renewals | Naira buttons show "Not on sale yet" |
+| `SITE_URL` | Checkout return links in production | Uses the address the request came from |
 
 ## Next step
 

@@ -173,7 +173,8 @@ export function HintModal({
       {note && <p role="status" className="mt-3 text-sm font-semibold text-red-soft">{note}</p>}
       {noneLeft && (
         <p className="mt-3 rounded-xl border border-line p-3 text-sm text-body">
-          Case Pass gives unlimited hints with no ads. Coming soon.
+          Case Pass gives unlimited hints with no ads.{' '}
+          <a href="/pass" className="font-bold text-amber">See Case Pass</a>
         </p>
       )}
       {text && (

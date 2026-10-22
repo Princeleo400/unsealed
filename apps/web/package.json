@@ -12,12 +12,14 @@
   "dependencies": {
     "@fontsource-variable/manrope": "^5.1.0",
     "@fontsource/ibm-plex-mono": "^5.1.0",
-    "@supabase/supabase-js": "^2.45.0",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
     "@unsealed/engine": "workspace:*",
     "next": "15.5.28",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "server-only": "^0.0.1",
+    "stripe": "23.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

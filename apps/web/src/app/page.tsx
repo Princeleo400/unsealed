@@ -151,7 +151,7 @@ export default function Home() {
                   <p className="mt-4 text-xs font-semibold text-muted">{c.minutes} · difficulty {c.difficulty}/5</p>
                   {c.status === 'playable' ? (
                     <Link href={`/play/${c.slug}`} className="mt-4 rounded-xl bg-amber px-4 py-3 text-center font-extrabold text-ink hover:bg-amber-soft">
-                      Play free
+                      {c.productId ? 'Open' : 'Play free'}
                     </Link>
                   ) : (
                     <span className="mt-4 rounded-xl border border-line-strong px-4 py-3 text-center font-bold text-muted">Coming soon</span>

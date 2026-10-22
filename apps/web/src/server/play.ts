@@ -13,13 +13,17 @@ import {
   type SessionState,
 } from '@unsealed/engine';
 import { z } from 'zod';
+import { catalogEntry } from '@/lib/catalog';
 import type { PlayResponse, PlayResult } from '@/lib/view-types';
+import { canOpen, type Access } from './billing/access';
 import { getCase } from './cases';
+import { progressScore, type SaveStore } from './saves';
 import { signState, verifyState } from './session';
 import { AD_HINTS_PER_CASE, FREE_HINTS_PER_CASE, buildView, hintsUsed } from './view';
 
 const Action = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('start') }),
+  // fresh: true = "Play again": ignore any saved progress and overwrite it.
+  z.object({ type: z.literal('start'), fresh: z.boolean().optional() }),
   z.object({ type: z.literal('view') }),
   z.object({ type: z.literal('read'), evidenceId: z.string().max(20) }),
   z.object({ type: z.literal('lead'), leadId: z.string().max(20) }),
@@ -46,18 +50,70 @@ export const PlayRequest = z.object({ token: z.string().max(60_000).optional(), 
 
 const brief = (e: Evidence) => ({ id: e.id, number: e.number, title: e.title });
 
-export function handlePlay(slug: string, body: unknown): { status: number; json: PlayResponse } {
+export type PlayContext = {
+  userId?: string | null;
+  store?: SaveStore | null;
+  /** The player's purchases. null = signed out or billing off; 'error' = couldn't be checked right now. */
+  access?: Access | 'error' | null;
+};
+export type SyncInfo = NonNullable<Extract<PlayResponse, { ok: true }>['sync']>;
+
+export async function handlePlay(slug: string, body: unknown, ctx: PlayContext = {}): Promise<{ status: number; json: PlayResponse }> {
   const found = getCase(slug);
   if (!found) return { status: 404, json: { ok: false, error: { code: 'no_case', message: 'Case not found.' } } };
   const { pub, sol } = found;
+
+  // Paywall (FR-PAY-04): a paid case needs the case itself or an active Case Pass, checked on every request
+  // so a pass that has ended stops working. Free cases never touch billing.
+  const entry = catalogEntry(slug);
+  const access = ctx.access === 'error' ? null : (ctx.access ?? null);
+  if (entry?.productId) {
+    if (ctx.access === 'error')
+      return { status: 503, json: { ok: false, error: { code: 'access_unavailable', message: 'We couldn’t check your purchases just now. Please try again.' } } };
+    if (!canOpen(slug, access)) {
+      const signedIn = Boolean(ctx.userId);
+      return {
+        status: 402,
+        json: {
+          ok: false,
+          error: { code: 'paywall', message: signedIn ? 'Unlock this case to open the file.' : 'Sign in and unlock this case to open the file.' },
+          paywall: { slug, title: entry.title, productId: entry.productId, signedIn },
+        },
+      };
+    }
+  }
+  const unlimitedHints = Boolean(access?.pass);
+  const view = (st: SessionState) => buildView(pub, sol, st, { unlimitedHints });
 
   const parsed = PlayRequest.safeParse(body);
   if (!parsed.success) return { status: 400, json: { ok: false, error: { code: 'bad_request', message: 'Invalid request.' } } };
   const { token, action } = parsed.data;
 
+  const expect = { caseId: pub.id, version: pub.version };
+  const signedIn = Boolean(ctx.userId && ctx.store);
+  let sync: SyncInfo = { signedIn, source: 'device', saved: false };
+
   let state: SessionState;
   if (action.type === 'start') {
-    state = (token && verifyState(token, { caseId: pub.id, version: pub.version })) || newSession(pub);
+    const local = !action.fresh && token ? verifyState(token, expect) : null;
+    let remote: SessionState | null = null;
+    let remoteBoard: unknown;
+    if (signedIn && !action.fresh) {
+      try {
+        const row = await ctx.store!.get(ctx.userId!, pub.id);
+        remote = row ? verifyState(row.token, expect) : null; // a tampered or outdated save is ignored
+        remoteBoard = row?.board;
+      } catch (e) {
+        console.error('play_saves read failed', e);
+      }
+    }
+    if (remote && progressScore(remote) >= progressScore(local)) {
+      state = remote;
+      sync = { signedIn, source: 'account', saved: true, board: remoteBoard };
+    } else {
+      state = local ?? newSession(pub);
+      sync = { signedIn, source: local ? 'device' : 'new', saved: false };
+    }
   } else {
     const verified = token ? verifyState(token, { caseId: pub.id, version: pub.version }) : null;
     if (!verified) return { status: 409, json: { ok: false, error: { code: 'session_invalid', message: 'Your session could not be verified. Start the case again.' } } };
@@ -105,11 +161,13 @@ export function handlePlay(slug: string, body: unknown): { status: number; json:
       }
       case 'hint': {
         const used = hintsUsed(state);
-        if (used >= FREE_HINTS_PER_CASE + AD_HINTS_PER_CASE)
+        if (unlimitedHints) {
+          // Case Pass: unlimited hints, no ads (they still cost score).
+        } else if (used >= FREE_HINTS_PER_CASE + AD_HINTS_PER_CASE)
           throw new ActionError('hint_limit', 'You’ve used every hint for this case. Case Pass gives unlimited hints with no ads.');
-        if (used >= FREE_HINTS_PER_CASE && !action.adReward)
+        else if (used >= FREE_HINTS_PER_CASE && !action.adReward)
           throw new ActionError('ad_required', 'Watch a short video to unlock this hint.');
-        if (action.adReward?.provider === 'dev' && process.env.NODE_ENV === 'production')
+        else if (action.adReward?.provider === 'dev' && process.env.NODE_ENV === 'production')
           throw new ActionError('ad_required', 'Watch a short video to unlock this hint.');
         const r = getHint(pub, sol, state, action.tier);
         state = r.state;
@@ -127,14 +185,25 @@ export function handlePlay(slug: string, body: unknown): { status: number; json:
     if (e instanceof ActionError) {
       return {
         status: 422,
-        json: { ok: false, error: { code: e.code, message: e.message }, token: signState(state), view: buildView(pub, sol, state) },
+        json: { ok: false, error: { code: e.code, message: e.message }, token: signState(state), view: view(state) },
       };
     }
     throw e;
   }
 
+  const newToken = signState(state);
+  if (signedIn) {
+    try {
+      await ctx.store!.putToken(ctx.userId!, pub.id, newToken);
+      sync = { ...sync, saved: true };
+    } catch (e) {
+      console.error('play_saves write failed', e); // the game carries on; this action just isn't synced
+      sync = { ...sync, saved: false };
+    }
+  }
+
   return {
     status: 200,
-    json: { ok: true, token: signState(state), view: buildView(pub, sol, state), result, unlocked: unlocked.map(brief) },
+    json: { ok: true, token: newToken, view: view(state), result, unlocked: unlocked.map(brief), sync },
   };
 }

@@ -20,6 +20,8 @@ Related: [02-GDD](02-GDD.md) (design intent) · [04-TECH-ARCHITECTURE](04-TECH-A
 | FR-AUTH-05 | Users can delete their account and all personal data from settings (store and GDPR/NDPR requirement). | M | P1 | B |
 | FR-AUTH-06 | Users can choose region and currency display; defaults come from locale/IP. | S | P1 | W |
 
+> **Status (22 Oct 2026), web:** FR-AUTH-01, 02 (email link built; Google and Apple appear once enabled in Supabase), 03 (progress made before signing in is uploaded, and the save further along wins), 04 (partial: name only), 05 (delete account), FR-CASE-10 (resume on any device) and Daily streak sync are built. Row-level security is tested on PGlite (`supabase/tests`).
+
 **Acceptance (FR-AUTH-03):** Given an anonymous player who has read 10 items in Case 001, when they sign in with Google, then their progress, pins and notes are still there, and the anonymous row is merged, not duplicated.
 
 ## 2. Case library and store (LIB)
