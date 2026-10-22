@@ -111,6 +111,10 @@ export function lintCase(pubRaw: unknown, solRaw: unknown): { issues: LintIssue[
     for (const t of e.timestamps) for (const sid of t.suspectIds ?? []) if (!suspects.has(sid)) err('bad_suspect', `${e.id}: unknown suspect ${sid}`);
     if (e.body.type === 'statement' && !suspects.has(e.body.suspectId)) err('bad_suspect', `${e.id}: unknown suspect ${e.body.suspectId}`);
   }
+  // The evidence viewer renders paragraphs, line breaks, bold/italic and "- " lists only.
+  for (const e of pub.evidence)
+    if (e.body.type === 'document' && /^\s*\|.*\|\s*$/m.test(e.body.markdown))
+      err('unsupported_markdown', `${e.id}: markdown tables are not supported by the viewer; use lines or a log item.`);
   for (const b of sol.breakthroughs) {
     if (!ev.has(b.a) || !ev.has(b.b)) err('bad_breakthrough', `${b.id} references unknown evidence.`);
     if (b.a === b.b) err('bad_breakthrough', `${b.id} links an item to itself.`);

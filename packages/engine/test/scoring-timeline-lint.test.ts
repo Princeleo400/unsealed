@@ -134,6 +134,12 @@ describe('case linter and golden path (FR-ADMIN-01/02, NFR-11)', () => {
     expect(codes).toEqual(expect.arrayContaining(['version_mismatch', 'id_mismatch']));
   });
 
+  it('rejects markdown tables the evidence viewer cannot render', () => {
+    const p = rawPub();
+    p.evidence.find((e: { id: string }) => e.id === 'E-01').body.markdown += '\n\n| Time | Event |\n|---|---|\n| 01:00 | x |';
+    expect(lintCase(p, rawSol()).issues.map((i) => i.code)).toContain('unsupported_markdown');
+  });
+
   it('detects a solution leak into the public file', () => {
     const p = rawPub();
     p.briefing += ' ' + sol.breakthroughs[0]!.insight;

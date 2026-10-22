@@ -211,11 +211,11 @@ Launch lineup proposal (4 cases):
 | # | Title (working) | City | Hook | Price |
 |---|---|---|---|---|
 | 001 | **Dead Air** | Cape Town 🇿🇦 | A late-night radio host is killed mid-broadcast, but she's still talking on air 30 minutes later. | **Free** |
-| 002 | **The Last Toast** | Lagos 🇳🇬 | A wedding-reception death. The guest list, aso-ebi colours and a MoMo transfer log are clues. | Paid |
+| 002 | **The Last Toast** | Lagos 🇳🇬 | A wedding-reception death. The seating plan, aso-ebi colours, a lighting cue and a planner's crew chat are clues. | Paid (written, v1) |
 | 003 | **Checkout at Room 9** | Lisbon 🇵🇹 | A boutique hotel during a tech conference. Key-card logs, tram timetable, a fado bar receipt. | Paid |
 | 004 | **Below Zero** | Seoul 🇰🇷 | A chef found in a restaurant's walk-in freezer. Delivery-app logs, CCTV stills, a KakaoTalk-style chat. | Paid |
 
-Cases 002–004 are concepts. Each needs a full outline using [06-CASE-AUTHORING-GUIDE](06-CASE-AUTHORING-GUIDE.md). Case 001 is outlined in [07-PILOT-CASE-001](07-PILOT-CASE-001.md).
+Case 001 is outlined in [07-PILOT-CASE-001](07-PILOT-CASE-001.md). Case 002 is written and playable (truth document: `content/cases/002-the-last-toast/TRUTH.md`, spoilers); it still needs blind playtests and artwork. Cases 003–004 are concepts and need full outlines using [06-CASE-AUTHORING-GUIDE](06-CASE-AUTHORING-GUIDE.md).
 
 ## 9. What we take from each of the 7 reference games
 
