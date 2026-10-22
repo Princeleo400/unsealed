@@ -5,7 +5,7 @@ import { BuyButton } from '@/components/billing/BuyButton';
 import { IconCheck } from '@/components/icons';
 import { SiteFooter, SiteHeader } from '@/components/SiteHeader';
 import { catalogEntry } from '@/lib/catalog';
-import { CURRENCIES, PRICING, currencyForCountry, formatPrice, isCurrency, priceOf, trialDays, type Currency } from '@/lib/pricing';
+import { CURRENCIES, PRICING, currencyForCountry, formatPrice, isCurrency, priceOf, providerFor, trialDays, type Currency } from '@/lib/pricing';
 import { safeNext } from '@/lib/supabase/config';
 import { canOpen, loadAccess, type Access } from '@/server/billing/access';
 import { sellable } from '@/server/billing/checkout';
@@ -175,7 +175,10 @@ export default async function PassPage({ searchParams }: { searchParams: Promise
           <h2 id="terms" className="mb-2 font-extrabold text-paper">The small print</h2>
           <ul className="flex list-disc flex-col gap-1.5 pl-5">
             <li>The Case Pass renews automatically at the price shown until you cancel. Cancel any time from your account; you keep access until the end of the period you paid for.</li>
-            <li>{currency === 'USD' ? 'US$ payments are processed by Stripe.' : 'Naira payments are processed by Paystack. Renewals are charged to the card you paid with.'} We never see your full card details.</li>
+            <li>
+              Payments are processed securely by {providerFor(currency) === 'stripe' ? 'Stripe' : 'Paystack'}. Renewals are charged to the card you paid with. We never see your full card details.
+              {currency === 'USD' && providerFor(currency) === 'paystack' ? ' Your bank may show the charge from Lagos, Nigeria.' : ''}
+            </li>
             <li>Single cases are a one-off payment and stay in your account forever.</li>
             <li>Hints are never for sale: they always cost score, with or without a pass.</li>
           </ul>

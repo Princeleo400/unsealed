@@ -1,7 +1,7 @@
 import 'server-only';
 import type Stripe from 'stripe';
 import { catalogEntry } from '@/lib/catalog';
-import { PRICING, isProductId, priceOf, product, type ProductId } from '@/lib/pricing';
+import { PRICING, isCurrency, isProductId, priceOf, product, type Currency, type ProductId } from '@/lib/pricing';
 import type { BillingStore } from './store';
 
 /**
@@ -152,15 +152,22 @@ function parseMeta(m: unknown): Record<string, unknown> {
   return m && typeof m === 'object' ? (m as Record<string, unknown>) : {};
 }
 
-/** Paystack plan codes come from env (they differ between test and live mode). */
-export function paystackPlanFor(productId: ProductId, env: NodeJS.ProcessEnv = process.env): string | null {
-  if (productId === 'pass-monthly') return env.PAYSTACK_PLAN_PASS_MONTHLY || null;
-  if (productId === 'pass-annual') return env.PAYSTACK_PLAN_PASS_ANNUAL || null;
-  return null;
+/**
+ * Paystack plan codes come from env (they differ between test and live mode, and each plan has one
+ * currency): PAYSTACK_PLAN_PASS_MONTHLY / _ANNUAL are the Naira plans, ..._USD the US$ plans.
+ */
+const PLAN_ENV: Record<'pass-monthly' | 'pass-annual', Record<Currency, string>> = {
+  'pass-monthly': { NGN: 'PAYSTACK_PLAN_PASS_MONTHLY', USD: 'PAYSTACK_PLAN_PASS_MONTHLY_USD' },
+  'pass-annual': { NGN: 'PAYSTACK_PLAN_PASS_ANNUAL', USD: 'PAYSTACK_PLAN_PASS_ANNUAL_USD' },
+};
+export function paystackPlanFor(productId: ProductId, currency: Currency, env: NodeJS.ProcessEnv = process.env): string | null {
+  if (productId !== 'pass-monthly' && productId !== 'pass-annual') return null;
+  return env[PLAN_ENV[productId][currency]] || null;
 }
-export function productForPaystackPlan(planCode: string, env: NodeJS.ProcessEnv = process.env): ProductId | null {
-  if (planCode && planCode === env.PAYSTACK_PLAN_PASS_MONTHLY) return 'pass-monthly';
-  if (planCode && planCode === env.PAYSTACK_PLAN_PASS_ANNUAL) return 'pass-annual';
+export function productForPaystackPlan(planCode: string, env: NodeJS.ProcessEnv = process.env): { productId: ProductId; currency: Currency } | null {
+  if (!planCode) return null;
+  for (const productId of ['pass-monthly', 'pass-annual'] as const)
+    for (const currency of ['NGN', 'USD'] as const) if (env[PLAN_ENV[productId][currency]] === planCode) return { productId, currency };
   return null;
 }
 
@@ -173,23 +180,26 @@ export async function fulfilPaystackCharge(data: PaystackCharge, store: BillingS
   if (!userId && customer) userId = await store.userForCustomer('paystack', customer); // renewals carry no metadata
   if (!userId) return ignored('no player for transaction');
   if (expectUserId && expectUserId !== userId) return ignored('transaction belongs to another player');
-  if (data.currency?.toUpperCase() !== 'NGN') return ignored('unexpected currency');
+  const currency = data.currency?.toUpperCase();
+  if (!isCurrency(currency)) return ignored('unexpected currency');
   if (customer) await store.setCustomer(userId, { paystack: customer });
   const paidAt = new Date(data.paid_at ?? data.paidAt ?? Date.now());
 
   if (planCode) {
-    const productId = productForPaystackPlan(planCode);
-    if (!productId) return ignored(`unknown plan ${planCode}`);
+    const plan = productForPaystackPlan(planCode);
+    if (!plan) return ignored(`unknown plan ${planCode}`);
+    if (plan.currency !== currency) return ignored('plan currency mismatch');
+    const productId = plan.productId;
     if (!customer) return ignored('subscription charge without a customer');
     // First purchase (our metadata present): the amount must match our price. Renewals are not checked,
     // so players who subscribed before a price change keep their old price.
-    if (meta.product_id && data.amount !== priceOf(productId, 'NGN')) {
+    if (meta.product_id && data.amount !== priceOf(productId, currency)) {
       console.error('paystack amount mismatch', { ref: data.reference, amount: data.amount, productId });
       return ignored('amount mismatch');
     }
     const p = product(productId);
     if (p.kind !== 'pass') return ignored('plan is not a pass');
-    await store.recordPayment({ userId, provider: 'paystack', ref: data.reference, productId, amountMinor: data.amount, currency: 'NGN' });
+    await store.recordPayment({ userId, provider: 'paystack', ref: data.reference, productId, amountMinor: data.amount, currency });
     await store.grant({
       userId,
       kind: 'pass',
@@ -205,11 +215,11 @@ export async function fulfilPaystackCharge(data: PaystackCharge, store: BillingS
   const productId = meta.product_id;
   if (!isProductId(productId) || product(productId).kind !== 'case') return ignored('not an UNSEALED purchase');
   if (!validCase(meta.case_id, productId)) return ignored('case does not match product');
-  if (data.amount !== priceOf(productId, 'NGN')) {
+  if (data.amount !== priceOf(productId, currency)) {
     console.error('paystack amount mismatch', { ref: data.reference, amount: data.amount, productId });
     return ignored('amount mismatch');
   }
-  await store.recordPayment({ userId, provider: 'paystack', ref: data.reference, productId, amountMinor: data.amount, currency: 'NGN' });
+  await store.recordPayment({ userId, provider: 'paystack', ref: data.reference, productId, amountMinor: data.amount, currency });
   await store.grant({ userId, kind: 'case', caseId: meta.case_id, source: 'paystack', ref: data.reference, productId, expiresAt: null, mode: 'extend' });
   return { status: 'granted', userId, productId };
 }

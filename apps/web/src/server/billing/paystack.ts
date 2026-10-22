@@ -25,6 +25,7 @@ async function call<T>(method: 'GET' | 'POST', path: string, body?: unknown): Pr
 /** Start a checkout. With `plan`, Paystack creates a subscription and charges the plan amount. */
 export function initializeTransaction(p: {
   email: string;
+  currency: 'NGN' | 'USD';
   amountMinor: number;
   reference: string;
   callbackUrl: string;
@@ -34,7 +35,7 @@ export function initializeTransaction(p: {
   return call<{ authorization_url: string; reference: string }>('POST', '/transaction/initialize', {
     email: p.email,
     amount: p.amountMinor,
-    currency: 'NGN',
+    currency: p.currency,
     reference: p.reference,
     callback_url: p.callbackUrl,
     metadata: p.metadata,
