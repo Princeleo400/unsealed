@@ -47,3 +47,33 @@ export function verifyState(
     return null;
   }
 }
+
+/**
+ * Signed, expiring payloads for other purposes (Bonus Brief tickets, share cards). The
+ * purpose is part of the signature, so a token made for one use is rejected by every other.
+ */
+export function signPayload(purpose: string, payload: object): string {
+  const body = b64url(Buffer.from(JSON.stringify(payload), 'utf8'));
+  const mac = b64url(
+    createHmac('sha256', secret()).update(`${purpose}.${body}`).digest(),
+  ).slice(0, 32);
+  return `${body}.${mac}`;
+}
+
+export function verifyPayload<T>(purpose: string, token: string): T | null {
+  const [body, mac] = token.split('.');
+  if (!body || !mac || token.length > 4000) return null;
+  const good = Buffer.from(
+    b64url(
+      createHmac('sha256', secret()).update(`${purpose}.${body}`).digest(),
+    ).slice(0, 32),
+  );
+  const given = Buffer.from(mac);
+  if (given.length !== good.length || !timingSafeEqual(given, good))
+    return null;
+  try {
+    return JSON.parse(Buffer.from(body, 'base64url').toString('utf8')) as T;
+  } catch {
+    return null;
+  }
+}

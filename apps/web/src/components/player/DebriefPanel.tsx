@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { CaseView } from '@/lib/view-types';
+import { ShareButton } from '@/components/share/ShareButton';
 import { formatClock } from './usePlay';
 
 const BADGES: Record<string, { label: string; help: string }> = {
@@ -22,26 +23,20 @@ export function DebriefPanel({
   const debriefView = view.debrief!;
   const solved = view.status === 'solved';
   const [step, setStep] = useState(0);
-  const [copied, setCopied] = useState(false);
   const currentStep = debriefView.steps[step]!;
 
-  const share = async () => {
-    const text = `UNSEALED · "${view.case.title}" (${view.case.city.name})\n${solved ? `Solved on accusation ${view.accusations.length}/3` : 'The case went cold'} · score ${debriefView.score.total}${
-      debriefView.score.badges.length
-        ? ` · ${debriefView.score.badges.map((badgeId) => BADGES[badgeId]?.label).join(', ')}`
-        : ''
-    }\nCan you solve it?`;
+  const shareText = solved
+    ? `I solved "${view.case.title}" on UNSEALED with a score of ${debriefView.score.total}. Can you?`
+    : `"${view.case.title}" went cold on me. Can you solve it?`;
+  // The signed play state proves the result; the server reads score and badges from it.
+  const shareRequest = () => {
     try {
-      if (navigator.share)
-        await navigator.share({ text, url: window.location.origin });
-      else {
-        await navigator.clipboard.writeText(
-          `${text}\n${window.location.origin}`,
-        );
-        setCopied(true);
-      }
+      const token = localStorage.getItem(`unsealed:play:${view.case.id}`);
+      return token
+        ? { kind: 'case' as const, caseId: view.case.id, token }
+        : null;
     } catch {
-      /* user cancelled */
+      return null;
     }
   };
 
@@ -166,14 +161,8 @@ export function DebriefPanel({
         ))}
       </section>
 
-      <div className="grid gap-2 sm:grid-cols-3">
-        <button
-          type="button"
-          onClick={share}
-          className="h-12 rounded-xl border border-line-strong font-extrabold"
-        >
-          {copied ? 'Copied!' : 'Share result'}
-        </button>
+      <div className="grid items-start gap-2 sm:grid-cols-3">
+        <ShareButton text={shareText} request={shareRequest} />
         <button
           type="button"
           onClick={onRestart}

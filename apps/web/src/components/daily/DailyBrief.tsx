@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { DailyView } from '@/server/daily';
+import { ShareButton } from '@/components/share/ShareButton';
+import { PlayMorePanel } from './PlayMorePanel';
 
 type Mark = '' | 'x' | 'v';
 type Solution = {
@@ -18,6 +20,8 @@ type Saved = {
   startedAt: number;
   seconds: number;
   solution?: Solution;
+  /** Server-signed proof of a correct answer, used for the share card. */
+  proof?: string;
   guesses: { suspect: number; place: number }[];
 };
 type History = Record<
@@ -63,7 +67,14 @@ export function streakFrom(history: History, today: string): number {
   return streak;
 }
 
-export function DailyBrief({ date }: { date?: string }) {
+export function DailyBrief({
+  date,
+  ticket,
+}: {
+  date?: string;
+  /** A Bonus Brief ticket: plays an extra puzzle instead of the calendar Daily. */
+  ticket?: string;
+}) {
   const [daily, setDaily] = useState<DailyView | null>(null);
   const [error, setError] = useState<{
     message: string;
@@ -75,10 +86,14 @@ export function DailyBrief({ date }: { date?: string }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
-  const [copied, setCopied] = useState(false);
+  const [coinNote, setCoinNote] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`/api/daily${date ? `?date=${encodeURIComponent(date)}` : ''}`)
+    fetch(
+      ticket
+        ? `/api/daily/bonus?ticket=${encodeURIComponent(ticket)}`
+        : `/api/daily${date ? `?date=${encodeURIComponent(date)}` : ''}`,
+    )
       .then((response) => response.json())
       .then(
         (reply: {
@@ -110,7 +125,7 @@ export function DailyBrief({ date }: { date?: string }) {
         },
       )
       .catch(() => setError({ message: 'No connection. Please try again.' }));
-  }, [date]);
+  }, [date, ticket]);
 
   useEffect(() => {
     if (daily && saved) save(`unsealed:daily:${daily.id}`, saved);
@@ -167,6 +182,8 @@ export function DailyBrief({ date }: { date?: string }) {
         if (!prev) return prev;
         const seconds = Math.round((Date.now() - prev.startedAt) / 1000);
         const result = { solved: status === 'solved', wrong, seconds };
+        if (daily.kind === 'bonus')
+          return { ...prev, status, solution, seconds, wrong }; // Bonus Briefs never touch the streak
         if (!daily.archive.includes(daily.id)) {
           // A Brief from the full archive: remembered here, but no streak and no account record.
           const archiveHistory = load<History>(ARCHIVE_HISTORY_KEY) ?? {};
@@ -218,9 +235,16 @@ export function DailyBrief({ date }: { date?: string }) {
     );
   if (error)
     return (
-      <p role="alert" className="py-20 text-center text-body">
-        {error.message}
-      </p>
+      <div className="flex flex-col items-center gap-4 py-20 text-center">
+        <p role="alert" className="text-body">
+          {error.message}
+        </p>
+        {ticket && (
+          <Link href="/daily" className="text-sm font-bold text-amber">
+            Back to the Daily Brief
+          </Link>
+        )}
+      </div>
     );
   if (!daily || !saved)
     return (
@@ -228,7 +252,7 @@ export function DailyBrief({ date }: { date?: string }) {
         role="status"
         className="py-20 text-center font-mono text-sm tracking-[0.2em] text-muted"
       >
-        OPENING TODAY’S BRIEF…
+        {ticket ? 'OPENING YOUR BONUS BRIEF…' : 'OPENING TODAY’S BRIEF…'}
       </p>
     );
 
@@ -260,17 +284,21 @@ export function DailyBrief({ date }: { date?: string }) {
     });
   };
 
+  const isBonus = daily.kind === 'bonus';
+  const endpoint = isBonus ? '/api/daily/bonus' : '/api/daily';
+  const target = isBonus ? { ticket: daily.ticket } : { date: daily.id };
+
   const submit = async () => {
     if (who === null || where === null) return;
     setBusy(true);
     setMsg(null);
     try {
-      const res = await fetch('/api/daily', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           type: 'answer',
-          date: daily.id,
+          ...target,
           suspect: who,
           place: where,
         }),
@@ -280,20 +308,26 @@ export function DailyBrief({ date }: { date?: string }) {
         correct?: boolean;
         solution?: Solution;
         message?: string;
+        coinsEarned?: number;
+        proof?: string;
       };
+      if (reply.ok && reply.coinsEarned)
+        setCoinNote(
+          `+${reply.coinsEarned} coin for solving today's Daily. Spend it on a Bonus Brief below.`,
+        );
       if (!reply.ok) return setMsg(reply.message ?? 'Something went wrong.');
       const guesses = [...saved.guesses, { suspect: who, place: where }];
       if (reply.correct && reply.solution) {
-        setSaved({ ...saved, guesses });
+        setSaved({ ...saved, guesses, proof: reply.proof });
         finish('solved', reply.solution, saved.wrong);
         return;
       }
       const wrong = saved.wrong + 1;
       if (wrong >= MAX_TRIES) {
-        const response = await fetch('/api/daily', {
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ type: 'reveal', date: daily.id }),
+          body: JSON.stringify({ type: 'reveal', ...target }),
         });
         const rj = (await response.json()) as { solution: Solution };
         setSaved({ ...saved, guesses, wrong });
@@ -311,24 +345,10 @@ export function DailyBrief({ date }: { date?: string }) {
     }
   };
 
-  const shareText = () => {
-    const squares =
-      [...Array(saved.wrong)].map(() => '🟥').join('') +
-      (saved.status === 'solved' ? '🟩' : '');
-    return `UNSEALED Daily #${daily.number} · ${daily.difficultyLabel} · ${daily.city}\n${squares} ${saved.status === 'solved' ? `solved in ${mmss(saved.seconds)}` : 'case went cold'}\nStreak ${streak}\n${window.location.origin}/daily`;
-  };
-  const share = async () => {
-    const text = shareText();
-    try {
-      if (navigator.share) await navigator.share({ text });
-      else {
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
-      }
-    } catch {
-      /* cancelled */
-    }
-  };
+  const shareText = () =>
+    saved.status === 'solved'
+      ? `I solved ${isBonus ? 'a Bonus Brief' : `UNSEALED Daily #${daily.number}`} in ${mmss(saved.seconds)}. Can you?`
+      : `${isBonus ? 'This Bonus Brief' : `UNSEALED Daily #${daily.number}`} beat me. Can you solve it?`;
 
   // A render function (not a nested component) so the grid isn't remounted on each tap and keeps keyboard focus.
   const renderGrid = ({
@@ -402,7 +422,8 @@ export function DailyBrief({ date }: { date?: string }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-mono text-xs tracking-[0.15em] text-red-text">
-            DAILY BRIEF #{daily.number} · {daily.city.toUpperCase()}
+            {isBonus ? 'BONUS BRIEF' : `DAILY BRIEF #${daily.number}`} ·{' '}
+            {daily.city.toUpperCase()}
           </p>
           <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
             {daily.title}
@@ -410,7 +431,9 @@ export function DailyBrief({ date }: { date?: string }) {
           <p className="mt-1 text-sm text-muted">
             {daily.difficultyLabel} · {suspectCount} suspects ·{' '}
             {daily.clues.length} clues
-            {daily.id !== daily.today &&
+            {isBonus && ' · no streak'}
+            {!isBonus &&
+              daily.id !== daily.today &&
               (daily.archive.includes(daily.id)
                 ? ` · from ${daily.id}`
                 : ` · archive Brief from ${daily.id} (no streak)`)}
@@ -423,12 +446,14 @@ export function DailyBrief({ date }: { date?: string }) {
           >
             {mmss(elapsed)}
           </span>
-          <span
-            className="rounded-full border border-line px-3 py-1.5"
-            aria-label="Streak"
-          >
-            Streak {streak}
-          </span>
+          {!isBonus && (
+            <span
+              className="rounded-full border border-line px-3 py-1.5"
+              aria-label="Streak"
+            >
+              Streak {streak}
+            </span>
+          )}
         </div>
       </div>
 
@@ -565,8 +590,8 @@ export function DailyBrief({ date }: { date?: string }) {
           <p className="text-sm text-muted">
             {saved.status === 'solved'
               ? `Solved in ${mmss(saved.seconds)} with ${saved.wrong} wrong ${saved.wrong === 1 ? 'guess' : 'guesses'}.`
-              : 'Three tries used.'}{' '}
-            Streak: {streak}.
+              : 'Three tries used.'}
+            {!isBonus && ` Streak: ${streak}.`}
           </p>
           <table className="text-sm">
             <thead>
@@ -588,14 +613,17 @@ export function DailyBrief({ date }: { date?: string }) {
               ))}
             </tbody>
           </table>
-          <div className="grid gap-2 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={share}
-              className="h-12 rounded-xl border border-line-strong font-extrabold"
-            >
-              {copied ? 'Copied!' : 'Share result'}
-            </button>
+          <div className="grid items-start gap-2 sm:grid-cols-2">
+            <ShareButton
+              text={shareText()}
+              request={() => ({
+                kind: 'daily',
+                ...target,
+                proof: saved.proof,
+                wrong: saved.wrong,
+                seconds: saved.seconds,
+              })}
+            />
             <Link
               href="/play/001-dead-air"
               className="flex h-12 items-center justify-center rounded-xl bg-amber font-extrabold text-ink"
@@ -603,7 +631,12 @@ export function DailyBrief({ date }: { date?: string }) {
               Play a full case
             </Link>
           </div>
-          {daily.id === daily.today && (
+          {coinNote && (
+            <p role="status" className="text-sm font-semibold text-green-text">
+              {coinNote}
+            </p>
+          )}
+          {!isBonus && daily.id === daily.today && (
             <p className="text-center font-mono text-xs text-faint">
               Next brief in {Math.floor(untilNext / 3600)}h{' '}
               {String(Math.floor((untilNext % 3600) / 60)).padStart(2, '0')}m
@@ -612,7 +645,7 @@ export function DailyBrief({ date }: { date?: string }) {
         </section>
       )}
 
-      {daily.archive.length > 1 && (
+      {!isBonus && daily.archive.length > 1 && (
         <nav aria-label="Past briefs" className="flex flex-col gap-2">
           <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">
             THIS WEEK
@@ -636,7 +669,11 @@ export function DailyBrief({ date }: { date?: string }) {
         </nav>
       )}
 
-      {daily.fullArchive ? (
+      {isBonus ? (
+        <Link href="/daily" className="text-sm font-bold text-amber">
+          Back to today&apos;s Daily
+        </Link>
+      ) : daily.fullArchive ? (
         <form
           action="/daily"
           aria-label="Full archive"
@@ -682,6 +719,7 @@ export function DailyBrief({ date }: { date?: string }) {
           .
         </p>
       )}
+      <PlayMorePanel />
     </div>
   );
 }

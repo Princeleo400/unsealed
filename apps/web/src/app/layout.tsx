@@ -5,6 +5,8 @@ import '@fontsource/ibm-plex-mono/600.css';
 import './globals.css';
 
 export const metadata: Metadata = {
+  // Absolute links for share-card previews. Set SITE_URL in production.
+  metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3003'),
   title: { default: 'UNSEALED — Can you solve it?', template: '%s · UNSEALED' },
   description:
     'A fair-play detective game. Read the real case file, tie the red string, rebuild the night and name the killer — alone or with friends.',
