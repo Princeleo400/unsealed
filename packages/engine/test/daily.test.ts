@@ -5,6 +5,7 @@ import {
   countSolutions,
   dailyNumber,
   difficultyFor,
+  generateBonusBrief,
   generateDaily,
   generateLogic,
   holds,
@@ -158,5 +159,41 @@ describe('Daily Brief text', () => {
         /(binoculars|braai tongs|sunglasses) (was|has|does)\b/,
       );
     }
+  });
+});
+
+describe('Bonus Briefs', () => {
+  const SEED = 'a1b2c3d4e5f60718293a4b5c6d7e8f90';
+  it('are deterministic per seed and difficulty, with exactly one answer', () => {
+    for (const difficulty of [
+      'rookie',
+      'detective',
+      'inspector',
+      'chief',
+    ] as const) {
+      const firstRun = generateBonusBrief(SEED, difficulty);
+      const secondRun = generateBonusBrief(SEED, difficulty);
+      expect(firstRun).toEqual(secondRun);
+      expect(firstRun.puzzle.id).toBe('bonus-a1b2c3d4e5f6');
+      expect(firstRun.puzzle.difficulty).toBe(difficulty);
+      expect(firstRun.puzzle.number).toBe(0);
+    }
+  });
+
+  it('every generated Bonus Brief has a single solution', () => {
+    for (let index = 0; index < 40; index++) {
+      const seed = (index.toString(16).padStart(2, '0') + SEED).slice(0, 32);
+      const { puzzle, solution } = generateBonusBrief(seed, 'detective');
+      expect(puzzle.clues.length).toBeGreaterThan(2);
+      expect(solution.place[solution.culprit]).toBeTypeOf('number');
+    }
+  });
+
+  it('never matches a calendar Daily, and rejects bad seeds', () => {
+    const bonus = generateBonusBrief(SEED, difficultyFor('2026-10-24'));
+    const daily = generateDaily('2026-10-24');
+    expect(bonus.puzzle.clues).not.toEqual(daily.puzzle.clues);
+    expect(() => generateBonusBrief('NOT-HEX', 'rookie')).toThrow();
+    expect(() => generateBonusBrief('abc', 'rookie')).toThrow(); // too short
   });
 });

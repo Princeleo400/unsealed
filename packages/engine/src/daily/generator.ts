@@ -432,15 +432,14 @@ function clueText(
   }
 }
 
-/** The puzzle for a date (YYYY-MM-DD, UTC). Deterministic: everyone in the world gets the same one. */
-export function generateDaily(
-  dateISO: string,
-  salt = 'unsealed',
+/** Builds a puzzle from a seed base (tries a few seeds until the logic has exactly one answer). */
+function buildPuzzle(
+  seedBase: string,
+  identity: { id: string; number: number; difficulty: Difficulty },
 ): { puzzle: DailyPuzzle; solution: DailySolution } {
-  const difficulty = difficultyFor(dateISO);
   for (let attempt = 0; attempt < 50; attempt++) {
-    const seed = `${salt}:${dateISO}:${attempt}`;
-    const logic = generateLogic(seed, difficulty);
+    const seed = `${seedBase}:${attempt}`;
+    const logic = generateLogic(seed, identity.difficulty);
     if (!logic.unique) continue;
     const random = rng(`${seed}:text`);
     const pack: CityPack = random.pick(CITY_PACKS);
@@ -451,9 +450,9 @@ export function generateDaily(
     const culprit = logic.sol.object.indexOf(target);
     const names = { suspects, places, objects };
     const puzzle: DailyPuzzle = {
-      id: dateISO,
-      number: dailyNumber(dateISO),
-      difficulty,
+      id: identity.id,
+      number: identity.number,
+      difficulty: identity.difficulty,
       city: pack.city,
       country: pack.country,
       title: `Who took the ${objects[target]}?`,
@@ -472,7 +471,40 @@ export function generateDaily(
       solution: { place: logic.sol.place, object: logic.sol.object, culprit },
     };
   }
-  throw new Error(`Could not generate a unique daily for ${dateISO}`);
+  throw new Error(`Could not generate a unique puzzle for ${identity.id}`);
+}
+
+/** The puzzle for a date (YYYY-MM-DD, UTC). Deterministic: everyone in the world gets the same one. */
+export function generateDaily(
+  dateISO: string,
+  salt = 'unsealed',
+): { puzzle: DailyPuzzle; solution: DailySolution } {
+  return buildPuzzle(`${salt}:${dateISO}`, {
+    id: dateISO,
+    number: dailyNumber(dateISO),
+    difficulty: difficultyFor(dateISO),
+  });
+}
+
+/** Bonus Brief ids look like "bonus-<seed>". Seeds are random hex chosen by the server. */
+export const BONUS_SEED_PATTERN = /^[a-f0-9]{16,64}$/;
+export const bonusId = (seed: string) => `bonus-${seed.slice(0, 12)}`;
+
+/**
+ * An extra puzzle outside the calendar. Its seed space ("bonus:") never overlaps a Daily,
+ * so playing Bonus Briefs can't reveal tomorrow's Daily.
+ */
+export function generateBonusBrief(
+  seed: string,
+  difficulty: Difficulty,
+  salt = 'unsealed',
+): { puzzle: DailyPuzzle; solution: DailySolution } {
+  if (!BONUS_SEED_PATTERN.test(seed)) throw new Error('Invalid bonus seed');
+  return buildPuzzle(`${salt}:bonus:${seed}:${difficulty}`, {
+    id: bonusId(seed),
+    number: 0,
+    difficulty,
+  });
 }
 
 /** Correct when the player names the culprit AND where they were. */

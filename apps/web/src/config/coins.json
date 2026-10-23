@@ -1,0 +1,10 @@
+{
+  "_note": "Daily Brief coins. Change the numbers here, not in code. Case Pass holders play Bonus Briefs free and without limits.",
+  "dailyLogin": 1,
+  "dailySolve": 1,
+  "perAd": 1,
+  "maxAdsPerDay": 3,
+  "bonusCost": 1,
+  "maxBonusPerDay": 5,
+  "guestBonusPerDay": 1
+}

@@ -8,6 +8,7 @@ import {
   type DailySolution,
 } from '@unsealed/engine';
 import { z } from 'zod';
+import { signPayload, verifyPayload } from './session';
 
 /** Free players can open today's Daily and the previous 6 (FR-DAILY-06). Case Pass opens every day since launch. */
 export const ARCHIVE_DAYS = 7;
@@ -74,6 +75,10 @@ function get(date: string) {
 }
 
 export type DailyView = DailyPuzzle & {
+  /** 'bonus' = an extra puzzle outside the calendar (no streak, no archive). */
+  kind: 'daily' | 'bonus';
+  /** Bonus Briefs only: the signed ticket that proves the puzzle was paid for. */
+  ticket?: string;
   difficultyLabel: string;
   /** The free window, newest first. */
   archive: string[];
@@ -97,6 +102,7 @@ export function dailyView(
   ).filter((date) => isRecentDate(date, now));
   return {
     ...puzzle,
+    kind: 'daily',
     difficultyLabel: DIFFICULTY_LABEL[puzzle.difficulty],
     archive,
     today,
@@ -146,6 +152,24 @@ export function handleDaily(
           },
         };
   const { puzzle, solution } = get(req.date);
+  return grade(puzzle, solution, req);
+}
+
+const SOLVED_PURPOSE = 'daily-solved';
+export const solvedProof = (puzzleId: string) =>
+  signPayload(SOLVED_PURPOSE, { id: puzzleId });
+export const isSolvedProof = (proof: string | undefined, puzzleId: string) =>
+  Boolean(
+    proof &&
+    verifyPayload<{ id: string }>(SOLVED_PURPOSE, proof)?.id === puzzleId,
+  );
+
+/** Grades an answer (or reveals after 3 tries). Shared by the Daily and Bonus Briefs. */
+export function grade(
+  puzzle: DailyPuzzle,
+  solution: DailySolution,
+  req: { type: 'reveal' } | { type: 'answer'; suspect: number; place: number },
+) {
   const full = {
     culprit: solution.culprit,
     place: solution.place[solution.culprit]!,
@@ -166,6 +190,12 @@ export function handleDaily(
   });
   return {
     status: 200,
-    json: { ok: true as const, correct, solution: correct ? full : undefined },
+    json: {
+      ok: true as const,
+      correct,
+      solution: correct ? full : undefined,
+      // Lets the player make a share card that says "solved" without us trusting their word.
+      proof: correct ? solvedProof(puzzle.id) : undefined,
+    },
   };
 }
