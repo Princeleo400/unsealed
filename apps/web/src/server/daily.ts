@@ -9,8 +9,13 @@ import {
 } from '@unsealed/engine';
 import { z } from 'zod';
 
-/** Free players can open today's Daily and the previous 6 (FR-DAILY-06). */
+/** Free players can open today's Daily and the previous 6 (FR-DAILY-06). Case Pass opens every day since launch. */
 export const ARCHIVE_DAYS = 7;
+const DAY_MS = 86_400_000;
+
+/** Who is asking: Case Pass holders get the full archive. */
+export type DailyAccess = { fullArchive: boolean };
+const FREE: DailyAccess = { fullArchive: false };
 
 const salt = () => process.env.DAILY_SALT || 'unsealed';
 const cache = new Map<
@@ -20,17 +25,43 @@ const cache = new Map<
 
 export const todayUTC = (now = new Date()) => now.toISOString().slice(0, 10);
 
-export function isOpenDate(date: string, now = new Date()): boolean {
+/** A real Daily: well-formed, not before launch, not in the future. */
+export function isPublishedDate(date: string, now = new Date()): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
   const timestamp = Date.parse(`${date}T00:00:00Z`);
   const today = Date.parse(`${todayUTC(now)}T00:00:00Z`);
   return (
     !Number.isNaN(timestamp) &&
     timestamp <= today &&
-    timestamp > today - ARCHIVE_DAYS * 86400000 &&
     timestamp >= Date.parse(`${DAILY_EPOCH}T00:00:00Z`)
   );
 }
+
+/** Inside the free window: today and the previous ARCHIVE_DAYS - 1 days. */
+export function isRecentDate(date: string, now = new Date()): boolean {
+  const timestamp = Date.parse(`${date}T00:00:00Z`);
+  const today = Date.parse(`${todayUTC(now)}T00:00:00Z`);
+  return (
+    isPublishedDate(date, now) && timestamp > today - ARCHIVE_DAYS * DAY_MS
+  );
+}
+
+export function isOpenDate(
+  date: string,
+  now = new Date(),
+  access: DailyAccess = FREE,
+): boolean {
+  return access.fullArchive
+    ? isPublishedDate(date, now)
+    : isRecentDate(date, now);
+}
+
+/** A published Daily that only the full archive (Case Pass) opens. */
+export const isArchiveOnlyDate = (date: string, now = new Date()) =>
+  isPublishedDate(date, now) && !isRecentDate(date, now);
+
+export const ARCHIVE_LOCKED_MESSAGE =
+  'Older Daily Briefs are in the full archive, included with Case Pass.';
 
 function get(date: string) {
   let hit = cache.get(date);
@@ -44,23 +75,33 @@ function get(date: string) {
 
 export type DailyView = DailyPuzzle & {
   difficultyLabel: string;
+  /** The free window, newest first. */
   archive: string[];
   today: string;
+  /** True for Case Pass holders: any day since `epoch` can be opened. */
+  fullArchive: boolean;
+  epoch: string;
 };
 
-export function dailyView(date: string, now = new Date()): DailyView {
+export function dailyView(
+  date: string,
+  now = new Date(),
+  access: DailyAccess = FREE,
+): DailyView {
   const { puzzle } = get(date);
   const today = todayUTC(now);
   const archive = Array.from({ length: ARCHIVE_DAYS }, (_, daysAgo) =>
-    new Date(Date.parse(`${today}T00:00:00Z`) - daysAgo * 86400000)
+    new Date(Date.parse(`${today}T00:00:00Z`) - daysAgo * DAY_MS)
       .toISOString()
       .slice(0, 10),
-  ).filter((date) => isOpenDate(date, now));
+  ).filter((date) => isRecentDate(date, now));
   return {
     ...puzzle,
     difficultyLabel: DIFFICULTY_LABEL[puzzle.difficulty],
     archive,
     today,
+    fullArchive: access.fullArchive,
+    epoch: DAILY_EPOCH,
   };
 }
 
@@ -75,7 +116,11 @@ export const DailyRequest = z.discriminatedUnion('type', [
 ]);
 
 /** Grading happens here so the answer is never in the page. Reveal is for players who used all 3 tries. */
-export function handleDaily(body: unknown, now = new Date()) {
+export function handleDaily(
+  body: unknown,
+  now = new Date(),
+  access: DailyAccess = FREE,
+) {
   const parsed = DailyRequest.safeParse(body);
   if (!parsed.success)
     return {
@@ -83,14 +128,23 @@ export function handleDaily(body: unknown, now = new Date()) {
       json: { ok: false as const, message: 'Invalid request.' },
     };
   const req = parsed.data;
-  if (!isOpenDate(req.date, now))
-    return {
-      status: 404,
-      json: {
-        ok: false as const,
-        message: 'That Daily Brief is not available.',
-      },
-    };
+  if (!isOpenDate(req.date, now, access))
+    return isArchiveOnlyDate(req.date, now)
+      ? {
+          status: 402,
+          json: {
+            ok: false as const,
+            code: 'archive_locked' as const,
+            message: ARCHIVE_LOCKED_MESSAGE,
+          },
+        }
+      : {
+          status: 404,
+          json: {
+            ok: false as const,
+            message: 'That Daily Brief is not available.',
+          },
+        };
   const { puzzle, solution } = get(req.date);
   const full = {
     culprit: solution.culprit,

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { generateDaily } from '@unsealed/engine';
-import { dailyView, handleDaily, isOpenDate } from '@/server/daily';
+import {
+  dailyView,
+  handleDaily,
+  isArchiveOnlyDate,
+  isOpenDate,
+} from '@/server/daily';
 import { streakFrom } from '@/components/daily/DailyBrief';
 
 const NOW = new Date('2026-10-23T09:00:00Z');
@@ -91,5 +96,32 @@ describe('Daily Brief API', () => {
       ),
     ).toBe(1);
     expect(streakFrom({}, '2026-10-23')).toBe(0);
+  });
+
+  it('Case Pass opens every Daily since launch; free players get a clear lock', () => {
+    const PASS = { fullArchive: true };
+    expect(isOpenDate('2026-10-02', NOW)).toBe(false);
+    expect(isOpenDate('2026-10-02', NOW, PASS)).toBe(true);
+    expect(isOpenDate('2026-09-30', NOW, PASS)).toBe(false); // before launch
+    expect(isOpenDate('2026-10-24', NOW, PASS)).toBe(false); // still no peeking
+    expect(isArchiveOnlyDate('2026-10-02', NOW)).toBe(true);
+    expect(isArchiveOnlyDate('2026-10-20', NOW)).toBe(false);
+    const locked = handleDaily(
+      { type: 'answer', date: '2026-10-02', suspect: 0, place: 0 },
+      NOW,
+    );
+    expect(locked.status).toBe(402);
+    expect(locked.json).toMatchObject({ ok: false, code: 'archive_locked' });
+    const opened = handleDaily(
+      { type: 'reveal', date: '2026-10-02' },
+      NOW,
+      PASS,
+    );
+    expect(opened.status).toBe(200);
+    const view = dailyView('2026-10-02', NOW, PASS);
+    expect(view.fullArchive).toBe(true);
+    expect(view.epoch).toBe('2026-10-01');
+    expect(view.archive).toHaveLength(7); // the free week list is the same for everyone
+    expect(dailyView('2026-10-23', NOW).fullArchive).toBe(false);
   });
 });

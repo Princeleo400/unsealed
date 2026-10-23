@@ -2,6 +2,7 @@ import 'server-only';
 import { randomUUID } from 'node:crypto';
 import { catalogEntry } from '@/lib/catalog';
 import {
+  currencyForCountry,
   priceOf,
   product,
   providerFor,
@@ -41,6 +42,30 @@ export function siteOrigin(req: Request): string {
   return new URL(req.url).origin;
 }
 
+/**
+ * The currency to show first. Normally Naira for Nigeria and US$ elsewhere, but if US$
+ * checkout isn't set up (no USD account on Paystack yet) and Naira is, everyone sees
+ * Naira: foreign Visa/Mastercard cards can pay it and the card's bank converts.
+ */
+export function defaultCurrency(country: string | null | undefined): Currency {
+  const preferred = currencyForCountry(country);
+  const other: Currency = preferred === 'USD' ? 'NGN' : 'USD';
+  const onSale = (currency: Currency) =>
+    sellable('pass-monthly', currency) || sellable('case-standard', currency);
+  return !onSale(preferred) && onSale(other) ? other : preferred;
+}
+
+/**
+ * Currencies the Paystack account can actually charge. US$ needs a USD settlement
+ * account approved by Paystack, so it is off until PAYSTACK_CURRENCIES=NGN,USD.
+ */
+export function paystackCurrencies(): Currency[] {
+  return (process.env.PAYSTACK_CURRENCIES || 'NGN')
+    .split(',')
+    .map((code) => code.trim().toUpperCase())
+    .filter((code): code is Currency => code === 'NGN' || code === 'USD');
+}
+
 /** Can this product be bought in this currency right now? (keys and plans configured) */
 export function sellable(productId: ProductId, currency: Currency): boolean {
   if (
@@ -49,7 +74,8 @@ export function sellable(productId: ProductId, currency: Currency): boolean {
   )
     return false; // purchases are recorded with the service role
   if (providerFor(currency) === 'stripe') return stripeEnabled();
-  if (!paystackEnabled()) return false;
+  if (!paystackEnabled() || !paystackCurrencies().includes(currency))
+    return false;
   return (
     product(productId).kind === 'case' ||
     Boolean(paystackPlanFor(productId, currency))
@@ -194,6 +220,12 @@ export async function startCheckout(request: Start): Promise<{ url: string }> {
     throw new CheckoutError(
       'unavailable',
       'Payments aren’t switched on yet.',
+      503,
+    );
+  if (!paystackCurrencies().includes(request.currency))
+    throw new CheckoutError(
+      'unavailable',
+      `Payments in ${request.currency} aren’t switched on yet. Please pay in Naira.`,
       503,
     );
   const plan =

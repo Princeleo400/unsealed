@@ -8,7 +8,6 @@ import { catalogEntry } from '@/lib/catalog';
 import {
   CURRENCIES,
   PRICING,
-  currencyForCountry,
   formatPrice,
   isCurrency,
   priceOf,
@@ -18,7 +17,7 @@ import {
 } from '@/lib/pricing';
 import { safeNext } from '@/lib/supabase/config';
 import { canOpen, loadAccess, type Access } from '@/server/billing/access';
-import { sellable } from '@/server/billing/checkout';
+import { defaultCurrency, sellable } from '@/server/billing/checkout';
 import { supabaseBillingStore } from '@/server/billing/store';
 import { currentUser } from '@/server/supabase';
 
@@ -51,12 +50,12 @@ export default async function PassPage({
 }) {
   const sp = await searchParams;
   const requestHeaders = await headers();
+  const visitorCountry =
+    requestHeaders.get('x-vercel-ip-country') ??
+    requestHeaders.get('cf-ipcountry');
   const currency: Currency = isCurrency(sp.currency)
     ? sp.currency
-    : currencyForCountry(
-        requestHeaders.get('x-vercel-ip-country') ??
-          requestHeaders.get('cf-ipcountry'),
-      );
+    : defaultCurrency(visitorCountry);
   const entry = sp.case ? catalogEntry(sp.case) : undefined;
   const forCase =
     entry?.productId && entry.status === 'playable' ? entry : undefined;
@@ -117,6 +116,9 @@ export default async function PassPage({
           </div>
           <span className="text-xs text-faint">
             {PRICING.currencies[currency].label}
+            {currency === 'NGN' && visitorCountry?.toUpperCase() !== 'NG'
+              ? '. Paying from abroad? Your card works: your bank converts the Naira price.'
+              : ''}
           </span>
         </div>
 

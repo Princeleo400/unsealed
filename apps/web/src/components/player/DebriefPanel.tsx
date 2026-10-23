@@ -182,10 +182,10 @@ export function DebriefPanel({
           Play again
         </button>
         <Link
-          href="/#waitlist"
+          href="/cases"
           className="flex h-12 items-center justify-center rounded-xl bg-amber font-extrabold text-ink"
         >
-          Get the next case
+          Next case
         </Link>
       </div>
     </div>

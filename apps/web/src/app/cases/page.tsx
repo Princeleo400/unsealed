@@ -3,13 +3,14 @@ import type { Metadata } from 'next';
 import { SiteFooter, SiteHeader } from '@/components/SiteHeader';
 import { headers } from 'next/headers';
 import { CATALOG } from '@/lib/catalog';
-import { currencyForCountry, formatPrice, priceOf } from '@/lib/pricing';
+import { formatPrice, priceOf } from '@/lib/pricing';
+import { defaultCurrency } from '@/server/billing/checkout';
 
 export const metadata: Metadata = { title: 'Case files' };
 
 export default async function CasesPage() {
   const requestHeaders = await headers();
-  const currency = currencyForCountry(
+  const currency = defaultCurrency(
     requestHeaders.get('x-vercel-ip-country') ??
       requestHeaders.get('cf-ipcountry'),
   );

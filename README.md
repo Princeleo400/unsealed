@@ -67,7 +67,7 @@ pnpm case:pack -- --pdf   # builds the paper playtest packs into dist/<case>/
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts: sign-in, progress and streaks synced across devices | No sign-in; progress stays in the browser |
 | `SUPABASE_SERVICE_ROLE_KEY` | Saving waitlist sign-ups, deleting accounts (server only, never public) | Dev saves the waitlist to `apps/web/.data/waitlist.jsonl`; production returns an error |
 | `NEXT_PUBLIC_AUTH_GOOGLE`, `NEXT_PUBLIC_AUTH_APPLE` | Showing Google / Apple sign-in buttons (`1` = on) | Email sign-in only |
-| `PAYSTACK_SECRET_KEY`, `PAYSTACK_PLAN_PASS_*` (Naira and `_USD` plans) | All checkout today, in ₦ and US$ ([setup](docs/09-PAYMENTS-SETUP.md)) | Buy buttons show "Not on sale yet" |
+| `PAYSTACK_SECRET_KEY`, `PAYSTACK_CURRENCIES` (`NGN` or `NGN,USD`), `PAYSTACK_PLAN_PASS_*` (Naira and `_USD` plans) | All checkout today, in ₦ and US$ ([setup](docs/09-PAYMENTS-SETUP.md)) | Buy buttons show "Not on sale yet" |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Optional, later: only if a currency is switched to Stripe in `pricing.json` | Not needed |
 | `SITE_URL` | Checkout return links in production | Uses the address the request came from |
 

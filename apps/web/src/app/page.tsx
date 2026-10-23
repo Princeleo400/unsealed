@@ -278,15 +278,16 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Waitlist */}
+        {/* New cases by email (the #waitlist anchor is kept so old links still work) */}
         <section id="waitlist" className="border-t border-walnut bg-cocoa/60">
           <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
             <h2 className="text-3xl font-extrabold tracking-tight">
-              Get the next case first
+              Get new cases by email
             </h2>
             <p className="mt-2 text-body">
-              New cases, the Daily Brief, co-op rooms and the phone apps are on
-              the way. Join the list and we’ll tell you when they open.
+              A new case every month, plus the phone apps and co-op rooms when
+              they open. One short email when something new is ready, nothing
+              else.
             </p>
             <div className="mt-8">
               <WaitlistForm />
