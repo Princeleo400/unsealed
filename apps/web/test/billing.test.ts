@@ -24,7 +24,7 @@ import {
   type PaystackCharge,
   type StripeReader,
 } from '@/server/billing/fulfil';
-import { sellable } from '@/server/billing/checkout';
+import { defaultCurrency, sellable } from '@/server/billing/checkout';
 import { verifyPaystackSignature } from '@/server/billing/paystack';
 import { MemoryBillingStore } from '@/server/billing/store';
 import {
@@ -452,10 +452,25 @@ describe('Paystack fulfilment', () => {
     vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'x');
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://x.supabase.co');
     vi.stubEnv('PAYSTACK_SECRET_KEY', 'sk_test_x');
+    vi.stubEnv('PAYSTACK_CURRENCIES', 'NGN,USD');
     expect(sellable('pass-annual', 'USD')).toBe(true);
     vi.stubEnv('PAYSTACK_PLAN_PASS_ANNUAL_USD', '');
     expect(sellable('pass-annual', 'USD')).toBe(false);
     expect(sellable('case-standard', 'USD')).toBe(true);
+  });
+
+  it('without a USD account, visitors abroad are shown Naira (foreign cards can pay it)', () => {
+    vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'x');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://x.supabase.co');
+    vi.stubEnv('PAYSTACK_SECRET_KEY', 'sk_test_x');
+    expect(defaultCurrency('GB')).toBe('NGN'); // US$ not enabled on the account yet
+    expect(sellable('case-standard', 'USD')).toBe(false);
+    expect(sellable('case-standard', 'NGN')).toBe(true);
+    vi.stubEnv('PAYSTACK_CURRENCIES', 'NGN,USD'); // USD account approved
+    expect(defaultCurrency('GB')).toBe('USD');
+    expect(defaultCurrency('NG')).toBe('NGN');
+    vi.stubEnv('PAYSTACK_SECRET_KEY', '');
+    expect(defaultCurrency('NG')).toBe('NGN'); // nothing on sale: keep the normal default
   });
 
   it('webhook signatures: valid passes, tampered or missing fails', () => {

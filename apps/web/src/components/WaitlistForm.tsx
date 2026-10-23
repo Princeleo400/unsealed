@@ -49,8 +49,8 @@ export function WaitlistForm({ source = 'landing' }: { source?: string }) {
         className="rounded-xl border border-green bg-green/15 px-4 py-4 font-semibold text-paper"
       >
         {state.exists
-          ? "You're already on the list. We'll be in touch."
-          : "You're on the list. We'll email you when new cases open."}
+          ? "You're already signed up. We'll email you when the next case is out."
+          : "Done. We'll email you when the next case is out."}
       </p>
     );
   }
@@ -95,7 +95,7 @@ export function WaitlistForm({ source = 'landing' }: { source?: string }) {
         disabled={state.kind === 'sending'}
         className="h-12 rounded-xl bg-amber px-6 font-extrabold text-ink transition hover:bg-amber-soft disabled:opacity-60"
       >
-        {state.kind === 'sending' ? 'Joining…' : 'Join the waitlist'}
+        {state.kind === 'sending' ? 'Saving…' : 'Email me new cases'}
       </button>
       {state.kind === 'error' && (
         <p

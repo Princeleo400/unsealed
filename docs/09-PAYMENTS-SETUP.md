@@ -21,6 +21,7 @@ Players must be signed in to buy, so purchases follow them to every device. A pa
 
 ```
 PAYSTACK_SECRET_KEY=sk_test_...
+PAYSTACK_CURRENCIES=NGN                  # NGN,USD once Paystack approves your USD account
 PAYSTACK_PLAN_PASS_MONTHLY=PLN_...       # ₦2,000 monthly
 PAYSTACK_PLAN_PASS_ANNUAL=PLN_...        # ₦15,000 yearly
 PAYSTACK_PLAN_PASS_MONTHLY_USD=PLN_...   # $4.99 monthly
@@ -35,7 +36,8 @@ Secret keys are server-only. Never paste them into a chat, a screenshot or git. 
 1. Create an account at paystack.com and complete business activation (compliance documents for your business type).
 2. Keep **Test mode** on. **Settings → API Keys & Webhooks** → copy the *Test Secret Key* into `PAYSTACK_SECRET_KEY`.
 3. **Turn on international payments** (Settings → Preferences, or ask Paystack support). Without it, foreign cards are declined.
-4. **US$:** open a **Zenith Bank USD domiciliary account**, then in **Settings → Accounts** click **Add USD account**. Paystack's reviews team confirms it (they say within 24 hours). Until then, US$ checkout won't work in live mode.
+4. **US$ (optional at launch):** Paystack's help centre names only a **Zenith Bank USD domiciliary account** for US$ payouts to Nigerian businesses; Access Bank isn't listed. Before opening a new account, email support@paystack.com and ask whether your Access Bank USD account can be added. Once a USD account is approved (**Settings → Accounts → Add USD account**), set `PAYSTACK_CURRENCIES=NGN,USD`.
+   **Until then:** leave `PAYSTACK_CURRENCIES=NGN`. The site shows Naira prices to everyone (visitors abroad see a note that their bank converts), and foreign Visa/Mastercard cards pay in Naira once international payments are on. You only lose US$-denominated prices, not foreign customers.
 5. **Products → Plans → Create plan**, four times:
 
    | Plan | Amount | Interval | Env var |

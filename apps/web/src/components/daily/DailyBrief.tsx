@@ -27,6 +27,8 @@ type History = Record<
 
 const MAX_TRIES = 3;
 const HISTORY_KEY = 'unsealed:daily:history';
+/** Results of Briefs older than the free week: shown as ✓/✕, never counted in the streak. */
+const ARCHIVE_HISTORY_KEY = 'unsealed:daily:archive-history';
 const load = <T,>(storageKey: string): T | null => {
   try {
     const stored = localStorage.getItem(storageKey);
@@ -63,8 +65,11 @@ export function streakFrom(history: History, today: string): number {
 
 export function DailyBrief({ date }: { date?: string }) {
   const [daily, setDaily] = useState<DailyView | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [saved, setS] = useState<Saved | null>(null);
+  const [error, setError] = useState<{
+    message: string;
+    code?: string;
+  } | null>(null);
+  const [saved, setSaved] = useState<Saved | null>(null);
   const [who, setWho] = useState<number | null>(null);
   const [where, setWhere] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -75,26 +80,36 @@ export function DailyBrief({ date }: { date?: string }) {
   useEffect(() => {
     fetch(`/api/daily${date ? `?date=${encodeURIComponent(date)}` : ''}`)
       .then((response) => response.json())
-      .then((reply: { ok: boolean; daily?: DailyView; message?: string }) => {
-        if (!reply.ok || !reply.daily)
-          return setError(reply.message ?? 'Could not load the Daily Brief.');
-        const dailyView = reply.daily;
-        setDaily(dailyView);
-        const size = dailyView.suspects.length;
-        const prev = load<Saved>(`unsealed:daily:${dailyView.id}`);
-        setS(
-          prev ?? {
-            places: grid(size),
-            objects: grid(size),
-            wrong: 0,
-            status: 'playing',
-            startedAt: Date.now(),
-            seconds: 0,
-            guesses: [],
-          },
-        );
-      })
-      .catch(() => setError('No connection. Please try again.'));
+      .then(
+        (reply: {
+          ok: boolean;
+          daily?: DailyView;
+          message?: string;
+          code?: string;
+        }) => {
+          if (!reply.ok || !reply.daily)
+            return setError({
+              message: reply.message ?? 'Could not load the Daily Brief.',
+              code: reply.code,
+            });
+          const dailyView = reply.daily;
+          setDaily(dailyView);
+          const size = dailyView.suspects.length;
+          const prev = load<Saved>(`unsealed:daily:${dailyView.id}`);
+          setSaved(
+            prev ?? {
+              places: grid(size),
+              objects: grid(size),
+              wrong: 0,
+              status: 'playing',
+              startedAt: Date.now(),
+              seconds: 0,
+              guesses: [],
+            },
+          );
+        },
+      )
+      .catch(() => setError({ message: 'No connection. Please try again.' }));
   }, [date]);
 
   useEffect(() => {
@@ -140,16 +155,28 @@ export function DailyBrief({ date }: { date?: string }) {
     () => load<History>(HISTORY_KEY) ?? {},
     [saved?.status, historyVersion],
   ); // eslint-disable-line react-hooks/exhaustive-deps
+  const archiveHistory = useMemo(
+    () => load<History>(ARCHIVE_HISTORY_KEY) ?? {},
+    [saved?.status],
+  ); // eslint-disable-line react-hooks/exhaustive-deps
 
   const finish = useCallback(
     (status: 'solved' | 'failed', solution: Solution, wrong: number) => {
       if (!daily) return;
-      setS((prev) => {
+      setSaved((prev) => {
         if (!prev) return prev;
         const seconds = Math.round((Date.now() - prev.startedAt) / 1000);
+        const result = { solved: status === 'solved', wrong, seconds };
+        if (!daily.archive.includes(daily.id)) {
+          // A Brief from the full archive: remembered here, but no streak and no account record.
+          const archiveHistory = load<History>(ARCHIVE_HISTORY_KEY) ?? {};
+          archiveHistory[daily.id] ??= result;
+          save(ARCHIVE_HISTORY_KEY, archiveHistory);
+          return { ...prev, status, solution, seconds, wrong };
+        }
         const history = load<History>(HISTORY_KEY) ?? {};
         if (!history[daily.id]) {
-          history[daily.id] = { solved: status === 'solved', wrong, seconds };
+          history[daily.id] = result;
           if (signedIn)
             void fetch('/api/daily/results', {
               method: 'POST',
@@ -166,10 +193,33 @@ export function DailyBrief({ date }: { date?: string }) {
     [daily, signedIn],
   );
 
+  if (error?.code === 'archive_locked')
+    return (
+      <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-20 text-center">
+        <p className="font-mono text-xs tracking-[0.25em] text-red-text">
+          DAILY ARCHIVE
+        </p>
+        <h1 className="text-2xl font-extrabold">
+          This Brief is in the archive
+        </h1>
+        <p role="alert" className="text-body">
+          {error.message} Every day&apos;s Brief from the last week stays free.
+        </p>
+        <Link
+          href="/pass"
+          className="flex h-12 items-center rounded-xl bg-amber px-6 font-extrabold text-ink"
+        >
+          See Case Pass
+        </Link>
+        <Link href="/daily" className="text-sm font-bold text-amber">
+          Play today&apos;s Brief
+        </Link>
+      </div>
+    );
   if (error)
     return (
       <p role="alert" className="py-20 text-center text-body">
-        {error}
+        {error.message}
       </p>
     );
   if (!daily || !saved)
@@ -197,7 +247,7 @@ export function DailyBrief({ date }: { date?: string }) {
     columnIndex: number,
   ) => {
     if (!playing) return;
-    setS((prev) => {
+    setSaved((prev) => {
       if (!prev) return prev;
       const nextGrid = prev[which].map((row) => [...row]);
       nextGrid[rowIndex]![columnIndex] =
@@ -234,7 +284,7 @@ export function DailyBrief({ date }: { date?: string }) {
       if (!reply.ok) return setMsg(reply.message ?? 'Something went wrong.');
       const guesses = [...saved.guesses, { suspect: who, place: where }];
       if (reply.correct && reply.solution) {
-        setS({ ...saved, guesses });
+        setSaved({ ...saved, guesses });
         finish('solved', reply.solution, saved.wrong);
         return;
       }
@@ -246,10 +296,10 @@ export function DailyBrief({ date }: { date?: string }) {
           body: JSON.stringify({ type: 'reveal', date: daily.id }),
         });
         const rj = (await response.json()) as { solution: Solution };
-        setS({ ...saved, guesses, wrong });
+        setSaved({ ...saved, guesses, wrong });
         finish('failed', rj.solution, wrong);
       } else {
-        setS({ ...saved, guesses, wrong });
+        setSaved({ ...saved, guesses, wrong });
         setMsg(
           `Not quite. ${MAX_TRIES - wrong} ${MAX_TRIES - wrong === 1 ? 'try' : 'tries'} left.`,
         );
@@ -360,7 +410,10 @@ export function DailyBrief({ date }: { date?: string }) {
           <p className="mt-1 text-sm text-muted">
             {daily.difficultyLabel} · {suspectCount} suspects ·{' '}
             {daily.clues.length} clues
-            {daily.id !== daily.today && ` · from ${daily.id}`}
+            {daily.id !== daily.today &&
+              (daily.archive.includes(daily.id)
+                ? ` · from ${daily.id}`
+                : ` · archive Brief from ${daily.id} (no streak)`)}
           </p>
         </div>
         <div className="flex gap-2 font-mono text-sm">
@@ -581,6 +634,53 @@ export function DailyBrief({ date }: { date?: string }) {
             })}
           </div>
         </nav>
+      )}
+
+      {daily.fullArchive ? (
+        <form
+          action="/daily"
+          aria-label="Full archive"
+          className="flex flex-col gap-2"
+        >
+          <h2 className="font-mono text-[11px] tracking-[0.15em] text-faint">
+            FULL ARCHIVE · CASE PASS
+          </h2>
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="flex flex-col gap-1 text-sm font-semibold text-muted">
+              Any day since {daily.epoch}
+              <input
+                type="date"
+                name="date"
+                required
+                min={daily.epoch}
+                max={daily.today}
+                defaultValue={daily.id}
+                className="h-11 rounded-xl border border-line bg-walnut px-3 font-mono text-paper"
+              />
+            </label>
+            <button
+              type="submit"
+              className="h-11 rounded-xl border border-line-strong px-4 font-extrabold hover:border-amber"
+            >
+              Open
+            </button>
+          </div>
+          <p className="text-xs text-faint">
+            Archive Briefs show your result here but don&apos;t count towards
+            your streak.
+            {archiveHistory[daily.id]
+              ? ` ${daily.id}: ${archiveHistory[daily.id]!.solved ? 'solved ✓' : 'not solved ✕'}.`
+              : ''}
+          </p>
+        </form>
+      ) : (
+        <p className="text-sm text-muted">
+          Older Briefs are in the{' '}
+          <Link href="/pass" className="font-bold text-amber">
+            full archive with Case Pass
+          </Link>
+          .
+        </p>
       )}
     </div>
   );
