@@ -89,7 +89,9 @@ function Card({ card, host }: { card: ShareCard; host: string }) {
     card.kind === 'case'
       ? card.title
       : card.solved
-        ? `Solved in ${clock(card.seconds)}`
+        ? card.seconds === null
+          ? 'Solved it'
+          : `Solved in ${clock(card.seconds)}`
         : 'The case went cold';
 
   // Satori ignores `gap` on some rows, so spacing uses margins.

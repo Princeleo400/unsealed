@@ -3,13 +3,19 @@ import { computeScore } from '@unsealed/engine';
 import { z } from 'zod';
 import { bonusView } from './bonus';
 import { getCase } from './cases';
-import { dailyView, isPublishedDate, isSolvedProof } from './daily';
+import {
+  dailyView,
+  isPublishedDate,
+  isSolvedProof,
+  verifiedSeconds,
+} from './daily';
 import { signPayload, verifyPayload, verifyState } from './session';
 
 /**
  * Share cards (spoiler-free result images). The server builds the card from data it can
  * check: a case card from the signed play state, a Daily card from the puzzle plus a
- * signed "solved" proof. The card never names the culprit, place or object.
+ * signed "solved" proof and
+ * server-checked time. The card never names the culprit, place or object.
  */
 const SHARE_PURPOSE = 'share';
 
@@ -28,7 +34,8 @@ const DailyCardSchema = z.object({
   difficulty: z.string().max(20),
   solved: z.boolean(),
   wrong: z.number().int().min(0).max(3),
-  seconds: z.number().int().min(0).max(86_400),
+  /** Solve time checked against the server's clock; null = not shown. */
+  seconds: z.number().int().min(0).max(86_400).nullable(),
 });
 const CaseCardSchema = z.object({
   kind: z.literal('case'),
@@ -54,6 +61,7 @@ export const ShareRequest = z.discriminatedUnion('kind', [
     date: z.string().max(10).optional(),
     ticket: z.string().max(2000).optional(),
     proof: z.string().max(400).optional(),
+    start: z.string().max(400).optional(),
     wrong: z.number().int().min(0).max(3),
     seconds: z.number().int().min(0),
   }),
@@ -112,7 +120,14 @@ function dailyCard(
     solved,
     // Without a proof the card says "cold", so inflated claims only ever make it look worse.
     wrong: solved ? Math.min(2, request.wrong) : 3,
-    seconds: Math.min(86_400, request.seconds),
+    seconds: solved
+      ? verifiedSeconds(
+          Math.min(86_400, request.seconds),
+          view.id,
+          request.start,
+          request.proof,
+        )
+      : null,
   };
 }
 
@@ -155,7 +170,9 @@ export const clock = (totalSeconds: number) =>
 export function shareHeadline(card: ShareCard): string {
   if (card.kind === 'daily')
     return card.solved
-      ? `${card.label} solved in ${clock(card.seconds)}`
+      ? card.seconds === null
+        ? `${card.label} solved`
+        : `${card.label} solved in ${clock(card.seconds)}`
       : `${card.label}: the case went cold`;
   return card.solved
     ? `"${card.title}" solved · score ${card.score}`

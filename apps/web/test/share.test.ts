@@ -3,7 +3,13 @@ import { newSession } from '@unsealed/engine';
 import { playGoldenPath } from '../../../packages/engine/src/golden';
 import { issueTicket } from '@/server/bonus';
 import { getCase } from '@/server/cases';
-import { dailyView, handleDaily } from '@/server/daily';
+import {
+  dailyView,
+  handleDaily,
+  solvedProof,
+  startToken,
+  verifiedSeconds,
+} from '@/server/daily';
 import { signState } from '@/server/session';
 import { createShare, readShare } from '@/server/share';
 
@@ -50,7 +56,8 @@ describe('share cards', () => {
   });
 
   it('a Daily card says solved only with the server’s proof', () => {
-    const view = dailyView(TODAY, NOW);
+    // Opened five minutes before the answer.
+    const view = dailyView(TODAY, new Date(NOW.getTime() - 5 * 60_000));
     // Find the right answer by asking the grader (the answer is not in the view).
     let proof: string | undefined;
     for (let suspect = 0; suspect < view.suspects.length && !proof; suspect++)
@@ -65,7 +72,14 @@ describe('share cards', () => {
     const solved = readShare(
       tokenOf(
         createShare(
-          { kind: 'daily', date: TODAY, proof, wrong: 1, seconds: 151 },
+          {
+            kind: 'daily',
+            date: TODAY,
+            proof,
+            start: view.startToken,
+            wrong: 1,
+            seconds: 151,
+          },
           NOW,
         ),
       ),
@@ -123,5 +137,22 @@ describe('share cards', () => {
     ).toBe(404);
     expect(readShare('garbage')).toBeNull();
     expect(readShare(ticket)).toBeNull(); // a ticket is not a share token
+  });
+
+  it('share-card times are capped by the server clock and dropped when unverifiable', () => {
+    const id = '2026-10-23';
+    const opened = startToken(id, new Date('2026-10-23T12:00:00Z'));
+    const solved = solvedProof(id, new Date('2026-10-23T12:03:00Z')); // 180 s later
+    expect(verifiedSeconds(95, id, opened, solved)).toBe(95); // paused clock: shorter is fine
+    expect(verifiedSeconds(4000, id, opened, solved)).toBe(180); // never longer than real
+    expect(verifiedSeconds(3, id, opened, solved)).toBeNull(); // impossibly fast
+    expect(verifiedSeconds(95, id, undefined, solved)).toBeNull(); // no start
+    expect(
+      verifiedSeconds(95, id, startToken('2026-10-22'), solved),
+    ).toBeNull(); // another puzzle's start
+    expect(verifiedSeconds(95, id, solved, solved)).toBeNull(); // wrong purpose
+    // Opened and solved within 10 seconds can't be a real solve either.
+    const quick = solvedProof(id, new Date('2026-10-23T12:00:05Z'));
+    expect(verifiedSeconds(5, id, opened, quick)).toBeNull();
   });
 });
