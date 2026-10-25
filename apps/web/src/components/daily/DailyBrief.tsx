@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { DailyView } from '@/server/daily';
 import { ShareButton } from '@/components/share/ShareButton';
+import { feedback } from '@/lib/feedback';
 import { PlayMorePanel } from './PlayMorePanel';
 
 type Mark = '' | 'x' | 'v';
@@ -359,6 +360,10 @@ export function DailyBrief({
     columnIndex: number,
   ) => {
     if (!playing) return;
+    const currentMark = saved[which][rowIndex]?.[columnIndex] ?? '';
+    feedback(
+      currentMark === '' ? 'mark' : currentMark === 'x' ? 'confirm' : 'tap',
+    );
     setSaved((prev) => {
       if (!prev) return prev;
       const nextGrid = prev[which].map((row) => [...row]);
@@ -399,14 +404,18 @@ export function DailyBrief({
         coinsEarned?: number;
         proof?: string;
       };
-      if (reply.ok && reply.coinsEarned)
+      if (reply.ok && reply.coinsEarned) {
+        // After the stamp has landed.
+        window.setTimeout(() => feedback('coin'), 1100);
         setCoinNote(
           `+${reply.coinsEarned} coin for solving today's Daily. Spend it on a Bonus Brief below.`,
         );
+      }
       if (!reply.ok) return setMsg(reply.message ?? 'Something went wrong.');
       const guesses = [...saved.guesses, { suspect: who, place: where }];
       if (reply.correct && reply.solution) {
         setSaved((prev) => prev && { ...prev, guesses, proof: reply.proof });
+        feedback('stamp');
         finish('solved', reply.solution, saved.wrong);
         return;
       }
@@ -419,9 +428,11 @@ export function DailyBrief({
         });
         const rj = (await response.json()) as { solution: Solution };
         setSaved((prev) => prev && { ...prev, guesses, wrong });
+        feedback('cold');
         finish('failed', rj.solution, wrong);
       } else {
         setSaved((prev) => prev && { ...prev, guesses, wrong });
+        feedback('wrong');
         setMsg(
           `Not quite. ${MAX_TRIES - wrong} ${MAX_TRIES - wrong === 1 ? 'try' : 'tries'} left.`,
         );
@@ -563,7 +574,10 @@ export function DailyBrief({
           </p>
           <button
             type="button"
-            onClick={resumeClock}
+            onClick={() => {
+              feedback('paper');
+              resumeClock();
+            }}
             className="h-12 rounded-xl bg-amber px-8 font-extrabold text-ink"
           >
             {freshStart ? 'Start' : 'Resume'}
@@ -647,7 +661,10 @@ export function DailyBrief({
                     type="button"
                     role="radio"
                     aria-checked={who === index}
-                    onClick={() => setWho(index)}
+                    onClick={() => {
+                      feedback('tap');
+                      setWho(index);
+                    }}
                     className={`min-h-11 rounded-xl border px-4 font-bold ${who === index ? 'border-paper bg-paper text-ink' : 'border-line-strong bg-walnut hover:border-amber'}`}
                   >
                     {name}
@@ -666,7 +683,10 @@ export function DailyBrief({
                     type="button"
                     role="radio"
                     aria-checked={where === index}
-                    onClick={() => setWhere(index)}
+                    onClick={() => {
+                      feedback('tap');
+                      setWhere(index);
+                    }}
                     className={`min-h-11 rounded-xl border px-4 text-sm font-bold ${where === index ? 'border-paper bg-paper text-ink' : 'border-line-strong bg-walnut hover:border-amber'}`}
                   >
                     {place}

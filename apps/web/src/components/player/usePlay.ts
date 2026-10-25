@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { feedback } from '@/lib/feedback';
 import { EMPTY_BOARD, parseBoard, type LocalBoard } from '@/lib/board';
 import type {
   CaseView,
@@ -9,6 +10,31 @@ import type {
   PlayResponse,
   PlayResult,
 } from '@/lib/view-types';
+
+/** The sound (and vibration) for a server reply. The biggest moment wins. */
+function playCueFor(result: PlayResult, newEvidence: boolean) {
+  switch (result.type) {
+    case 'verdict':
+      return feedback(
+        result.status === 'solved'
+          ? 'stamp'
+          : result.status === 'cold'
+            ? 'cold'
+            : 'wrong',
+      );
+    case 'string':
+      if (result.duplicate) return feedback('tap');
+      if (!result.valid) return feedback('wrong');
+      return feedback(result.breakthrough ? 'breakthrough' : 'link');
+    case 'confront':
+      if (result.duplicate) return feedback('tap');
+      return feedback(result.valid ? 'breakthrough' : 'wrong');
+    case 'hint':
+      return feedback('hint');
+    default:
+      if (newEvidence) feedback('unlock');
+  }
+}
 
 const tokenKey = (slug: string) => `unsealed:play:${slug}`;
 
@@ -136,6 +162,7 @@ export function usePlay(slug: string) {
             title: 'New evidence',
             body: `${evidenceBrief.number}. ${evidenceBrief.title}`,
           });
+        playCueFor(json.result, json.unlocked.length > 0);
         return { result: json.result, unlocked: json.unlocked };
       } catch {
         if (action.type === 'start')

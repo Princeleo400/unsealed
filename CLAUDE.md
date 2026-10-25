@@ -19,6 +19,7 @@ UNSEALED: a fair-play detective game. Monorepo with `apps/web` (Next.js App Rout
 ## Conventions
 - **Formatting:** Prettier, `printWidth` 80 (`.prettierrc`). Run `pnpm format` before handing over files; `pnpm format:check` must pass.
 - **Naming:** readable, descriptive names for every variable, parameter and argument. Never single letters (`e`, `s`, `x`, `i`…): use `evidence`, `state`, `index`. `_` is allowed only for an unused value. `pnpm lint:names` enforces this.
+- **Sound & vibration:** game moments call `feedback(cue)` from `@/lib/feedback`; add new cues there (recipe + optional vibration), never play audio directly. Vibrate only for moments that matter.
 - TypeScript strict. zod schemas for all external data (case files, API payloads, webhooks).
 - Prices and product IDs live in config/DB, never hard-coded.
 - Supabase: RLS on every table; migrations only via `supabase/migrations`.

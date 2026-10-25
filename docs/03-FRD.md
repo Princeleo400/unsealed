@@ -141,10 +141,13 @@ Related: [02-GDD](02-GDD.md) (design intent) · [04-TECH-ARCHITECTURE](04-TECH-A
 | FR-DAILY-08 | **Bonus Briefs**: extra generated puzzles outside the calendar, any difficulty, never counted in the streak. Members pay 1 coin (max 5 a day); Case Pass plays unlimited with no ads; guests watch one rewarded video a day, then are invited to sign in. | S | P2 | B |
 | FR-DAILY-09 | **Coins** (signed-in players): +1 daily login, +1 for solving today's Daily, +1 per rewarded video (max 3 a day). Server-side ledger, idempotent and capped; coins are never sold. | S | P2 | B |
 | FR-SHARE-01 | **Share image cards** for Daily, Bonus and case results: a 1200×630 spoiler-free image (never the culprit, place or object) and a share page with link previews and a "Can you solve it?" link. Built only from server-verified results. | S | P2 | B |
+| FR-FEEL-01 | **Sound and vibration**: short sound effects for game moments (grid marks, opening evidence, red strings, breakthroughs, wrong answers, hints, coins, case closed / cold), made in code with no audio files. Vibration on supporting phones for bigger moments only. On by default; a speaker button in every header turns sound and vibration off separately, remembered per browser. No background music. | S | P2 | B |
 
 > **Status (22 Oct 2026):** FR-DAILY-01, 02 (Sunday uses the Chief generator until Story Briefs are written), 03, 05 and 06 are built on the web (`/daily`). Grading happens on the server, and 8,000 generated puzzles were verified to have exactly one solution. Streaks are kept in the browser for now; they move to accounts later. Not built yet: the Streak Shield (needs Case Pass), the Friday lying witness, and leaderboards.
 >
 > **Status (23 Oct 2026):** FR-DAILY-08, FR-DAILY-09 and FR-SHARE-01 are built. Bonus Briefs live at `/daily/bonus?ticket=…` (signed ticket, 7 days). Coins use `coin_wallets` + `coin_ledger` and the `coin_apply` function (service role only); rates are in `apps/web/src/config/coins.json`. A correct Daily answer returns a signed proof so share cards can say "solved" without trusting the browser; case cards are read from the signed play state. Share pages are `/s/<token>` with the image at `/s/<token>/card.png`.
+>
+> **Status (25 Oct 2026):** FR-FEEL-01 is built on the web: `apps/web/src/lib/feedback` (`feedback(cue)` plays the sound and vibration). iPhone browsers don't offer vibration to websites, and Safari's silent switch mutes the sounds. Hear every cue at `/dev/sounds` (development only). The mobile app will use `expo-haptics` with the same cue names.
 
 ## 12. Co-op rooms (COOP)
 
