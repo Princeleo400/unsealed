@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRewardedAd } from '@/components/ads/useRewardedAd';
 import { COIN_RULES, type CoinStatus } from '@/lib/coins';
+import { feedback } from '@/lib/feedback';
 
 const LEVELS = [
   { id: 'rookie', label: 'Rookie' },
@@ -64,6 +65,7 @@ export function PlayMorePanel() {
         code?: string;
       };
       if (reply.ok && reply.ticket) {
+        feedback('unlock');
         router.push(`/daily/bonus?ticket=${encodeURIComponent(reply.ticket)}`);
         return;
       }
@@ -111,6 +113,7 @@ export function PlayMorePanel() {
         balance: reply.balance,
         adsLeft: Math.max(0, coins.adsLeft - 1),
       });
+      feedback('coin');
       setNote({
         tone: 'good',
         text: `+${COIN_RULES.perAd} coin. Thanks for watching.`,
@@ -161,7 +164,10 @@ export function PlayMorePanel() {
             key={option.id}
             type="button"
             aria-pressed={level === option.id}
-            onClick={() => setLevel(option.id)}
+            onClick={() => {
+              feedback('tap');
+              setLevel(option.id);
+            }}
             className={`rounded-full border px-3 py-1.5 text-sm font-bold ${level === option.id ? 'border-amber bg-amber text-ink' : 'border-line-strong text-muted hover:text-paper'}`}
           >
             {option.label}

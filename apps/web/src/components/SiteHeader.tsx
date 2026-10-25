@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AuthLink } from '@/components/auth/AuthLink';
+import { SoundToggle } from '@/components/SoundToggle';
 
 export function SiteHeader() {
   return (
@@ -30,6 +31,7 @@ export function SiteHeader() {
           Case Pass
         </Link>
         <AuthLink className="px-2 py-2 text-sm font-semibold text-muted hover:text-paper" />
+        <SoundToggle />
         <Link
           href="/play/001-dead-air"
           className="rounded-full bg-amber px-4 py-2.5 text-sm font-extrabold text-ink hover:bg-amber-soft"

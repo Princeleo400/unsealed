@@ -12,6 +12,8 @@ import {
   IconScales,
   IconTimeline,
 } from '@/components/icons';
+import { SoundToggle } from '@/components/SoundToggle';
+import { feedback } from '@/lib/feedback';
 import { BoardPanel } from './BoardPanel';
 import { DebriefPanel } from './DebriefPanel';
 import { EvidenceViewer } from './EvidenceViewer';
@@ -89,6 +91,7 @@ export function CasePlayer({ slug }: { slug: string }) {
 
   const open = useCallback(
     (id: string) => {
+      feedback('paper');
       setSelectedId(id);
       setPanel('file');
       window.scrollTo({ top: 0 });
@@ -195,13 +198,15 @@ export function CasePlayer({ slug }: { slug: string }) {
   }
 
   const closed = view.status !== 'active';
-  const togglePin = (id: string) =>
+  const togglePin = (id: string) => {
+    feedback('tap');
     update((board) => ({
       ...board,
       pins: board.pins.includes(id)
         ? board.pins.filter((pinnedId) => pinnedId !== id)
         : [...board.pins, id],
     }));
+  };
 
   const onCheck = async (
     firstId: string,
@@ -340,12 +345,14 @@ export function CasePlayer({ slug }: { slug: string }) {
             <button
               type="button"
               onClick={() => setShowHints(true)}
-              className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-line bg-walnut px-3 text-xs font-bold"
+              aria-label="Hint"
+              className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-line bg-walnut px-2.5 text-xs font-bold sm:px-3"
             >
               <IconBulb className="h-4 w-4 text-amber" />
-              Hint
+              <span className="hidden sm:inline">Hint</span>
             </button>
           )}
+          <SoundToggle className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-muted hover:bg-walnut hover:text-paper" />
         </div>
       </header>
 
