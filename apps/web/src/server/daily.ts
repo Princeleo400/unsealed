@@ -83,6 +83,8 @@ export type DailyView = DailyPuzzle & {
   /** The free window, newest first. */
   archive: string[];
   today: string;
+  /** Signed time this Brief was opened; the browser keeps the one from its first open. */
+  startToken: string;
   /** True for Case Pass holders: any day since `epoch` can be opened. */
   fullArchive: boolean;
   epoch: string;
@@ -103,6 +105,7 @@ export function dailyView(
   return {
     ...puzzle,
     kind: 'daily',
+    startToken: startToken(puzzle.id, now),
     difficultyLabel: DIFFICULTY_LABEL[puzzle.difficulty],
     archive,
     today,
@@ -152,23 +155,64 @@ export function handleDaily(
           },
         };
   const { puzzle, solution } = get(req.date);
-  return grade(puzzle, solution, req);
+  return grade(puzzle, solution, req, now);
 }
 
+/**
+ * Server timing for share cards. The page shows a pausing clock measured in the browser,
+ * which we can't trust on its own. So when a Brief opens the server signs the start time,
+ * a correct answer comes back with a signed solve time, and the share card never shows a
+ * time longer than the real gap between the two (or one too short to be possible).
+ */
+const START_PURPOSE = 'brief-start';
 const SOLVED_PURPOSE = 'daily-solved';
-export const solvedProof = (puzzleId: string) =>
-  signPayload(SOLVED_PURPOSE, { id: puzzleId });
+/** No honest player solves a Brief faster than this; shorter claims show no time. */
+export const MIN_SOLVE_SECONDS = 10;
+
+export const startToken = (puzzleId: string, now = new Date()) =>
+  signPayload(START_PURPOSE, { id: puzzleId, startedAt: now.getTime() });
+export const solvedProof = (puzzleId: string, now = new Date()) =>
+  signPayload(SOLVED_PURPOSE, { id: puzzleId, solvedAt: now.getTime() });
+
 export const isSolvedProof = (proof: string | undefined, puzzleId: string) =>
   Boolean(
     proof &&
     verifyPayload<{ id: string }>(SOLVED_PURPOSE, proof)?.id === puzzleId,
   );
 
+/**
+ * The time to print on a share card: the player's own (paused) clock, capped at the
+ * server-measured time from opening to solving. Null when it can't be checked.
+ */
+export function verifiedSeconds(
+  claimedSeconds: number,
+  puzzleId: string,
+  start: string | undefined,
+  proof: string | undefined,
+): number | null {
+  const opened = start
+    ? verifyPayload<{ id: string; startedAt: number }>(START_PURPOSE, start)
+    : null;
+  const solved = proof
+    ? verifyPayload<{ id: string; solvedAt: number }>(SOLVED_PURPOSE, proof)
+    : null;
+  if (opened?.id !== puzzleId || solved?.id !== puzzleId) return null;
+  if (typeof opened.startedAt !== 'number') return null;
+  if (typeof solved.solvedAt !== 'number') return null;
+  const serverSeconds = Math.floor((solved.solvedAt - opened.startedAt) / 1000);
+  const seconds = Math.min(
+    Math.max(0, Math.round(claimedSeconds)),
+    serverSeconds,
+  );
+  return seconds >= MIN_SOLVE_SECONDS ? seconds : null;
+}
+
 /** Grades an answer (or reveals after 3 tries). Shared by the Daily and Bonus Briefs. */
 export function grade(
   puzzle: DailyPuzzle,
   solution: DailySolution,
   req: { type: 'reveal' } | { type: 'answer'; suspect: number; place: number },
+  now = new Date(),
 ) {
   const full = {
     culprit: solution.culprit,
@@ -195,7 +239,7 @@ export function grade(
       correct,
       solution: correct ? full : undefined,
       // Lets the player make a share card that says "solved" without us trusting their word.
-      proof: correct ? solvedProof(puzzle.id) : undefined,
+      proof: correct ? solvedProof(puzzle.id, now) : undefined,
     },
   };
 }

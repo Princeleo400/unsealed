@@ -8,7 +8,7 @@ import {
   type Difficulty,
 } from '@unsealed/engine';
 import { z } from 'zod';
-import { grade, todayUTC, type DailyView } from './daily';
+import { grade, startToken, todayUTC, type DailyView } from './daily';
 import { signPayload, verifyPayload } from './session';
 
 /**
@@ -62,6 +62,7 @@ export function bonusView(token: string, now = new Date()): DailyView | null {
     ...puzzle,
     kind: 'bonus',
     ticket: token,
+    startToken: startToken(puzzle.id, now),
     difficultyLabel: DIFFICULTY_LABEL[puzzle.difficulty],
     archive: [],
     today: todayUTC(now),
@@ -101,7 +102,7 @@ export function handleBonus(body: unknown, now = new Date()) {
     ticket.difficulty,
     salt(),
   );
-  return grade(puzzle, solution, parsed.data);
+  return grade(puzzle, solution, parsed.data, now);
 }
 
 /** Guests get a small daily allowance (kept in a signed cookie) before being asked to sign in. */
