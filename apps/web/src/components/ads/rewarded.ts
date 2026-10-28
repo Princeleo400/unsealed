@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdReward } from '@/lib/view-types';
+import { detectAdBlocker } from './adblock';
 
 /**
  * Rewarded video for hints (web).
@@ -8,7 +9,9 @@ import type { AdReward } from '@/lib/view-types';
  * Production: Google Ad Manager "rewarded ads for web" via GPT, when NEXT_PUBLIC_GAM_REWARDED_AD_UNIT
  * is set (e.g. "/1234567/unsealed_rewarded_hint"). Requires a Google Ad Manager account; Google
  * serves rewarded web ads mainly on mobile browsers, so desktop often gets "no fill".
- * No fill / blocked: the player still gets the hint (provider "no-fill"); the server caps ad hints per case.
+ * No fill (Google has no video right now): the player still gets the reward (provider "no-fill");
+ * the server caps rewards. An ad blocker is different: the player is asked to pause it
+ * (status "blocked") instead of getting the reward for free.
  * Development without an ad unit: a 5-second simulated video so the flow can be tested.
  */
 
@@ -36,6 +39,8 @@ declare global {
 export type RewardedOutcome =
   | { status: 'rewarded'; reward: AdReward }
   | { status: 'closed' }
+  /** An ad blocker stopped the video: ask the player to pause it. */
+  | { status: 'blocked' }
   | { status: 'dev-simulate' };
 
 const AD_UNIT = process.env.NEXT_PUBLIC_GAM_REWARDED_AD_UNIT;
@@ -62,16 +67,28 @@ export function rewardedAdsConfigured(): boolean {
   return Boolean(AD_UNIT);
 }
 
+/** True where reward videos actually play (an ad unit is set, or in development). */
+export function rewardVideosInUse(): boolean {
+  return Boolean(AD_UNIT) || process.env.NODE_ENV !== 'production';
+}
+
 /** Shows a rewarded video. Resolves when the player earned the reward, closed early, or no ad could be shown. */
 export async function showRewardedAd(): Promise<RewardedOutcome> {
-  if (!AD_UNIT) {
-    return process.env.NODE_ENV === 'production'
-      ? { status: 'rewarded', reward: { provider: 'no-fill', id: id() } }
-      : { status: 'dev-simulate' };
-  }
+  const production = process.env.NODE_ENV === 'production';
+  // No ad unit in production = ads aren't switched on yet, so there's nothing to block.
+  if (!AD_UNIT && production)
+    return { status: 'rewarded', reward: { provider: 'no-fill', id: id() } };
+  // Checked in development too, so the "pause your ad blocker" screen can be tried out.
+  if (await detectAdBlocker()) return { status: 'blocked' };
+  if (!AD_UNIT) return { status: 'dev-simulate' };
+
   const gt = await loadGpt();
   if (!gt)
-    return { status: 'rewarded', reward: { provider: 'no-fill', id: id() } };
+    // The ad script didn't load: a blocker that slipped past the first check, or a
+    // network hiccup. Look again before deciding.
+    return (await detectAdBlocker(true))
+      ? { status: 'blocked' }
+      : { status: 'rewarded', reward: { provider: 'no-fill', id: id() } };
 
   return new Promise<RewardedOutcome>((resolve) => {
     // If no ad is ready within 15 s, don't leave the player stuck: give the hint.
