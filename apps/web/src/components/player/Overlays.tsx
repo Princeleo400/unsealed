@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { AdReward, CaseView } from '@/lib/view-types';
+import { AdBlockedNotice } from '@/components/ads/AdBlockedNotice';
 import { showRewardedAd } from '@/components/ads/rewarded';
 import { IconClose } from '@/components/icons';
 import { mdToHtml } from './EvidenceBody';
@@ -138,6 +139,7 @@ export function HintModal({
     null,
   );
   const [loadingAd, setLoadingAd] = useState(false);
+  const [adBlocked, setAdBlocked] = useState(false);
   const { freeLeft, adLeft, unlimited } = view.hintAllowance;
   const needsAd = !unlimited && freeLeft === 0;
   const noneLeft = !unlimited && freeLeft === 0 && adLeft === 0;
@@ -173,6 +175,7 @@ export function HintModal({
       return setDevAd({ tier, seconds: 5 });
     if (outcome.status === 'closed')
       return setNote('Watch the video to the end to unlock the hint.');
+    if (outcome.status === 'blocked') return setAdBlocked(true);
     setText(await onHint(tier, outcome.reward));
   };
 
@@ -200,8 +203,17 @@ export function HintModal({
     setText(null);
     setNote(null);
     setDevAd(null);
+    setAdBlocked(false);
     onClose();
   };
+
+  if (adBlocked) {
+    return (
+      <Modal open={open} onClose={close} label="Ad blocker detected">
+        <AdBlockedNotice reward="hints" onDismiss={() => setAdBlocked(false)} />
+      </Modal>
+    );
+  }
 
   if (devAd) {
     return (

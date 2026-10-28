@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { detectAdBlocker } from '@/components/ads/adblock';
+import { rewardVideosInUse } from '@/components/ads/rewarded';
 import { useRewardedAd } from '@/components/ads/useRewardedAd';
 import { COIN_RULES, type CoinStatus } from '@/lib/coins';
 import { feedback } from '@/lib/feedback';
@@ -31,6 +33,19 @@ export function PlayMorePanel() {
     tone: 'good' | 'bad';
     text: string;
   } | null>(null);
+
+  // Warn up front, before the player taps a video button that can't work.
+  const [blockerOn, setBlockerOn] = useState(false);
+  useEffect(() => {
+    if (!rewardVideosInUse()) return;
+    let active = true;
+    void detectAdBlocker().then((blocked) => {
+      if (active) setBlockerOn(blocked);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     fetch('/api/coins')
@@ -79,24 +94,30 @@ export function PlayMorePanel() {
   };
 
   const watchForGuestBonus = async () => {
-    const reward = await ad.watch();
-    if (!reward)
+    const watched = await ad.watch({
+      reward: 'Bonus Briefs',
+      signedIn: false,
+    });
+    if (watched.status === 'blocked') return;
+    if (watched.status === 'stopped')
       return setNote({
         tone: 'bad',
         text: 'Watch the video to the end to play.',
       });
-    await start(reward);
+    await start(watched.reward);
   };
 
   const watchForCoin = async () => {
     if (!coins.signedIn) return;
     setNote(null);
-    const reward = await ad.watch();
-    if (!reward)
+    const watched = await ad.watch({ reward: 'coins', signedIn: true });
+    if (watched.status === 'blocked') return;
+    if (watched.status === 'stopped')
       return setNote({
         tone: 'bad',
         text: 'Watch the video to the end to earn a coin.',
       });
+    const reward = watched.reward;
     const response = await fetch('/api/coins/ad', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -247,6 +268,18 @@ export function PlayMorePanel() {
             Unlimited with Case Pass
           </Link>
           .
+        </p>
+      )}
+      {blockerOn && !(coins.signedIn && coins.pass) && (
+        <p
+          role="status"
+          className="rounded-xl border border-amber/40 bg-amber/10 px-4 py-3 text-sm text-body"
+        >
+          <b className="text-amber">Your ad blocker is on,</b> so videos
+          can&apos;t play here.{' '}
+          {coins.signedIn
+            ? 'Pause it for UNSEALED to earn coins from videos. Your daily coins still arrive without it.'
+            : 'Pause it for UNSEALED, then reload, to play a free Bonus Brief.'}
         </p>
       )}
       {note && (
