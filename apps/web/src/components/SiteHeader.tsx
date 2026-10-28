@@ -49,12 +49,23 @@ export function SiteFooter() {
     <footer className="mx-auto w-full max-w-6xl border-t border-walnut px-4 py-8 text-sm text-faint sm:px-6">
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
         <p>© 2026 UNSEALED. All cases are works of fiction.</p>
-        <p>
-          Detective cases from around the world.{' '}
+        <nav
+          aria-label="Policies and more"
+          className="flex flex-wrap gap-x-4 gap-y-2"
+        >
           <Link href="/pass" className="text-muted hover:text-paper">
             Case Pass
           </Link>
-        </p>
+          <Link href="/terms" className="text-muted hover:text-paper">
+            Terms
+          </Link>
+          <Link href="/privacy" className="text-muted hover:text-paper">
+            Privacy
+          </Link>
+          <Link href="/refunds" className="text-muted hover:text-paper">
+            Refunds
+          </Link>
+        </nav>
       </div>
     </footer>
   );

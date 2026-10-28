@@ -12,7 +12,8 @@
     "case:pack": "pnpm --filter @unsealed/content-tools pack-case",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint:names": "node scripts/check-names.mjs"
+    "lint:names": "node scripts/check-names.mjs",
+    "launch:check": "node scripts/check-launch.mjs"
   },
   "devDependencies": {
     "prettier": "3.9.10",

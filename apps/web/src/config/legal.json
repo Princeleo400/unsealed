@@ -1,0 +1,8 @@
+{
+  "_note": "Who publishes UNSEALED, shown on the Terms, Privacy and Refund pages. Replace every [BRACKETED] value before taking real payments: `pnpm launch:check` lists what's left. Change lastUpdated whenever the wording of a policy changes.",
+  "publisher": "[STUDIO NAME]",
+  "supportEmail": "[SUPPORT EMAIL]",
+  "country": "Nigeria",
+  "minimumAge": 13,
+  "lastUpdated": "2026-10-28"
+}
