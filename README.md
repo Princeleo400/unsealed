@@ -31,6 +31,7 @@
 | 07 | [Pilot Case 001 — "Dead Air"](docs/07-PILOT-CASE-001.md) | ⚠️ Spoilers. Full outline of the free launch case |
 | 08 | [Roadmap](docs/08-ROADMAP.md) | Phases 0–4, weekly plan, content calendar, budget, open decisions |
 | 09 | [Payments setup](docs/09-PAYMENTS-SETUP.md) | Stripe + Paystack keys, plans, webhooks, test cards, go-live checklist |
+| 10 | [Deploy](docs/10-DEPLOY.md) | GitHub + Vercel, environment variables, Supabase and Paystack addresses, launch checklist |
 | — | [CLAUDE.md](CLAUDE.md) | Build rules for AI-assisted development in this repo |
 
 ## Stack
@@ -50,6 +51,7 @@ pnpm lint:names     # fails on single-letter variable/parameter names
 pnpm case:lint      # validates every case in content/cases
 pnpm case:golden    # an automated detective solves every case end to end
 pnpm case:pack -- --pdf   # builds the paper playtest packs into dist/<case>/
+pnpm launch:check   # fails while the legal details still have [PLACEHOLDERS]
 ```
 
 - `apps/web`: the Next.js web app. The landing page and waitlist are in `src/app/page.tsx` and `api/waitlist`. The case player is `src/components/player/*`, and it's graded on the server by `api/play/[slug]`.

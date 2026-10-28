@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { LEGAL } from '@/lib/legal';
 import { browserSupabase } from '@/lib/supabase/browser';
 
 type Props = { next: string; error?: string; google: boolean; apple: boolean };
@@ -164,6 +166,17 @@ export function SignInForm({
       <p className="text-xs leading-relaxed text-faint">
         No password needed. Signing in keeps your cases and streak on every
         device. Progress you made before signing in comes with you.
+      </p>
+      <p className="text-xs leading-relaxed text-faint">
+        You must be {LEGAL.minimumAge} or older. By signing in you agree to our{' '}
+        <Link href="/terms" className="text-muted underline hover:text-paper">
+          Terms
+        </Link>{' '}
+        and{' '}
+        <Link href="/privacy" className="text-muted underline hover:text-paper">
+          Privacy Policy
+        </Link>
+        .
       </p>
     </div>
   );

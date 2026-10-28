@@ -120,8 +120,8 @@ export function CasePlayer({ slug }: { slug: string }) {
         </p>
         <h1 className="text-3xl font-extrabold">{paywall.title}</h1>
         <p className="text-body">
-          Unlock this case once and keep it forever, or get Case Pass for every
-          case with unlimited hints and no ads.
+          Unlock this case once and it stays in your account, or get Case Pass
+          for every case with unlimited hints and no ads.
         </p>
         <Link
           href={`/pass?case=${encodeURIComponent(paywall.slug)}&back=${encodeURIComponent(back)}`}

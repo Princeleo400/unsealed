@@ -24,7 +24,7 @@ import { currentUser } from '@/server/supabase';
 export const metadata: Metadata = {
   title: 'Case Pass',
   description:
-    'Every UNSEALED case, unlimited hints and no ads. Or buy a single case and keep it forever.',
+    'Every UNSEALED case, unlimited hints and no ads. Or buy a single case to keep in your account.',
 };
 export const dynamic = 'force-dynamic';
 
@@ -281,8 +281,19 @@ export default async function PassPage({
                 : ''}
             </li>
             <li>
-              Single cases are a one-off payment and stay in your account
-              forever.
+              Single cases are a one-off payment and stay in your account for as
+              long as UNSEALED is available.
+            </li>
+            <li>
+              By paying you agree to our{' '}
+              <Link href="/terms" className="text-amber underline">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href="/refunds" className="text-amber underline">
+                Refund Policy
+              </Link>
+              . Unopened cases can be refunded within 14 days.
             </li>
             <li>
               Hints are never for sale: they always cost score, with or without

@@ -3,10 +3,11 @@ import '@fontsource-variable/manrope';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import './globals.css';
+import { siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  // Absolute links for share-card previews. Set SITE_URL in production.
-  metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3003'),
+  // Absolute links for share-card previews (SITE_URL, or the Vercel address).
+  metadataBase: new URL(siteUrl()),
   title: { default: 'UNSEALED — Can you solve it?', template: '%s · UNSEALED' },
   description:
     'A fair-play detective game. Read the real case file, tie the red string, rebuild the night and name the killer — alone or with friends.',

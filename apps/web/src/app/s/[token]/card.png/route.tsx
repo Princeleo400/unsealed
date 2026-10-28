@@ -1,6 +1,8 @@
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
+import { siteUrl } from '@/lib/site';
 import { BADGE_LABELS, clock, readShare, type ShareCard } from '@/server/share';
 
 export const runtime = 'nodejs';
@@ -23,7 +25,13 @@ let fontsPromise: Promise<
   { name: string; data: Buffer; weight: 400 | 500 | 600 | 800 }[]
 > | null = null;
 function loadFonts() {
-  const folder = join(process.cwd(), 'assets/fonts');
+  // The app folder locally; on some hosts the working folder is the repo root instead.
+  const folder =
+    [
+      join(process.cwd(), 'assets/fonts'),
+      join(process.cwd(), 'apps/web/assets/fonts'),
+    ].find((candidate) => existsSync(candidate)) ??
+    join(process.cwd(), 'assets/fonts');
   fontsPromise ??= Promise.all([
     readFile(join(folder, 'manrope-latin-500-normal.woff')).then((data) => ({
       name: 'Manrope',
@@ -286,8 +294,8 @@ export async function GET(
   const { token } = await params;
   const card = readShare(token);
   if (!card) return new Response('Not found', { status: 404 });
-  const host = (
-    process.env.SITE_URL ? new URL(process.env.SITE_URL) : new URL(request.url)
+  const host = new URL(
+    process.env.SITE_URL || process.env.VERCEL ? siteUrl() : request.url,
   ).host;
   return new ImageResponse(<Card card={card} host={host} />, {
     width: 1200,
